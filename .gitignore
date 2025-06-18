@@ -1,0 +1,43 @@
+# IDE files
+.idea/
+*.idea
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Build output
+target/
+build/
+out/
+
+# Logs
+*.log
+application.log
+
+# Compiled class files
+*.class
+
+# Package files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Spring Boot
+spring-boot-devtools-*.jar
+
+# Application properties
+application-*.properties
+!application.properties
+
+# OS specific files
+.DS_Store
+Thumbs.db

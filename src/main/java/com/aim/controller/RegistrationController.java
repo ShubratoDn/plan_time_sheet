@@ -88,19 +88,19 @@ public class RegistrationController {
 			ModelMap modelMap,RedirectAttributes redirectAttributes ,HttpSession session,HttpServletRequest request) {
 	
 		String response = request.getParameter("g-recaptcha-response");
-        try {
-			captchaService.processResponse(response);
-        } catch (InvalidReCaptchaException e) {
-        	modelMap.addAttribute("captchaErrorMsg", e.getMessage());
-        	modelMap.addAttribute("company", companyRequest);
-			return "new/registration";
-        
-		} catch (ReCaptchaInvalidException e) {
-			modelMap.addAttribute("captchaErrorMsg", e.getMessage());
-			modelMap.addAttribute("company", companyRequest);
-			modelMap.addAttribute("new/registration");
-			return "new/registration";
-		}
+//        try {
+//			captchaService.processResponse(response);
+//        } catch (InvalidReCaptchaException e) {
+//        	modelMap.addAttribute("captchaErrorMsg", e.getMessage());
+//        	modelMap.addAttribute("company", companyRequest);
+//			return "new/registration";
+//
+//		} catch (ReCaptchaInvalidException e) {
+//			modelMap.addAttribute("captchaErrorMsg", e.getMessage());
+//			modelMap.addAttribute("company", companyRequest);
+//			modelMap.addAttribute("new/registration");
+//			return "new/registration";
+//		}
 		
 		Company company = companyRepository.findByName(companyRequest.getName());
 		if (company != null) {
