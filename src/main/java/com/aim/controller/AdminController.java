@@ -28,7 +28,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.apache.log4j.Logger;
+
+import com.aim.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -103,10 +106,6 @@ import com.aim.response.CustomerResponse;
 import com.aim.response.DefaultCalendarResponse;
 import com.aim.response.HomePageUserResponse;
 import com.aim.response.UserTotalRevenueChart;
-import com.aim.service.AdminService;
-import com.aim.service.PermissionService;
-import com.aim.service.TemplateService;
-import com.aim.service.UserService;
 import com.aim.service.email.EmailSenderService;
 import com.aim.utils.Response;
 
@@ -131,6 +130,9 @@ public class AdminController extends DataMenuController {
 	
 	@Autowired
 	private HourLogFileRepository hourLogFileRepository;
+
+	@Autowired
+	private HourLogFileService hourLogFileService;
 	
 	@Autowired
 	private InternalUserRepository internalUserRepository;
@@ -164,13 +166,16 @@ public class AdminController extends DataMenuController {
 	
 	@Autowired
 	private HourLogFilePathRepository hourLogFilePathRepository;
-	
+
+	@Autowired
+	private UserFileService userFileService;
+
 	private final Boolean APPROVED = true;
 	private final Boolean NOT_APPROVED = false;
 	private final Boolean REJECTED= true;
 	private final Boolean NOT_REJECTED= false;
 	
-	final static Logger logger = Logger.getLogger(AdminController.class);
+	final static Logger logger = LoggerFactory.getLogger(AdminController.class);
 	
 	@RequestMapping(value="home", method = RequestMethod.GET)
 	public ModelAndView home(@RequestParam(name="year",required=false) Integer year, 
@@ -221,7 +226,7 @@ public class AdminController extends DataMenuController {
 			userResponses = userTotalHour.stream().filter(f -> f.getUserDetails().getUser().getId() == user)
 					.collect(Collectors.toList());
 			
-			modelAndView.addObject("selectedUserName", userRepository.findById(user).getFirstName()+ " " + userRepository.findById(user).getLastName());
+			modelAndView.addObject("selectedUserName", userService.findOne(user).getFirstName()+ " " + userService.findOne(user).getLastName());
 		} else {
 			
 			userResponses = userTotalHour;
@@ -465,9 +470,9 @@ public class AdminController extends DataMenuController {
 		modelMap.addAttribute("internalUsers",internalUserRepository.findAllByDefaultUser(false));
 		InternalUser user =  new InternalUser();
 		if(id != null) {
-			user = internalUserRepository.findOne(id);
+			user = internalUserRepository.findById(id).orElse(null);
 		}
-		if(user.isDefaultUser()) {
+		if(user != null && user.isDefaultUser()) {
 			return "redirect:/admin/internal-user";
 		}
 		modelMap.addAttribute("internalUser", user);
@@ -502,7 +507,7 @@ public class AdminController extends DataMenuController {
 			}
 		}
 		
-		User user = userRepository.findById(id);
+		User user = userService.findOne(id);
 		modelMap.addAttribute("user", user);
 		modelMap.addAttribute("internalUser", new InternalUser());
 		
@@ -560,7 +565,7 @@ public class AdminController extends DataMenuController {
 			}
 		}
 		
-		User userExists = userRepository.findById(id);
+		User userExists = userService.findOne(id);
 		
 		if(userExists == null) {
 			redirectAttributes.addFlashAttribute("error", "User not found");
@@ -659,7 +664,7 @@ public class AdminController extends DataMenuController {
 			}
 		}
 		
-		User user = userRepository.findOne(id);
+		User user = userService.findOne(id);
 		if(user != null) {
 			user.setActive(0);
 			userRepository.save(user);
@@ -679,7 +684,7 @@ public class AdminController extends DataMenuController {
 			}
 		}
 		
-		User user = userRepository.findOne(id);
+		User user = userService.findOne(id);
 		if(user != null) {
 			user.setActive(1);
 			userRepository.save(user);
@@ -701,7 +706,7 @@ public class AdminController extends DataMenuController {
 			}
 		}
 		
-		User user = userRepository.findOne(id);
+		User user = userService.findOne(id);
 		List<UserDetail> userDetails = userDetailsRepository.findByUser(user);
 		
 		UserDetail userDetail = new UserDetail();
@@ -780,7 +785,7 @@ public class AdminController extends DataMenuController {
 			return "new/admin/add-user-detail";
 		} else {
 			//check validation
-			InternalUser acmUser = internalUserRepository.findOne(userDetailRequest.getAccountManagerId());
+			InternalUser acmUser = internalUserRepository.findById(userDetailRequest.getAccountManagerId()).orElse(null);
 			if(acmUser == null) {
 				model.addAttribute("error", "Selected account manager not available");
 				model.addAttribute("userDetail",userDetailRequest);
@@ -799,13 +804,13 @@ public class AdminController extends DataMenuController {
 					return "new/admin/add-user-detail";
 				}
 			}
-			InternalUser bdmUser = internalUserRepository.findOne(userDetailRequest.getBusinessDevelopmentManagerId());
+			InternalUser bdmUser = internalUserRepository.findById(userDetailRequest.getBusinessDevelopmentManagerId()).orElse(null);
 			if(bdmUser == null) {
 				model.addAttribute("error", "Selected business development manager not available");
 				model.addAttribute("userDetail",userDetailRequest);
 				return "new/admin/add-user-detail";
 			}
-			InternalUser recUser = internalUserRepository.findOne(userDetailRequest.getRecruiterId());
+			InternalUser recUser = internalUserRepository.findById(userDetailRequest.getRecruiterId()).orElse(null);
 			if(recUser == null) {
 				model.addAttribute("error", "Selected recruiter not available");
 				model.addAttribute("userDetail",userDetailRequest);
@@ -975,7 +980,7 @@ public class AdminController extends DataMenuController {
 			RedirectAttributes redirectAttributes, HttpServletRequest request) throws IllegalStateException, IOException { 
 		
 		Company company = (Company) request.getSession().getAttribute("company");
-		User user = userRepository.findById(id);
+		User user = userService.findOne(id);
 		String filePath =null;
 		String fileName =null;
 
@@ -1023,7 +1028,7 @@ public class AdminController extends DataMenuController {
 		
 		Company company = (Company) request.getSession().getAttribute("company");
 		
-		UserFile userFile = userFileRepository.findById(id);
+		UserFile userFile = userFileService.findById(id);
 		Integer userId = userFile.getUser().getId();
 		
 		File file = new File(FILE_PATH + company.getFileFolder() + userFile.getFilePath());
@@ -1057,7 +1062,7 @@ public class AdminController extends DataMenuController {
 	public FileSystemResource downloadFile(@PathVariable(value="id") Integer id, HttpServletRequest request) {
 		
 		Company company = (Company) request.getSession().getAttribute("company");
-		UserFile userFile = userFileRepository.findById(id);
+		UserFile userFile = userFileService.findById(id);
 		return new FileSystemResource(new File(FILE_PATH + company.getFileFolder() + userFile.getFilePath()));
 	}
 	
@@ -1073,7 +1078,7 @@ public class AdminController extends DataMenuController {
 		
 		Company company = (Company) request.getSession().getAttribute("company");
 		
-		HourLogFile hourLogFile = hourLogFileRepository.findById(id);
+		HourLogFile hourLogFile = hourLogFileService.findById(id);
 		userService.addActivity("Time sheet file download", ActivityType.DOWNLOAD_FILE.toString() , hourLogFile.getUserDetail());
 		
 		response.setContentType(MediaType.ALL_VALUE);
@@ -1288,7 +1293,6 @@ public class AdminController extends DataMenuController {
 	
 	/**
 	 * active user details
-	 * @param internalUser
 	 * @param redirectAttributes
 	 * @return
 	 */
@@ -1296,15 +1300,15 @@ public class AdminController extends DataMenuController {
 	public String setUserDetailsActive(@PathVariable("id") Integer id,
 			RedirectAttributes redirectAttributes){
 		
-		UserDetail userDetail = userDetailsRepository.findOne(id);
+		UserDetail userDetail = userDetailsRepository.findById(id).orElse(null);
 		List<UserDetail> userDetails = userDetailsRepository.findByUser(userDetail.getUser());
 		userDetails.forEach(list -> list.setActive(false));
-		userDetailsRepository.save(userDetails);
+		userDetailsRepository.saveAll(userDetails);
 		
 		userDetail.setActive(true);
 		userDetailsRepository.save(userDetail);
 		
-		User user = userRepository.findOne(userDetail.getUser().getId());
+		User user = userService.findOne(userDetail.getUser().getId());
 		user.setClientActiveId(userDetail.getUserDetailId());
 		userRepository.save(user);
 		
@@ -1314,7 +1318,6 @@ public class AdminController extends DataMenuController {
 	
 	/**
 	 * de-active user details
-	 * @param internalUser
 	 * @param redirectAttributes
 	 * @return
 	 */
@@ -1322,11 +1325,11 @@ public class AdminController extends DataMenuController {
 	public String setUserDetailsDeactive(@PathVariable("id") Integer id,
 			RedirectAttributes redirectAttributes){
 		
-		UserDetail userDetail = userDetailsRepository.findOne(id);
+		UserDetail userDetail = userDetailsRepository.findById(id).orElse(null);
 		userDetail.setActive(false);
 		userDetailsRepository.save(userDetail);
 		
-		User user = userRepository.findOne(userDetail.getUser().getId());
+		User user = userService.findOne(userDetail.getUser().getId());
 		user.setClientActiveId(null);
 		userRepository.save(user);
 		redirectAttributes.addFlashAttribute("success","De-active has been done successfully");
@@ -1389,7 +1392,6 @@ public class AdminController extends DataMenuController {
      * Remove edit credential education
      * @param modelMap
      * @param request
-     * @param editCredential
      * @return
      */
     @RequestMapping(value = "new-client-add", params = {"removeRowManager"})
@@ -1505,7 +1507,7 @@ public class AdminController extends DataMenuController {
 	public ResponseEntity<Response> setInternalUser(@PathVariable("id") Integer id){
 		
 		try {
-			InternalUser user = internalUserRepository.findOne(id);
+			InternalUser user = internalUserRepository.findById(id).orElse(null);
 			if(user == null) {
 				return ResponseGenerator.generateResponse(new Response("Please try again", null), HttpStatus.INTERNAL_SERVER_ERROR);
 			} 
@@ -1556,7 +1558,6 @@ public class AdminController extends DataMenuController {
 	
 	/**
 	 * add template step
-	 * @param modal
 	 * @return
 	 */
 	@RequestMapping(value="template/add", method = RequestMethod.GET) 
@@ -1794,7 +1795,7 @@ public class AdminController extends DataMenuController {
 	@ResponseBody
 	public ResponseEntity<Response> signatureDelete(@PathVariable("id") Integer id){
 		
-		Signature signature = signatureRepository.findOne(id);
+		Signature signature = signatureRepository.findById(id).orElse(null);
 		if(signature == null) {
 			return ResponseGenerator.generateResponse(new Response("error", null), HttpStatus.BAD_REQUEST);
 		}
@@ -1855,7 +1856,6 @@ public class AdminController extends DataMenuController {
 	
 	/**
 	 * send mail
-	 * @param type
 	 * @return
 	 */
 	@RequestMapping(value="mail/send-mail", method = RequestMethod.POST) 
@@ -1876,7 +1876,6 @@ public class AdminController extends DataMenuController {
 	
 	/**
 	 * send mail
-	 * @param type
 	 * @return
 	 */
 	@RequestMapping(value="mail/access-send-mail", method = RequestMethod.POST) 
@@ -1921,7 +1920,6 @@ public class AdminController extends DataMenuController {
 	
 	/**
 	 * send mail
-	 * @param type
 	 * @return
 	 */
 	@RequestMapping(value="template/exist", method = RequestMethod.GET) 
@@ -1943,7 +1941,6 @@ public class AdminController extends DataMenuController {
 	
 	/**
 	 * send mail
-	 * @param type
 	 * @return
 	 */
 	@RequestMapping(value="company/configuration", method = RequestMethod.GET) 
@@ -2033,11 +2030,7 @@ public class AdminController extends DataMenuController {
 		redirectAttributes.addFlashAttribute("success", "Change save");
 		return "redirect:/admin/company/set";
 	}
-	/**
-	 * send mail
-	 * @param type
-	 * @return
-	 */
+
 	@RequestMapping(value="role/permission", method = RequestMethod.GET) 
 	public String rolePermission(ModelMap modelMap){
 		RolePermissionRequest rolePermissionRequest = adminService.getRolePermission();
@@ -2061,8 +2054,6 @@ public class AdminController extends DataMenuController {
 	}
 	/**
 	 * send mail
-	 * @param type
-	 * @return
 	 */
 	@RequestMapping(value="set-role-permission", method = RequestMethod.POST) 
 	@ResponseBody

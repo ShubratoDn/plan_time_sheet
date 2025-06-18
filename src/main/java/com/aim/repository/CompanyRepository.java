@@ -15,8 +15,6 @@ public interface CompanyRepository extends CrudRepository <Company, Integer>{
 
 	Company findByName(String name);
 
-	Company findById(Integer id);
-
 	Company findByUuid(String cId);
 
 	Company findFirstByVarifyAndActive(boolean b, boolean c);

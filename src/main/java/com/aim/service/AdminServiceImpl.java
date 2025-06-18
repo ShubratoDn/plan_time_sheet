@@ -191,7 +191,7 @@ public class AdminServiceImpl implements AdminService {
 		List<Activity> activities = null;
 		
 		if(id != null) {
-			User user = userRepository.findById(id);
+			User user = userService.findById(id);
 			if(type == null) {
 				activities = activityRepository.findAllByActivityByUserOrderByIdDesc(user);
 			} else {
@@ -224,9 +224,9 @@ public class AdminServiceImpl implements AdminService {
 				}
 			}
 			else
-				userDetails = userDetailsRepository.findByUser(userRepository.findById(user));
+				userDetails = userDetailsRepository.findByUser(userService.findById(user));
 		} else {
-			userDetails = userDetailsRepository.findByUser(userRepository.findById(user)).stream().filter(f -> f.getUserDetailId() == userDetailId).collect(Collectors.toList());
+			userDetails = userDetailsRepository.findByUser(userService.findById(user)).stream().filter(f -> f.getUserDetailId() == userDetailId).collect(Collectors.toList());
 		}
 		
 		List<Double> hours = new ArrayList<>();
@@ -333,7 +333,7 @@ public class AdminServiceImpl implements AdminService {
 				userDetails = userDetailsRepository.findAll();
 			}
 		else
-			userDetails = userDetailsRepository.findByUser(userRepository.findById(user));
+			userDetails = userDetailsRepository.findByUser(userService.findById(user));
 		
 		for(int i = 1; i<=numberOfDays; i++) {
 			
@@ -391,9 +391,9 @@ public class AdminServiceImpl implements AdminService {
 				}
 			}
 			else
-				userDetails = userDetailsRepository.findByUser(userRepository.findById(user));
+				userDetails = userDetailsRepository.findByUser(userService.findById(user));
 		} else {
-			userDetails = userDetailsRepository.findByUser(userRepository.findById(user)).stream().filter(f -> f.getUserDetailId() == userDetailId).collect(Collectors.toList());
+			userDetails = userDetailsRepository.findByUser(userService.findById(user)).stream().filter(f -> f.getUserDetailId() == userDetailId).collect(Collectors.toList());
 		}
 		
 		List<Double> revenue = new ArrayList<>();
@@ -660,7 +660,7 @@ public class AdminServiceImpl implements AdminService {
 				userDetails = userDetailsRepository.findAll();
 			}
 		else
-			userDetails = userDetailsRepository.findByUser(userRepository.findById(user));
+			userDetails = userDetailsRepository.findByUser(userService.findById(user));
         
         for(int i = 1; i<=numberOfDays; i++) {
 			
@@ -793,7 +793,7 @@ public class AdminServiceImpl implements AdminService {
 				
 				managers.add(manager);
 			}
-		managerRepository.save(managers);
+		managerRepository.saveAll(managers);
 		}
 		return client;
 	}
@@ -820,7 +820,7 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	public Client getEmployerDetails(Integer id) {
-		Client client = clientRepository.findById(id);
+		Client client = clientRepository.findById(id).orElse(null);
 		return client;
 	}
 
@@ -1452,7 +1452,7 @@ public class AdminServiceImpl implements AdminService {
 	public void setRolePermission(Integer id, Functionality functionality, boolean create, boolean delete, boolean read,
 			boolean update) {
 		
-		UserRoleAccess userRoleAccess = userRoleAccessRepository.findOne(id);
+		UserRoleAccess userRoleAccess = userRoleAccessRepository.findById(id).orElse(null);
 		userRoleAccess.setCreate(create);
 		userRoleAccess.setDelete(delete);
 		userRoleAccess.setRead(read);

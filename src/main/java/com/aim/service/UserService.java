@@ -126,4 +126,7 @@ public interface UserService {
 	String setPlanString(PermissionPlan permissionPlan);
 
 	String getFinalFileFolder(String u, int d);
-}	
+
+	User findOne(int id);
+	User findById(int id);
+}

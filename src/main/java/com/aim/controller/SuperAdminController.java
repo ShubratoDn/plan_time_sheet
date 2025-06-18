@@ -57,8 +57,7 @@ public class SuperAdminController {
 
 	/**
 	 * add Company
-	 * 
-	 * @param modelAttribute
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "add-company", method = RequestMethod.GET)
@@ -99,8 +98,7 @@ public class SuperAdminController {
 
 	/**
 	 * add Company
-	 * 
-	 * @param modelAttribute
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "company-list", method = RequestMethod.GET)
@@ -114,8 +112,7 @@ public class SuperAdminController {
 
 	/**
 	 * active Company
-	 * 
-	 * @param modelAttribute
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "company-active/{companyId}", method = RequestMethod.GET)
@@ -127,8 +124,7 @@ public class SuperAdminController {
 
 	/**
 	 * de-active Company
-	 * 
-	 * @param modelAttribute
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "company-deactive/{companyId}", method = RequestMethod.GET)
@@ -138,16 +134,11 @@ public class SuperAdminController {
 		return "redirect:/super-admin/company-list";
 	}
 
-	/**
-	 * de-active Company
-	 * 
-	 * @param modelAttribute
-	 * @return
-	 */
+
 	@RequestMapping(value = "company-detail/{companyId}", method = RequestMethod.GET)
 	public String getDetailsCompany(@PathVariable("companyId") Integer companyId, ModelMap modelMap) {
 
-		Company company = companyRepository.findById(companyId);
+		Company company = companyRepository.findById(companyId).orElse(null);
 		if (company == null) {
 			modelMap.addAttribute("company", company);
 			return "new/superAdmin/companyDetail";
@@ -175,8 +166,7 @@ public class SuperAdminController {
 
 	/**
 	 * add Company
-	 * 
-	 * @param modelAttribute
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "edit-company", method = RequestMethod.POST)
@@ -223,7 +213,7 @@ public class SuperAdminController {
 			PermissionPlan permissionPlan) {
 
 		try {
-			Company company = companyRepository.findById(companyId);
+			Company company = companyRepository.findById(companyId).orElse(null);
 			if (company == null) {
 				return ResponseGenerator.generateResponse(new Response("Please try again", null),
 						HttpStatus.INTERNAL_SERVER_ERROR);

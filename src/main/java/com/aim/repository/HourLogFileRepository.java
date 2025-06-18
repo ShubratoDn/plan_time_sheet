@@ -22,8 +22,6 @@ public interface HourLogFileRepository extends CrudRepository <HourLogFile, Inte
 	@Query("SELECT h FROM HourLogFile h where h.userDetail = :userDetail and (YEAR(h.startDate) = :year or YEAR(h.endDate) = :year)")
 	List<HourLogFile> findHourLogFile(@Param("userDetail") UserDetail userDetail, @Param("year") Integer year);
 
-	HourLogFile findById(Integer id);
-
 	@Query("SELECT h FROM HourLogFile h where h.approve = :approve AND h.reject = :reject AND (YEAR(h.startDate) = :yearFile or YEAR(h.endDate) = :yearFile) ORDER BY h.modifiedDatetime DESC")
 	List<HourLogFile> findAllHourLogFile(@Param("yearFile") Integer yearFile, @Param("approve") boolean approve,
 			@Param("reject") boolean reject);
@@ -38,7 +36,7 @@ public interface HourLogFileRepository extends CrudRepository <HourLogFile, Inte
 
 	Integer countByApproveAndReject(Boolean aPPROVED, Boolean nOT_REJECTED);
 	
-	@Query("SELECT COUNT(h) FROM HourLogFile h where h.approve = :approve AND h.reject = :reject AND YEAR(h.startDate) = :year AND MONTH(h.startDate) = :month)")
+	@Query("SELECT COUNT(h) FROM HourLogFile h where h.approve = :approve AND h.reject = :reject AND YEAR(h.startDate) = :year AND MONTH(h.startDate) = :month ")
 	Integer countByApproveAndRejectByMonthAndYear(@Param("month") Integer month, @Param("year") Integer year, 
 			@Param("approve") boolean approve, @Param("reject") boolean reject);
 
@@ -50,10 +48,10 @@ public interface HourLogFileRepository extends CrudRepository <HourLogFile, Inte
 	@Query("SELECT h FROM HourLogFile h where h.userDetail.user = :user AND (YEAR(h.startDate) = :yearFile or YEAR(h.endDate) = :yearFile) ORDER BY h.modifiedDatetime DESC")
 	List<HourLogFile> findAllHourLogFileNoSortByUser(@Param("yearFile") Integer yearFile, @Param("user") User user);
 
-	@Query("SELECT h FROM HourLogFile h where h.userDetail.user = :user AND h.approve = :approve AND YEAR(h.startDate) = :year AND MONTH(h.startDate) = :month) ORDER BY h.modifiedDatetime DESC")
+	@Query("SELECT h FROM HourLogFile h where h.userDetail.user = :user AND h.approve = :approve AND YEAR(h.startDate) = :year AND MONTH(h.startDate) = :month ORDER BY h.modifiedDatetime DESC")
 	List<HourLogFile> getHourLogFile(@Param("month") Integer month, @Param("year") Integer year, @Param("approve") boolean approve, @Param("user") User user);
 
-	@Query("SELECT h FROM HourLogFile h where h.userDetail.user = :user AND YEAR(h.startDate) = :year AND MONTH(h.startDate) = :month) ORDER BY h.modifiedDatetime DESC")
+	@Query("SELECT h FROM HourLogFile h where h.userDetail.user = :user AND YEAR(h.startDate) = :year AND MONTH(h.startDate) = :month ORDER BY h.modifiedDatetime DESC")
 	List<HourLogFile> getHourLogFile(@Param("month") Integer month, @Param("year") Integer year, @Param("user") User user);
 
 	@Query("SELECT COUNT(h) FROM HourLogFile h where h.approve = :approve AND h.reject = :reject AND YEAR(h.startDate) = :year AND h.userDetail = :userDetail")

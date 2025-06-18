@@ -1,6 +1,10 @@
 package com.aim.utils;
 
 
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -8,12 +12,9 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.log4j.Logger;
-import org.apache.tomcat.util.codec.binary.Base64;
-
 public class EncryptDecryptUtils {
 
-	final static Logger logger = Logger.getLogger(EncryptDecryptUtils.class);
+	final static Logger logger = LoggerFactory.getLogger(EncryptDecryptUtils.class);
 	
 	private static final String PASS_PHRASE = "KWH360ThisIs#KWH360This_IsWebsOptiThis#IsKWH360";
 	private static final byte[] SALT_BYTE = "WEBS_KWH/OPTI_360".getBytes();

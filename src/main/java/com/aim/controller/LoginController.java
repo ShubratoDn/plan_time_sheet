@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.aim.service.UserCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,7 +46,9 @@ public class LoginController {
 	
 	@Autowired
 	PermissionService permissionService;
-	
+
+	@Autowired
+	private UserCompanyService userCompanyService;
 	/**
 	 * Login
 	 * @param principal
@@ -107,7 +110,7 @@ public class LoginController {
 		Company company1 = (Company) request.getSession().getAttribute("company");
 
 		if(company1 == null) {
-			UserCompany userCompany = userCompanyRepository.findOne(userCompanyId);
+			UserCompany userCompany = userCompanyService.findOne(userCompanyId);
 
 			User user = (User) request.getSession().getAttribute("user");
 			user.setCompany(userCompany.getCompany());

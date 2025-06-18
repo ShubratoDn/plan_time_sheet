@@ -1,18 +1,18 @@
 package com.aim.service.email;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -20,7 +20,7 @@ public class EmailServiceImpl implements EmailService {
 	@Autowired
 	private JavaMailSender mailSender;
 	
-	final static Logger logger = Logger.getLogger(EmailServiceImpl.class);
+	final static Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
 
 	@Override
 	public void sendHTMLMail(String from, String to, String subject, String msg, String ccEmail)  {

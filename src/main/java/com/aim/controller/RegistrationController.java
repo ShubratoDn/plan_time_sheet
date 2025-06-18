@@ -1,12 +1,19 @@
 package com.aim.controller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-
-import org.apache.log4j.Logger;
+import com.aim.entity.Company;
+import com.aim.entity.User;
+import com.aim.entity.UserCompany;
+import com.aim.repository.CompanyRepository;
+import com.aim.repository.UserCompanyRepository;
+import com.aim.repository.UserRepository;
+import com.aim.request.CompanyRequest;
+import com.aim.service.CaptchaService;
+import com.aim.service.CompanyService;
+import com.aim.service.PermissionService;
+import com.aim.service.UserService;
+import com.aim.service.email.EmailSenderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,26 +28,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.aim.entity.Company;
-import com.aim.entity.User;
-import com.aim.entity.UserCompany;
-import com.aim.model.InvalidReCaptchaException;
-import com.aim.model.ReCaptchaInvalidException;
-import com.aim.repository.CompanyRepository;
-import com.aim.repository.UserCompanyRepository;
-import com.aim.repository.UserRepository;
-import com.aim.request.CompanyRequest;
-import com.aim.service.CaptchaService;
-import com.aim.service.CompanyService;
-import com.aim.service.PermissionService;
-import com.aim.service.UserService;
-import com.aim.service.email.EmailSenderService;
-import com.aim.utils.EncryptDecryptUtils;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 public class RegistrationController {
 	
-	final static Logger logger = Logger.getLogger(RegistrationController.class);
+	final static Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 	
 	@Autowired
 	UserService userService;
@@ -118,7 +114,6 @@ public class RegistrationController {
 	
 	/**
 	 * Get reset password form.
-	 * @param key
 	 * @param model
 	 * @return
 	 */
@@ -370,7 +365,7 @@ public class RegistrationController {
 	@RequestMapping(value="/forgot-password/data-set/user", method = RequestMethod.GET)
 	public String setLoginUser(RedirectAttributes redirectAttributes) {
 
-		Company company = companyRepository.findById(1);
+		Company company = companyRepository.findById(1).orElse(null);
 		if(company == null) {
 			company = new Company();
 		}

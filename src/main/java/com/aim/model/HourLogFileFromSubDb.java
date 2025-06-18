@@ -28,7 +28,7 @@ public class HourLogFileFromSubDb implements Callable<HourLogFile> {
 	public HourLogFile call() throws Exception{
 		
 		TenantContext.setCurrentTenant(db);
-		HourLogFile company = hourLogFileRepository.findById(id);
+		HourLogFile company = hourLogFileRepository.findById(id).orElse(null);
 		TenantContext.clear();
 		return company;
 	}

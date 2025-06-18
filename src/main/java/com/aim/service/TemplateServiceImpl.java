@@ -56,7 +56,7 @@ public class TemplateServiceImpl implements TemplateService{
 		
 		Template template = new Template();
 		if(id != null) {
-			template = templateRepository.findOne(id);
+			template = templateRepository.findById(id).orElse(null);
 		}
 		template.setHtmlDate(htmlDate);
 		template.setMailTemplateType(mailTemplateType);
@@ -75,8 +75,7 @@ public class TemplateServiceImpl implements TemplateService{
 	 */
 	@Override
 	public Template getTemplate(Integer id) {
-		
-		Template template = templateRepository.findOne(id);
+		Template template = templateRepository.findById(id).orElse(null);
 		return template;
 	}
 
@@ -88,7 +87,7 @@ public class TemplateServiceImpl implements TemplateService{
 
 	@Override
 	public void deleteTemplate(Integer id) {
-		Template template = templateRepository.findOne(id);
+		Template template = templateRepository.findById(id).orElse(null);
 		if(template != null)
 			templateRepository.delete(template);
 	}
@@ -370,7 +369,7 @@ public class TemplateServiceImpl implements TemplateService{
 	@Override
 	public boolean getTemplateByName(String templateName, Integer id) {
 		if(id != null) {
-			Template template = templateRepository.findOne(id);
+			Template template = templateRepository.findById(id).orElse(null);
 			
 			Template templateByName = templateRepository.findByTemplateName(templateName);
 			if(templateByName != null && !template.getTemplateName().equals(templateName)) {

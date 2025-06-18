@@ -145,7 +145,7 @@ public class UserController extends DataMenuController {
 		} else {
 			userList = userRepository.findByRole("ROLE_USER");
 			if (userId != null) {
-				user = userRepository.findById(userId);
+				user = userRepository.findById(userId).orElse(null);
 				model.addAttribute("userList", userList);
 				if (user == null) {
 					if (!CollectionUtils.isEmpty(userList)) {
@@ -325,8 +325,7 @@ public class UserController extends DataMenuController {
 
 	/**
 	 * Get add hours list
-	 * 
-	 * @param id
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "user-hour-log/{userDetailId}", method = RequestMethod.GET)
@@ -418,7 +417,6 @@ public class UserController extends DataMenuController {
 	 * @param request
 	 * @param endDate
 	 * @param redirectAttributes
-	 * @param file
 	 * @return
 	 * @throws MalformedURLException
 	 */
@@ -493,7 +491,7 @@ public class UserController extends DataMenuController {
 	@ResponseBody
 	public void downloadFile(@PathVariable(value = "id") Integer id, HttpServletResponse response,
 			HttpServletRequest request) {
-		HourLogFile hourLogFile = hourLogFileRepository.findById(id);
+		HourLogFile hourLogFile = hourLogFileRepository.findById(id).orElse(null);
 		userService.addActivity("Time sheet file download", ActivityType.DOWNLOAD_FILE.toString(),
 				hourLogFile.getUserDetail());
 
@@ -602,7 +600,6 @@ public class UserController extends DataMenuController {
 	 * get user time sheet add
 	 * 
 	 * @param request
-	 * @param userDetailId
 	 * @param startDate
 	 * @param endDate
 	 * @return
@@ -622,7 +619,7 @@ public class UserController extends DataMenuController {
 		}
 
 		User user = (User) request.getSession().getAttribute("user");
-		user = userRepository.findById(user.getId());
+		user = userService.findById(user.getId());
 		Integer userDetailId = user.getClientActiveId();
 		SimpleDateFormat simpleDateformat3 = new SimpleDateFormat("MM/dd/yyyy");
 
@@ -702,15 +699,7 @@ public class UserController extends DataMenuController {
 		return "/new/user/add-time-sheet";
 	}
 
-	/**
-	 * get user time sheet add
-	 * 
-	 * @param request
-	 * @param userDetailId
-	 * @param startDate
-	 * @param endDate
-	 * @return
-	 */
+
 	@RequestMapping(value = "add-time-sheet", method = RequestMethod.POST)
 	public String getTimeSheetAdd(@ModelAttribute("addUserTimeSheet") AddUserTimeSheet addUserTimeSheet,
 			@RequestParam(name = "file", required = false) List<MultipartFile> files,
@@ -856,14 +845,14 @@ public class UserController extends DataMenuController {
 
 		Company company = (Company) request.getSession().getAttribute("company");
 
-		HourLogFile hourLogFile = hourLogFileRepository.findById(id);
+		HourLogFile hourLogFile = hourLogFileRepository.findById(id).orElse(null);
 		List<HourLogFilePath> hourLogFilePaths = hourLogFilePathRepository.findByHourLogFile(hourLogFile);
 		if (!CollectionUtils.isEmpty(hourLogFilePaths)) {
 			for (HourLogFilePath hourLogFilePath : hourLogFilePaths) {
 				File file = new File(FILE_PATH + company.getFileFolder() + hourLogFilePath.getFilePath());
 				file.delete();
 			}
-			hourLogFilePathRepository.delete(hourLogFilePaths);
+			hourLogFilePathRepository.deleteAll(hourLogFilePaths);
 		}
 		hourLogFileRepository.delete(hourLogFile);
 		userService.addActivity("Time sheet delete", ActivityType.DELETE_TIMESHEET.toString(), null);
@@ -926,7 +915,6 @@ public class UserController extends DataMenuController {
 	 * get user time sheet add
 	 * 
 	 * @param request
-	 * @param userDetailId
 	 * @param startDate
 	 * @param endDate
 	 * @return
@@ -1006,14 +994,6 @@ public class UserController extends DataMenuController {
 		return "/new/user/add-time-sheet::addTimeSheet";
 	}
 
-	/**
-	 * get default time sheet
-	 * 
-	 * @param startDate
-	 * @param endDate
-	 * @return
-	 * @throws ParseException
-	 */
 	@RequestMapping(value = "schedular/default-time-sheet", method = RequestMethod.GET)
 	public String getDefaultTimesheet(@RequestParam(name = "year", required = false) Integer year,
 			RedirectAttributes redirectAttributes) throws ParseException {
@@ -1049,12 +1029,7 @@ public class UserController extends DataMenuController {
 		return calendarResponses;
 	}
 
-	/**
-	 * @param message
-	 * @param email
-	 * @param subject
-	 * @return
-	 */
+
 	@RequestMapping(value = "unauthorized", method = RequestMethod.GET)
 	public String userSchedularTimeSheet(ModelMap modelMap) {
 

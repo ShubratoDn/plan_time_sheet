@@ -25,9 +25,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 	List<User> findByRole(String role);
 
 	Integer countByRole(String role);
-
-	User findById(int id);
-
+	
 	List<User> findByRoleOrRole(String string, String string2);
 
 	List<User> findByRoleAndActive(String string, int i);

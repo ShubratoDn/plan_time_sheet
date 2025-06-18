@@ -16,7 +16,4 @@ public interface UserFileRepository extends CrudRepository<UserFile, Integer> {
 
 	List<UserFile> findByUser(User user);
 
-	UserFile findById(Integer id);
-
-
 }

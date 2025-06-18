@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,13 +39,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class SupervisorServiceImpl implements SupervisorService{
 	
-	final static Logger logger = Logger.getLogger(UserServiceImpl.class);
+	final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 	
 	@Autowired
 	private UserService userService;
 	
 	@Autowired
 	private HourLogFileRepository hourLogFileRepository;
+
+	@Autowired
+	private HourLogFileService hourLogFileService;
 	
 	@Autowired
 	private HttpServletRequest request;
@@ -61,7 +65,7 @@ public class SupervisorServiceImpl implements SupervisorService{
 	@Override
 	public void aproveOrRejectFile(Integer timesheetId, boolean isApprove, String reason, String remark) {
 		
-		HourLogFile hourLogFile = hourLogFileRepository.findById(timesheetId);
+		HourLogFile hourLogFile = hourLogFileService.findById(timesheetId);
 		User user = (User) request.getSession().getAttribute("user");
 		
 		if(isApprove) {

@@ -22,12 +22,14 @@ import javax.validation.Valid;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -102,7 +104,7 @@ import com.mysql.cj.Session;
 @Service
 public class UserServiceImpl implements UserService {
 	
-	final static Logger logger = Logger.getLogger(UserServiceImpl.class);
+	final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 	
 	@Value("${file.path}")
 	private String FILE_PATH;
@@ -203,7 +205,7 @@ public class UserServiceImpl implements UserService {
 		Company company = getCompany();
 		if(user.getId() != 0) { 
 			
-			User user2 = userRepository.findById(user.getId());
+			User user2 = userRepository.findById(user.getId()).orElse(null);
 			uuid = user2.getUuid();
 			
 			user2.setEmail(user.getEmail());
@@ -272,7 +274,7 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public void sendActivation(Integer userId) {
-		User user = userRepository.findOne(userId);
+		User user = userRepository.findById(userId).orElse(null);
 		
 		ThreadPoolExecutor executor1 = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
 		GetUserThread g = new GetUserThread(userRepository, user.getEmail(),null);
@@ -410,7 +412,7 @@ public class UserServiceImpl implements UserService {
 			userDetail2.setFileFolder(getUserDetailsFinalFileFolder(userDetail2.getClientName(), 0));
 			List<UserDetail> userDetaillist = userDetailsRepository.findByUser(userDetails.getUser());
 			userDetaillist.forEach(list -> list.setActive(false));
-			userDetailsRepository.save(userDetaillist);
+			userDetailsRepository.saveAll(userDetaillist);
 				
 			userDetail2.setActive(true);
 		} else {
@@ -419,7 +421,7 @@ public class UserServiceImpl implements UserService {
 		userDetailsRepository.save(userDetail2);
 		
 		if(isNew) {
-			User user = userRepository.findOne(userDetails.getUser().getId());
+			User user = userRepository.findById(userDetails.getUser().getId()).orElse(null);
 			user.setClientActiveId(userDetail2.getUserDetailId());
 			userRepository.save(user);
 		}
@@ -1160,7 +1162,7 @@ public class UserServiceImpl implements UserService {
 	public void saveUserFile(String fileName, String filePath, Integer id, Date expDate, String type, String remark) {
 
 		UserFile userFile = new UserFile();
-		userFile.setUser(userRepository.findById(id));
+		userFile.setUser(userRepository.findById(id).orElse(null));
 		userFile.setExpDate(expDate);
 		userFile.setFilePath(filePath);
 		userFile.setRemark(remark);
@@ -1564,7 +1566,7 @@ public class UserServiceImpl implements UserService {
 							file1.delete();
 						}
 //						
-						hourLogFilePathRepository.delete(hourLogFilePaths);
+						hourLogFilePathRepository.deleteAll(hourLogFilePaths);
 					}
 					hourLogFileRepository.delete(hourLogFile1);
 				}
@@ -1595,7 +1597,7 @@ public class UserServiceImpl implements UserService {
 					}
 				}
 				if(!CollectionUtils.isEmpty(d))
-					hourLogFilePathRepository.delete(d);
+					hourLogFilePathRepository.deleteAll(d);
 			}
 			addActivity("Time sheet re-submit", ActivityType.RESUBMIT_TIMESHEET.toString() , userDetail);
 		}
@@ -2125,7 +2127,7 @@ public class UserServiceImpl implements UserService {
 			AdminTimeSheetAction adminTimeSheetAction) {
 
 		List<HourLogFile> hourLogFiles = new ArrayList<>();
-		User user = userRepository.findById(userId);
+		User user = userRepository.findById(userId).orElse(null);
 		
 		switch (adminTimeSheetAction) {
 			case APPROVED:
@@ -2190,7 +2192,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public String viewHoursLogPdf(Integer id) {
 		
-		HourLogFile hourLogFile  = hourLogFileRepository.findById(id);
+		HourLogFile hourLogFile  = hourLogFileRepository.findById(id).orElse(null);
 		AddUserTimeSheet addUserTimeSheet  = getCalendarResponse(hourLogFile.getUserDetail().getUserDetailId(),
 				hourLogFile.getStartDate(), hourLogFile.getEndDate());
 		
@@ -2229,13 +2231,13 @@ public class UserServiceImpl implements UserService {
 			userDetail.setUserDetailId(userDetailRequest.getUserDetailId());
 		}
 		
-		InternalUser acmUser = internalUserRepository.findOne(userDetailRequest.getAccountManagerId());
+		InternalUser acmUser = internalUserRepository.findById(userDetailRequest.getAccountManagerId()).orElse(null);
 		userDetail.setAccountManager(acmUser);
 		
-		InternalUser bdmUser = internalUserRepository.findOne(userDetailRequest.getBusinessDevelopmentManagerId());
+		InternalUser bdmUser = internalUserRepository.findById(userDetailRequest.getBusinessDevelopmentManagerId()).orElse(null);
 		userDetail.setBusinessDevelopmentManager(bdmUser);
 		
-		InternalUser recUser = internalUserRepository.findOne(userDetailRequest.getRecruiterId());
+		InternalUser recUser = internalUserRepository.findById(userDetailRequest.getRecruiterId()).orElse(null);
 		userDetail.setRecruiter(recUser);
 		
 		userDetail.setAccountManagerName(acmUser.getFirstname() + " " + acmUser.getLastname());
@@ -2275,7 +2277,7 @@ public class UserServiceImpl implements UserService {
 		userDetail.setInvoiceTo(invoiceTo);
 		
 		if(userDetailRequest.getClientId() != null) {
-			Client client = clientRepository.findById(userDetailRequest.getClientId()); 
+			Client client = clientRepository.findById(userDetailRequest.getClientId()).orElse(null);
 			userDetail.setClient(client);
 			if(invoiceTo.urlParam.equals(InvoiceTo.CLIENT.urlParam)) {
 				userDetail.setClientName(client.getClientName());
@@ -2285,7 +2287,7 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		if(userDetailRequest.getVendorId() != null) {
-			Client vendor = clientRepository.findById(userDetailRequest.getVendorId()); 
+			Client vendor = clientRepository.findById(userDetailRequest.getVendorId()).orElse(null);
 			userDetail.setVendor(vendor);
 			userDetail.setVendorName(vendor.getClientName());
 			if(invoiceTo.urlParam.equals(InvoiceTo.VENDOR.urlParam)) {
@@ -2316,7 +2318,7 @@ public class UserServiceImpl implements UserService {
 			userDetail.setPtax(0.0f);
 			userDetail.setW2(0.0f);
 			
-			Client client1 = clientRepository.findById(userDetailRequest.getEmployerId()); 
+			Client client1 = clientRepository.findById(userDetailRequest.getEmployerId()).orElse(null);
 			userDetail.setEmployer(client1);
 		
 			userDetail.setAddress(userDetailRequest.getAddress());
@@ -2441,7 +2443,7 @@ public class UserServiceImpl implements UserService {
 		
 		List<User> users = new ArrayList<User>();
 		if(userId != null) {
-			User user1 = userRepository.findById(userId);
+			User user1 = userRepository.findById(userId).orElse(null);
 			users.add(user1);
 		} else {
 			users =	findByRole("ROLE_USER");
@@ -2518,17 +2520,25 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void addPrivateSignature(String privateSignature, User user) {
 		
-		User user2 = userRepository.findById(user.getId());
+		User user2 = userRepository.findById(user.getId()).orElse(null);
 		user2.setPrivateSign(privateSignature);
 		userRepository.save(user2);
 	}
 
+//	@Override
+//	public Page<User> findAll(Integer page) {
+//		Pageable pageable = new PageRequest(page-1, 12);
+//		Page<User> d = userRepository.findAll(pageable);
+//		return d;
+//	}
+
 	@Override
 	public Page<User> findAll(Integer page) {
-		Pageable pageable = new PageRequest(page-1, 12);
+		Pageable pageable = PageRequest.of(page-1, 12, Sort.by("id"));
 		Page<User> d = userRepository.findAll(pageable);
 		return d;
 	}
+
 
 	/**
 	 * 
@@ -2582,10 +2592,28 @@ public class UserServiceImpl implements UserService {
 		return div;
 	}
 
+//	@Override
+//	public Page<User> findByFirstNameStartsWith(String startsWith, Integer page) {
+//		Pageable pageable = new PageRequest(page-1, 12);
+//		Page<User> d =userRepository.findByFirstNameStartsWithIgnoreCase(startsWith, pageable);
+//		return d;
+//	}
+
+
 	@Override
 	public Page<User> findByFirstNameStartsWith(String startsWith, Integer page) {
-		Pageable pageable = new PageRequest(page-1, 12);
-		Page<User> d =userRepository.findByFirstNameStartsWithIgnoreCase(startsWith, pageable);
+		Pageable pageable = PageRequest.of(page-1, 12, Sort.by("id"));
+		Page<User> d = userRepository.findByFirstNameStartsWithIgnoreCase(startsWith, pageable);
 		return d;
+	}
+
+	@Override
+	public User findOne(int id){
+		return userRepository.findById(id).orElse(null);
+	}
+
+	@Override
+	public User findById(int id){
+		return userRepository.findById(id).orElse(null);
 	}
 }

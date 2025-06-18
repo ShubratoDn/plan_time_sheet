@@ -11,7 +11,8 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.ibatis.jdbc.ScriptRunner;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,7 @@ import com.aim.utils.Utils;
 @Service
 public class CompanyServiceImpl implements CompanyService{
 
-	final static Logger logger = Logger.getLogger(CompanyServiceImpl.class);
+	final static Logger logger = LoggerFactory.getLogger(CompanyServiceImpl.class);
 	
 	@Autowired
 	private CompanyRepository companyRepository;
@@ -251,7 +252,7 @@ public class CompanyServiceImpl implements CompanyService{
 	 */
 	@Override
 	public void edit(Company company1) {
-		Company company = companyRepository.findById(company1.getId());
+		Company company = companyRepository.findById(company1.getId()).orElse(null);
 		company.setAddress(company1.getAddress());
 		company.setDetails(company1.getDetails());
 		company.setName(company1.getName());
@@ -266,7 +267,7 @@ public class CompanyServiceImpl implements CompanyService{
 
 	@Override
 	public void active(Integer companyId, boolean active) {
-		Company company = companyRepository.findById(companyId);
+		Company company = companyRepository.findById(companyId).orElse(null);
 		company.setActive(active);
 		companyRepository.save(company);
 	}

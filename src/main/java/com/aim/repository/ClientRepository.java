@@ -11,8 +11,5 @@ public interface ClientRepository extends CrudRepository <Client, Integer> {
 
 	List<Client> findByType(ClientType employee);
 
-	Client findById(Integer clientId);
-	
-
 }
 

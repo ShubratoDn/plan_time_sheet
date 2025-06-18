@@ -1,27 +1,16 @@
 package com.aim.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.aim.entity.*;
+import com.aim.enums.*;
+import com.aim.model.ResponseGenerator;
+import com.aim.repository.*;
+import com.aim.response.*;
+import com.aim.service.*;
+import com.aim.service.email.EmailSenderService;
+import com.aim.utils.Response;
+import com.aim.utils.Utils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.itextpdf.html2pdf.HtmlConverter;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,56 +22,18 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.aim.entity.Company;
-import com.aim.entity.HourLogFile;
-import com.aim.entity.HourLogFilePath;
-import com.aim.entity.Schedular;
-import com.aim.entity.Template;
-import com.aim.entity.User;
-import com.aim.entity.UserDetail;
-import com.aim.enums.ActivityType;
-import com.aim.enums.AdminTimeSheetAction;
-import com.aim.enums.Functionality;
-import com.aim.enums.MailTemplateType;
-import com.aim.enums.Month;
-import com.aim.enums.Permission;
-import com.aim.enums.UserDetailsType;
-import com.aim.model.ResponseGenerator;
-import com.aim.repository.HourLogFilePathRepository;
-import com.aim.repository.HourLogFileRepository;
-import com.aim.repository.SchedularRepository;
-import com.aim.repository.UserDetailsRepository;
-import com.aim.repository.UserRepository;
-import com.aim.response.AddUserTimeSheet;
-import com.aim.response.AdminUserHoursChart;
-import com.aim.response.CalendarResponse;
-import com.aim.response.DefaultCalendarResponse;
-import com.aim.response.HomePageUserResponse;
-import com.aim.response.PendingHourLogFile;
-import com.aim.response.SchedularResponse;
-import com.aim.response.UserTimeSheet;
-import com.aim.response.UserTimeSheetDate;
-import com.aim.response.UserTypeChartResponse;
-import com.aim.service.AdminService;
-import com.aim.service.HoursLogService;
-import com.aim.service.PermissionService;
-import com.aim.service.SupervisorService;
-import com.aim.service.TemplateService;
-import com.aim.service.UserService;
-import com.aim.service.email.EmailSenderService;
-import com.aim.utils.Response;
-import com.aim.utils.Utils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.itextpdf.html2pdf.HtmlConverter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Controller
 @RequestMapping("/supervisor/")
@@ -105,7 +56,10 @@ public class SupervisorController extends DataMenuController {
 	
 	@Autowired
 	private HourLogFileRepository hourLogFileRepository;
-	
+
+	@Autowired
+	private HourLogFileService hourLogFileService;
+
 	@Autowired
 	private UserDetailsRepository userDetailsRepository;
 	
@@ -225,16 +179,11 @@ public class SupervisorController extends DataMenuController {
 		return "new/supervisor/home";
 	}
 	
-	/**
-	 * all user time sheet
-	 * @param yearFile
-	 * @param model
-	 * @return
-	 */
+
 	@RequestMapping(value="timesheet-view-file-list", method = RequestMethod.GET)
 	@ResponseBody
 	public List<HourLogFilePath> timesheetFileList(@RequestParam(name="id",required=false) Integer id) {
-		HourLogFile hourLogFile = hourLogFileRepository.findById(id);
+		HourLogFile hourLogFile = hourLogFileService.findById(id);
 		List<HourLogFilePath> hourLogFilePaths = new ArrayList<>();
 		if(hourLogFile != null)
 			hourLogFilePaths = hourLogFilePathRepository.findByHourLogFile(hourLogFile);
@@ -371,7 +320,7 @@ public class SupervisorController extends DataMenuController {
 		
 		try {
 			
-			HourLogFile hourLogFile = hourLogFileRepository.findById(id);
+			HourLogFile hourLogFile = hourLogFileService.findById(id);
 			userService.addActivity("Time sheet file download", ActivityType.DOWNLOAD_FILE.toString() , hourLogFile.getUserDetail());
 			response.setContentType("application/pdf");
 	        response.setHeader("Content-Disposition", "inline;filename="+ hourLogFile.getUserDetail().getUser().getFirstName()+"_"+hourLogFile.getUserDetail().getUser().getLastName()+"/"+ hourLogFile.getUserDetail().getClientName() +"_"+hourLogFile.getStartDate().toString() +"_To_" +hourLogFile.getEndDate()+".pdf");
@@ -398,7 +347,7 @@ public class SupervisorController extends DataMenuController {
 		
 		Company company = (Company) request.getSession().getAttribute("company");
 		
-		HourLogFile hourLogFile = hourLogFileRepository.findById(id);
+		HourLogFile hourLogFile = hourLogFileService.findById(id);
 		userService.addActivity("Time sheet file download", ActivityType.DOWNLOAD_FILE.toString() , hourLogFile.getUserDetail());
 		
 		response.setContentType(MediaType.ALL_VALUE);
@@ -491,7 +440,6 @@ public class SupervisorController extends DataMenuController {
 	
 	/**
 	 * Get add hours list
-	 * @param id
 	 * @return
 	 */
 	@RequestMapping(value = "get-hours-list/{userDetailId}", method = RequestMethod.GET)
@@ -500,18 +448,12 @@ public class SupervisorController extends DataMenuController {
 		return hoursLogService.getAddHoursList(userDetailId);
 	}
 	
-	/**
-	 * send mail to user 
-	 * @param message
-	 * @param email
-	 * @param subject
-	 * @return
-	 */
+
 	@RequestMapping(value = "timesheet-view", method = RequestMethod.GET)
 	public String timeseetView(@RequestParam(name="id") Integer id,
 			ModelMap modelMap) {
 			
-		HourLogFile hourLogFile  = hourLogFileRepository.findById(id);
+		HourLogFile hourLogFile  = hourLogFileService.findById(id);
 		AddUserTimeSheet addUserTimeSheet  = userService.getCalendarResponse(hourLogFile.getUserDetail().getUserDetailId(),
 				hourLogFile.getStartDate(), hourLogFile.getEndDate());
 		modelMap.addAttribute("hourLogFile", hourLogFile);
@@ -537,15 +479,7 @@ public class SupervisorController extends DataMenuController {
 		modelMap.addAttribute("templatesRejected", templatesRejected);
 		return "new/supervisor/add-time-sheet";
 	}
-	
-	/**
-	 * get user time sheet add
-	 * @param request
-	 * @param userDetailId
-	 * @param startDate
-	 * @param endDate
-	 * @return
-	 */
+
 	@RequestMapping(value="add-time-sheet", method = RequestMethod.POST)
 	public String getTimeSheetAdd(@ModelAttribute("addUserTimeSheet") AddUserTimeSheet addUserTimeSheet,
 			@RequestParam(name= "timesheetId") Integer timesheetId,
@@ -601,13 +535,7 @@ public class SupervisorController extends DataMenuController {
 		}
 	}
 	
-	/**
-	 * get shedular
-	 * @param message
-	 * @param email
-	 * @param subject
-	 * @return
-	 */
+
 	@RequestMapping(value = "time-sheet-schedular", method = RequestMethod.GET)
 	public String userSchedularTimeSheet(@RequestParam(name="month", required=false) Integer month,
 			@RequestParam(name="year", required=false) Integer year,
@@ -631,13 +559,7 @@ public class SupervisorController extends DataMenuController {
 		modelMap.addAttribute("selectedMonth",Month.getMonth(month));
 		return "new/supervisor/submittedTimesheet";
 	}
-	/**
-	 * get shedular
-	 * @param message
-	 * @param email
-	 * @param subject
-	 * @return
-	 */
+
 	@RequestMapping(value = "unauthorized", method = RequestMethod.GET)
 	public String userSchedularTimeSheet(ModelMap modelMap){
 		
@@ -645,15 +567,7 @@ public class SupervisorController extends DataMenuController {
 	}
 	
 
-	/**
-	 * get user time sheet add
-	 * @param request
-	 * @param userDetailId
-	 * @param startDate
-	 * @param endDate
-	 * @return
-	 * @throws ParseException 
-	 */
+
 	@RequestMapping(value="add-user-time-sheet", method = RequestMethod.GET)
 	public String setTimeSheetAdd(HttpServletRequest request,
 			@RequestParam(name = "startDate", required = false) Date startDate,
@@ -673,7 +587,7 @@ public class SupervisorController extends DataMenuController {
 		User user = new User();
 		
 		if(userId != null) {
-			user = userRepository.findById(userId);
+			user = userService.findById(userId);
 		} else {
 			user = users.get(0);
 		}
@@ -771,14 +685,7 @@ public class SupervisorController extends DataMenuController {
 	}
 	
 
-	/**
-	 * get user time sheet add
-	 * @param request
-	 * @param userDetailId
-	 * @param startDate
-	 * @param endDate
-	 * @return
-	 */
+
 	@RequestMapping(value="add-user-time-sheet", method = RequestMethod.POST)
 	public String getTimeSheetAdd(@ModelAttribute("addUserTimeSheet") AddUserTimeSheet addUserTimeSheet,
 			@RequestParam(name="file", required = false) List<MultipartFile> files,
@@ -870,15 +777,7 @@ public class SupervisorController extends DataMenuController {
 		}
 	}
 	
-	/**
-	 * get user time sheet add
-	 * @param request
-	 * @param userDetailId
-	 * @param startDate
-	 * @param endDate
-	 * @return
-	 * @throws ParseException 
-	 */
+
 	@RequestMapping(value="add-time-sheet/changeDate", method = RequestMethod.GET)
 	public String changeDateTimesheet(HttpServletRequest request,
 			@RequestParam(name = "startDate", required = false) Date startDate,
@@ -891,7 +790,7 @@ public class SupervisorController extends DataMenuController {
 		User user = new User();
 		
 		if(userId != null) {
-			user = userRepository.findById(userId);
+			user = userService.findById(userId);
 		} else {
 			user = users.get(0);
 		}
@@ -1006,13 +905,7 @@ public class SupervisorController extends DataMenuController {
 		return "new/supervisor/daySchedularFragment";
 	}
 	
-	/**
-	 * get shedular
-	 * @param message
-	 * @param email
-	 * @param subject
-	 * @return
-	 */
+
 	@RequestMapping(value = "schedular", method = RequestMethod.GET)
 	public String getSchedularNew(@RequestParam(name="year", required=false) Integer year,
 			ModelMap modelMap) {
@@ -1041,13 +934,7 @@ public class SupervisorController extends DataMenuController {
 		return "/new/supervisor/schedular";
 	}
 	
-	/**
-	 * get shedular
-	 * @param message
-	 * @param email
-	 * @param subject
-	 * @return
-	 */
+
 	@RequestMapping(value = "schedular-save", method = RequestMethod.POST)
 	public ResponseEntity<Response> setSchedularNew(Schedular schedular,String hoursDateString,
 			RedirectAttributes redirectAttributes) throws ParseException {
@@ -1074,14 +961,7 @@ public class SupervisorController extends DataMenuController {
 			return ResponseGenerator.generateResponse(new Response("Please try again", null), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	/**
-	 * get shedular
-	 * @param message
-	 * @param email
-	 * @param subject
-	 * @return
-	 */
+
 	@RequestMapping(value = "schedular-send-email", method = RequestMethod.GET)
 	public String getSchedular(@RequestParam(name="month") Integer month,
 			@RequestParam(name="year") Integer year,
@@ -1102,13 +982,7 @@ public class SupervisorController extends DataMenuController {
 		modelMap.addAttribute("templates",templates);
 		return "/new/supervisor/schedularEmail";
 	}
-	/**
-	 * get shedular
-	 * @param message
-	 * @param email
-	 * @param subject
-	 * @return
-	 */
+
 	@RequestMapping(value = "schedular-send-email", method = RequestMethod.POST)
 	public String setSchedular(@RequestParam(name="description", required=false) String description,
 			@RequestParam(name="ccEmail", required=false) String ccEmail,
@@ -1159,7 +1033,7 @@ public class SupervisorController extends DataMenuController {
 	
 	@RequestMapping(value="hours-log-file/delete",method=RequestMethod.GET)
 	public ResponseEntity<Response> deleteFile(ModelMap modelMap, Integer id, Integer hourLogId) {
-		HourLogFile hourLogFile = hourLogFileRepository.findById(hourLogId);
+		HourLogFile hourLogFile = hourLogFileService.findById(hourLogId);
 		HourLogFilePath hourLogFilePath = hourLogFilePathRepository.findByIdAndHourLogFile(id,hourLogFile);
 		if(hourLogFilePath != null) {
 			hourLogFilePathRepository.delete(hourLogFilePath);
@@ -1182,7 +1056,7 @@ public class SupervisorController extends DataMenuController {
 			return ResponseGenerator.generateResponse(new Response("unauthorized", null), HttpStatus.INTERNAL_SERVER_ERROR);
 		}	
 		
-		HourLogFile hourLogFile = hourLogFileRepository.findById(hourLogFileId);
+		HourLogFile hourLogFile = hourLogFileService.findById(hourLogFileId);
 		Company company = (Company) request.getSession().getAttribute("company");
 		List<String[]> filePath = new ArrayList<>();
 		try {

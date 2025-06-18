@@ -1,19 +1,17 @@
 package com.aim.config;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import com.aim.entity.Company;
+import com.aim.repository.CompanyRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
-import org.springframework.stereotype.Component;
-
-import com.aim.entity.Company;
-import com.aim.repository.CompanyRepository;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class TenantDataSource implements Serializable {
@@ -47,7 +45,7 @@ public class TenantDataSource implements Serializable {
     
     public DataSource getNewDataSource(String name) {
         	 DataSourceBuilder factory = DataSourceBuilder
-                     .create().driverClassName("com.mysql.jdbc.Driver")
+                     .create().driverClassName("com.mysql.cj.jdbc.Driver")
                      .username(DB_USERNAME)
                      .password(DB_PASSWORD)
                      .url(SUB_DB_URL + name);
@@ -72,7 +70,7 @@ public class TenantDataSource implements Serializable {
     	Company config = companyRepository.findByUrlSlug(name);
         if (config != null) {
             DataSourceBuilder factory = DataSourceBuilder
-                    .create().driverClassName("com.mysql.jdbc.Driver")
+                    .create().driverClassName("com.mysql.cj.jdbc.Driver")
                     .username(DB_USERNAME)
                     .password(DB_PASSWORD)
                     .url(SUB_DB_URL + config.getDbName());
