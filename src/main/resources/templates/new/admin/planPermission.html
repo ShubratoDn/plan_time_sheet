@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Plan</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+		 <!-- DataTables -->
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+
+ 		<!-- Responsive datatable examples -->
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" th:href="@{/assets_new/libs/summernote/summernote-bs4.min.css}">
+    </head>
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="vertical-menu">
+				<div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+                </div>
+            </div>
+            <!-- Left Sidebar End -->
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+						<div class="row">
+						  <div class="col-12">
+							<div class="card">
+								<div class="card-body">
+									<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}">
+			                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			                                <span aria-hidden="true">×</span>
+			                            </button>
+			                            <strong>Oh snap!</strong> <th:block th:text="${error}"></th:block>
+			                        </div>
+			                        <div class="alert alert-success alert-dismissible" role="alert" th:if="${success}">
+			                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			                                <span aria-hidden="true">×</span>
+			                            </button>
+			                            <strong>Success</strong> <th:block th:text="${success}"></th:block>
+			                        </div>
+			                        <div id="emailAlertInAccessMail"></div>
+			                        
+									<h4 class="card-title mb-4">Access plan</h4>
+									<button class="btn btn-primary mb-2 float-right" onclick="accessMailSend()">
+										Request Access
+									</button>
+									<table 
+										class="table table-bordered nowrap">
+										<thead>
+											<tr>
+												<td>User can login</td>
+												<td>
+													<span class="badge font-size-11 m-1" 
+													th:classappend="${permissionPlan.userCanLogin==true?'badge-success':'badge-danger'}"
+													th:text="${permissionPlan.userCanLogin==true?'Yes':'No'}"></span>
+	                                           	</td>
+											</tr>
+											<tr>
+												<td>Commission</td>
+												<td>
+													<span class="badge font-size-11 m-1" 
+													th:classappend="${permissionPlan.commission==true?'badge-success':'badge-danger'}"
+													th:text="${permissionPlan.commission==true?'Yes':'No'}"></span>
+												</td>
+											</tr>
+											<tr>
+												<td>Schedular can set</td>
+												<td>
+													<span class="badge font-size-11 m-1" 
+													th:classappend="${permissionPlan.schedularCanSet==true?'badge-success':'badge-danger'}"
+													th:text="${permissionPlan.schedularCanSet==true?'Yes':'No'}"></span>
+													
+	                                           	</td>
+											</tr>
+											<tr>
+												<td>Template can add</td>
+												<td>
+	                                               	<span class="badge font-size-11 m-1" 
+	                                               	th:classappend="${permissionPlan.templateCanSet==true?'badge-success':'badge-danger'}"
+													th:text="${permissionPlan.templateCanSet==true?'Yes':'No'}"></span>
+													
+	                                           	</td>
+											</tr>
+											<tr>
+												<td>QB integration</td>
+												<td>
+												
+													<span class="badge font-size-11 m-1" th:classappend="${permissionPlan.qbIntegration==true?'badge-success':'badge-danger'}"
+													th:text="${permissionPlan.qbIntegration==true?'Yes':'No'}"></span>
+													
+	                                           	</td>
+											</tr>
+											<tr>
+												<td>User limit</td>
+												<td> <h4> 
+													 <span id="limmitId" th:text="${permissionPlan.userLimit}"></span>
+													 </h4>
+	                                           	</td>
+											</tr>
+										</thead>
+									</table>
+			                        
+								</div>
+							</div>
+						</div>
+					</div>
+					</div> <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+            </div>
+            <!-- end main content-->
+        </div>
+<!---------------------------------------------------------------------------------------->
+	<div id="access-mail-send" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Email-modal" aria-hidden="true" style="display: none;">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header mb-1">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4" style="z-index: 2;">
+				        	<div class="m-t-20">
+					        	<form id="access-mail-add-form" enctype="multipart/form-data" th:action="@{/admin/mail/access-send-mail}" method="post">
+						             <div>
+						             	<table class="table">
+											<thead>
+												<tr>
+													<td class="text-center text-info" colspan="2">Set yes for plan request</td>
+												</tr>
+												<tr th:if="${permissionPlan.userCanLogin == false}">
+													<td class="p-0">User can login</td>
+													<td class="p-0">
+														<input type="checkbox" name="userCanLogin" id="switch3" switch="bool" 
+														th:checked="${permissionPlan.userCanLogin}" value="true"/>
+		                                               	<label class="m-0" for="switch3" data-on-label="Yes" data-off-label="No"></label>
+		                                           	</td>
+												</tr>
+												<tr th:if="${permissionPlan.commission == false}">
+													<td class="p-0">Commission</td>
+													<td class="p-0">
+														<input type="checkbox" id="switch1" switch="bool" name="commission" 
+														th:checked="${permissionPlan.commission}" value="true"/>
+		                                               	<label class="m-0" for="switch1" data-on-label="Yes" data-off-label="No"></label>
+		                                           	</td>
+												</tr>
+												<tr th:if="${permissionPlan.schedularCanSet == false}">
+													<td class="p-0">Schedular can set</td>
+													<td class="p-0">
+														<input type="checkbox" id="switch2" switch="bool" 
+														name="schedularCanSet" value="true" th:checked="${permissionPlan.schedularCanSet}"/>
+		                                               	<label class="m-0" for="switch2" data-on-label="Yes" data-off-label="No"></label>
+		                                           	</td>
+												</tr>
+												<tr th:if="${permissionPlan.templateCanSet == false}">
+													<td class="p-0">Template can add</td>
+													<td class="p-0">
+														<input type="checkbox" id="switch4" switch="bool" value="true"
+														name="templateCanSet" th:checked="${permissionPlan.templateCanSet}"/>
+		                                               	<label class="m-0" for="switch4" data-on-label="Yes" data-off-label="No"></label>
+		                                           	</td>
+												</tr>
+												<tr th:if="${permissionPlan.qbIntegration == false}">
+													<td class="p-0">QB integration</td>
+													<td class="p-0">
+														<input type="checkbox" id="switch5" switch="bool" value="true"
+														name="qbIntegration" th:checked="${permissionPlan.qbIntegration}"/>
+		                                               	<label class="m-0" for="switch5" data-on-label="Yes" data-off-label="No"></label>
+		                                           	</td>
+												</tr>
+												<tr class="mb-5">
+													<td colspan="2">
+														<label class="control-label" for="example-input1-group3">User limit increase </label>
+								                        <select class="form-control" name="userLimit">
+									                       <option value="0"> 0</option>
+									                       <option value="5"> 5</option>
+									                       <option value="10"> 10</option>
+									                       <option value="20"> 20</option>
+									                       <option value="30"> 30</option>
+									                       <option value="50"> 50</option>
+									                       <option value="100"> 100</option>
+									                       <option value="200"> 200</option>
+								                     	</select>
+							                     	</td>
+												</tr>
+											</thead>
+										</table>
+						             </div>
+						             <div class="form-group">
+						            	 <label>Subject<span class="text-danger">*</span></label>
+						                 <input type="text" th:value="${T(com.aim.enums.DefaultMailTemplate).REQUEST_ACCESS.subject}" id="access-email-subject" name="subject" class="form-control subject" placeholder="Subject">
+						                 <p class="text-danger subjectErrorInAccess m-0" style="display: none;"> Please enter subject</p>
+						                 <input type="hidden" id="description" th:value="${T(com.aim.enums.DefaultMailTemplate).REQUEST_ACCESS.htmlData}" name="description">
+						             </div>
+						             <div class="btn-toolbar form-group m-b-0">
+						             	 <button type="submit" class="btn btn-info waves-effect waves-light">Submit</button>
+						             </div>
+						           </form>
+								</div>
+							</div>
+								<div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+									<div class="form-group">
+								    	<p class="text-danger m-0 descriptionErrorInGenaral" style="display: none;">Please enter description</p>
+						                <div class="summernote" th:utext="${T(com.aim.enums.DefaultMailTemplate).REQUEST_ACCESS.htmlData}">
+						                </div>
+						            </div>
+						            <div class="col-sm-12">
+							            <a class="float-right" href="javascript:void(0);" onclick="accessMailCancel()">
+											Cancel plan ?
+										</a>	
+						            </div>
+								</div>
+						      </div>
+						      <div id="access-mail-add-form-is-submit" style="position: absolute;
+							     	display:none;
+							     	z-index: 5;
+								    top: 0;
+								    left: 0;
+								    background: rgba(255,255,255,0.5);
+								    width: 100%;
+								    height: 100%;
+								    justify-content: center;
+								    align-items: center;
+								    transition: all .5s;
+								    opacity:1;
+								    cursor: pointer;">
+								    
+								    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="48" height="48" viewBox="0 0 172 172" style=" fill:#000000;"><defs><linearGradient x1="157.28683" y1="157.28683" x2="42.48758" y2="42.48758" gradientUnits="userSpaceOnUse" id="color-1_Z4lBdSu2GAl2_gr1"><stop offset="0" stop-color="#ffffff"></stop><stop offset="0.242" stop-color="#f2f2f2"></stop><stop offset="1" stop-color="#cccccc"></stop></linearGradient><linearGradient x1="13.66683" y1="13.66683" x2="117.01017" y2="117.01017" gradientUnits="userSpaceOnUse" id="color-2_Z4lBdSu2GAl2_gr2"><stop offset="0" stop-color="#5aa9ef"></stop><stop offset="1" stop-color="#218ded"></stop></linearGradient></defs><g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal" transform="rotate(307.237 86 86)">
+							   			<animateTransform xmlns="http://www.w3.org/2000/svg" attributeType="xml" attributeName="transform" type="rotate" from="0 86 86" to="360 86 86" dur="0.6s" repeatCount="indefinite"></animateTransform>
+							   			<path d="M0,172v-172h172v172z" fill="none"></path><g><path d="M86,14.33333c-39.5815,0 -71.66667,32.08517 -71.66667,71.66667c0,39.5815 32.08517,71.66667 71.66667,71.66667c39.5815,0 71.66667,-32.08517 71.66667,-71.66667c0,-39.5815 -32.08517,-71.66667 -71.66667,-71.66667zM86,139.75c-29.68433,0 -53.75,-24.06567 -53.75,-53.75c0,-29.68433 24.06567,-53.75 53.75,-53.75c29.68433,0 53.75,24.06567 53.75,53.75c0,29.68433 -24.06567,53.75 -53.75,53.75z" fill="url(#color-1_Z4lBdSu2GAl2_gr1)"></path><path d="M86,18.02058v10.75717c0,1.935 1.53725,3.45792 3.46867,3.57975c28.896,1.84183 51.58567,26.51667 50.224,56.17592c-1.25775,27.3695 -23.779,49.89433 -51.15208,51.15567c-29.66283,1.36525 -54.33767,-21.32442 -56.1795,-50.224c-0.12542,-1.92783 -1.64833,-3.46508 -3.58333,-3.46508h-10.75717c-2.021,0 -3.698,1.67342 -3.59408,3.69083c1.98517,39.13 35.35317,69.97892 75.43275,67.8755c36.17375,-1.89558 65.80792,-31.53333 67.7035,-67.70708c2.10342,-40.08317 -28.7455,-73.44758 -67.87192,-75.43275c-2.01742,-0.10033 -3.69083,1.57667 -3.69083,3.59408z" fill="url(#color-2_Z4lBdSu2GAl2_gr2)"></path></g></g>
+							   		</svg>
+							     
+							     </div>
+			             	</div>
+			    		</div>
+					</div>
+			   	</div>
+        	<div>
+        </div>
+        <!-- ----------------------------------------------------------------------------------------------------------------------- -->
+        <div id="access-mail-cancel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Email-modal" aria-hidden="true" style="display: none;">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header mb-1">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4" style="z-index: 2;">
+				        	<div class="m-t-20">
+					        	<form id="access-mail-cancel-form" enctype="multipart/form-data" th:action="@{/admin/mail/access-send-mail}" method="post">
+						             <div>
+						             	<table class="table">
+											<thead>
+												<tr>
+													<td class="text-center text-info" colspan="2">Set yes for cancel plan request</td>
+												</tr>
+												<tr th:if="${permissionPlan.userCanLogin != false}">
+													<td class="p-0">User can login</td>
+													<td class="p-0">
+														<input type="checkbox" name="userCanLogin" id="switchCancel3" switch="bool" 
+														value="true"/>
+		                                               	<label class="m-0" for="switchCancel3" data-on-label="Yes" data-off-label="No"></label>
+		                                           	</td>
+												</tr>
+												<tr th:if="${permissionPlan.commission != false}">
+													<td class="p-0">Commission</td>
+													<td class="p-0">
+														<input type="checkbox" id="switchCancel1" switch="bool" name="commission" 
+														 value="true"/>
+		                                               	<label class="m-0" for="switchCancel1" data-on-label="Yes" data-off-label="No"></label>
+		                                           	</td>
+												</tr>
+												<tr th:if="${permissionPlan.schedularCanSet != false}">
+													<td class="p-0">Schedular can set</td>
+													<td class="p-0">
+														<input type="checkbox" id="switchCancel2" switch="bool" 
+														name="schedularCanSet" value="true" />
+		                                               	<label class="m-0" for="switchCancel2" data-on-label="Yes" data-off-label="No"></label>
+		                                           	</td>
+												</tr>
+												<tr th:if="${permissionPlan.templateCanSet != false}">
+													<td class="p-0">Template can add</td>
+													<td class="p-0">
+														<input type="checkbox" id="switchCancel4" switch="bool" value="true"
+														name="templateCanSet"/>
+		                                               	<label class="m-0" for="switchCancel4" data-on-label="Yes" data-off-label="No"></label>
+		                                           	</td>
+												</tr>
+												<tr th:if="${permissionPlan.qbIntegration != false}">
+													<td class="p-0">QB integration</td>
+													<td class="p-0">
+														<input type="checkbox" id="switchCancel5" switch="bool" value="true"
+														name="qbIntegration"/>
+		                                               	<label class="m-0" for="switchCancel5" data-on-label="Yes" data-off-label="No"></label>
+		                                           	</td>
+												</tr>
+												<tr class="mb-5">
+													<td colspan="2">
+														<label class="control-label" for="example-input1-group3">User limit decrease </label>
+								                        <select class="form-control" name="userLimit">
+									                       <option value="0"> 0</option>
+									                       <option value="5"> 5</option>
+									                       <option value="10"> 10</option>
+									                       <option value="20"> 20</option>
+									                       <option value="30"> 30</option>
+									                       <option value="50"> 50</option>
+									                       <option value="100"> 100</option>
+									                       <option value="200"> 200</option>
+								                     	</select>
+							                     	</td>
+												</tr>
+											</thead>
+										</table>
+						             </div>
+						             <div class="form-group">
+						            	 <label>Subject<span class="text-danger">*</span></label>
+						                 <input type="text" th:value="${T(com.aim.enums.DefaultMailTemplate).CANCELPLAN_ACCESS.subject}" id="access-email-subject" name="subject" class="form-control subject" placeholder="Subject">
+						                 <p class="text-danger subjectErrorInAccess m-0" style="display: none;"> Please enter subject</p>
+						                 <input type="hidden" id="description" th:value="${T(com.aim.enums.DefaultMailTemplate).CANCELPLAN_ACCESS.htmlData}" name="description">
+						             </div>
+						             <div class="btn-toolbar form-group m-b-0">
+						             	 <button type="submit" class="btn btn-info waves-effect waves-light">Submit</button>
+						             </div>
+						           </form>
+					         	</div>
+				         	
+								</div>
+								<div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+									<div class="form-group">
+								    	<p class="text-danger m-0 descriptionErrorInGenaral" style="display: none;">Please enter description</p>
+						                <div class="summernote" th:utext="${T(com.aim.enums.DefaultMailTemplate).CANCELPLAN_ACCESS.htmlData}">
+						                </div>
+						            </div>
+								</div>
+						      </div>
+						      <div id="access-mail-cancel-form-is-submit" style="position: absolute;
+							     	display:none;
+							     	z-index: 5;
+								    top: 0;
+								    left: 0;
+								    background: rgba(255,255,255,0.5);
+								    width: 100%;
+								    height: 100%;
+								    justify-content: center;
+								    align-items: center;
+								    transition: all .5s;
+								    opacity:1;
+								    cursor: pointer;">
+								    
+								    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="48" height="48" viewBox="0 0 172 172" style=" fill:#000000;"><defs><linearGradient x1="157.28683" y1="157.28683" x2="42.48758" y2="42.48758" gradientUnits="userSpaceOnUse" id="color-1_Z4lBdSu2GAl2_gr1"><stop offset="0" stop-color="#ffffff"></stop><stop offset="0.242" stop-color="#f2f2f2"></stop><stop offset="1" stop-color="#cccccc"></stop></linearGradient><linearGradient x1="13.66683" y1="13.66683" x2="117.01017" y2="117.01017" gradientUnits="userSpaceOnUse" id="color-2_Z4lBdSu2GAl2_gr2"><stop offset="0" stop-color="#5aa9ef"></stop><stop offset="1" stop-color="#218ded"></stop></linearGradient></defs><g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal" transform="rotate(307.237 86 86)">
+							   			<animateTransform xmlns="http://www.w3.org/2000/svg" attributeType="xml" attributeName="transform" type="rotate" from="0 86 86" to="360 86 86" dur="0.6s" repeatCount="indefinite"></animateTransform>
+							   			<path d="M0,172v-172h172v172z" fill="none"></path><g><path d="M86,14.33333c-39.5815,0 -71.66667,32.08517 -71.66667,71.66667c0,39.5815 32.08517,71.66667 71.66667,71.66667c39.5815,0 71.66667,-32.08517 71.66667,-71.66667c0,-39.5815 -32.08517,-71.66667 -71.66667,-71.66667zM86,139.75c-29.68433,0 -53.75,-24.06567 -53.75,-53.75c0,-29.68433 24.06567,-53.75 53.75,-53.75c29.68433,0 53.75,24.06567 53.75,53.75c0,29.68433 -24.06567,53.75 -53.75,53.75z" fill="url(#color-1_Z4lBdSu2GAl2_gr1)"></path><path d="M86,18.02058v10.75717c0,1.935 1.53725,3.45792 3.46867,3.57975c28.896,1.84183 51.58567,26.51667 50.224,56.17592c-1.25775,27.3695 -23.779,49.89433 -51.15208,51.15567c-29.66283,1.36525 -54.33767,-21.32442 -56.1795,-50.224c-0.12542,-1.92783 -1.64833,-3.46508 -3.58333,-3.46508h-10.75717c-2.021,0 -3.698,1.67342 -3.59408,3.69083c1.98517,39.13 35.35317,69.97892 75.43275,67.8755c36.17375,-1.89558 65.80792,-31.53333 67.7035,-67.70708c2.10342,-40.08317 -28.7455,-73.44758 -67.87192,-75.43275c-2.01742,-0.10033 -3.69083,1.57667 -3.69083,3.59408z" fill="url(#color-2_Z4lBdSu2GAl2_gr2)"></path></g></g>
+							   		</svg>
+							     
+							     </div>
+			             	</div>
+			    		</div>
+					</div>
+			   	</div>
+        	<div>
+        </div>
+<!---------------------------------------------------------------------------------------------->
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			var accessReq = [[${accessReq}]];
+			/*]]>*/
+		</script>
+        <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+        <script th:src="@{/assets_new/libs/summernote/summernote-bs4.min.js}"></script>
+        <script th:src="@{/assets_new/js/app.js}"></script>
+        <script th:src="@{/assets_new/js/permissionPlan.js}"></script>
+		<th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

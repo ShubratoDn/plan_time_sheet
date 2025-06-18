@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Admin Dashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        
+        <!-- DataTables -->
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+ 		<!-- Responsive datatable examples -->
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets_new/css/page/adminHome.css}" rel="stylesheet" type="text/css" />
+        <style>
+        .monthset{cursor: pointer;}
+    	.monthset.active{
+    	    background: #c9cff7 !important;
+    	}
+    	.btn-secondary.buttons-pdf.buttons-html5{
+    		border-radius: 5px;
+    	}
+    	.buttons-html5{
+        	margin: 5px;
+    	}
+    	.btn.btn-secondary.buttons-excel.buttons-html5{
+       		border-radius: 5px; 		
+    	}
+    .table-scroll{
+    	overflow-y:scroll;
+    	height: calc(100vh - 145px); 
+    }
+    .vertical-collpsed .vertical-menu { 
+    position: fixed;
+    z-index: 110;}
+        </style>
+    </head>
+
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			
+			<th:block th:replace="new/user/header :: header"></th:block>
+			
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="vertical-menu">
+
+                <div data-simplebar class="h-100">
+					
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+					
+                </div>
+            </div>
+            <!-- Left Sidebar End -->
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            
+            <div id="myHeader" class="main-content hide">
+                <div id="filter-second-div" class="page-content filter-padding-bottom">
+                <button type="button" class="btn btn-sm btn-primary" onclick="showFilter()" ><i class="fa fa-filter"></i> Filter</button>
+                </div>
+           	</div>
+            <div id="filter-first-div" class="main-content filter-stick">
+                <div id="filter-second-div" class="page-content filter-padding-bottom">
+                    <div class="container-fluid">
+                    	<div class="card p-0 ml-0 mr-0 row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" style="flex-direction: row;">
+	                        <div class="bg-soft-primary col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+	                         <button id="filterRemove" type="button" class="hide filter-remove btn btn-sm btn-primary" onclick="removeFilter()" ><i class="fa fa-times"></i></button>
+	                            <div class="row">
+	                                <div class="col-12">
+	                                    <div class="text-primary p-3">
+	                                        <h5 class="text-primary">Welcome to dashboard !</h5>
+	                                        <p th:text="${session.user.firstName + ' ' + session.user.lastName }">Dashboard</p>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+                           	<div class="card-body pt-0 col-12 col-sm-12 col-md-10 col-lg-10 col-xl-10">
+								<div class="row p-0 ml-0 mr-0 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                	<div class="col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+                                    	<div class="text-primary">
+                                        	<b class="text-primary">Select Year</b>
+							              	<select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value">
+												<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2015)}"
+							                    	th:text="${year}" th:value="'?year=' + ${year}"
+													th:selected="${year == selectYear}">
+							                  	</option>
+							              	</select>
+                                      	</div>
+                                  	</div>
+                                   	<div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                   		<div class="text-primary">
+				                        	<b class="text-primary">Month</b>
+				                          	<select name="sort" class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value" id="sortByAction">
+						  						<option th:value="'?year='+${selectYear}" default>All month</option>
+						  						<option th:each="month : ${T(com.aim.enums.Month).values()}" 
+			  										th:value="'?year='+${selectYear} +'&month=' + ${month.urlParam}"
+			  										th:selected="${month.urlParam} == ${selectMonth}" th:text="${month.displayLabel}">
+						  						</option>
+											</select>
+										</div>
+			                      	</div>
+                                   	<div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                   		<div class="text-primary">
+				                        	<b class="text-primary">Consultant type</b>
+				                          	<select name="sort" class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value" id="sortByAction">
+						  						<option th:each="type : ${T(com.aim.enums.UserDetailsType).values()}" th:if="${selectMonth != null}"
+			  										th:value="'?year='+${selectYear}+'&month=' + ${selectMonth} + '&userType='+${type.urlParam}"
+			  										th:selected="${type.urlParam} == ${selectType}" th:text="${type.displayLabel}">
+						  						</option>
+						  						<option th:each="type : ${T(com.aim.enums.UserDetailsType).values()}" th:if="${selectMonth == null}"
+			  										th:value="'?year='+${selectYear}+'&userType='+${type.urlParam}"
+			  										th:selected="${type.urlParam} == ${selectType}" th:text="${type.displayLabel}">
+						  						</option>
+											</select>
+										</div>
+			                      	</div>
+                                   	<div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                    	<div class="text-primary">
+                                        	<b class="text-primary">User</b>
+							                <select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value">
+							                	<option th:if="${selectMonth != null}" th:value="'?year='+${selectYear}+'&month=' + ${selectMonth}+'&userType='+${selectType}" default>All user</option>
+							                   	<option th:if="${selectMonth == null}" th:value="'?year='+${selectYear}+'&userType='+${selectType}" default>All user</option>
+												<option th:if="${selectMonth != null}" th:each="user : ${usersList}"
+							             	     	th:text="${user.firstName + ' ' +user.lastName }" th:value="'?year=' + ${selectYear}+'&month=' + ${selectMonth}+'&userType='+${selectType}+'&user=' + ${user.id}"
+													th:selected="${user.id == selectUser}">
+							                  	</option>
+												<option th:if="${selectMonth == null}" th:each="user : ${usersList}"
+							                    	th:text="${user.firstName + ' ' +user.lastName }" th:value="'?year=' + ${selectYear}+'&userType='+${selectType}+'&user=' + ${user.id}"
+													th:selected="${user.id == selectUser}">
+							                  	</option>
+							                </select>
+                                   	   </div>
+                                  	</div>
+                                  	<div class="col-12 col-sm-12 col-md-1 col-lg-1 col-xl-1">
+                                  		<a th:href="@{/admin/home}" class="btn btn-info mt-3"><i class="fas fa-sync-alt"></i></a>
+                                  	</div>
+                              	</div>
+                              	<hr>
+                              	<div class="row p-0 ml-0 mr-0 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                              		<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                              			<div class="d-flex align-items-center mb-1">
+	                                        <b class=" mb-0"><span class="text-danger"> Gross Margin</span>  / <span class="text-success">  Net Margin </span> </b>
+	                                    </div>
+	                                    <div class="text-muted mt-2">
+	                                        <b>$ <span class="text-danger" th:text="${#numbers.formatDecimal(grossMargin, 0, 'COMMA', 2, 'POINT')}">  </span> / <span class="text-success" th:text="${#numbers.formatDecimal(netMargin, 0, 'COMMA', 2, 'POINT')}"></span></b>
+	                                    </div>
+                              		</div>
+                              		<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <b class="mb-0"> <span class="text-info">Consultant expense</span> / <span class="text-primary">Commission</span></b>
+                                        </div>
+                                        <div class="text-muted mt-2">
+                                            <b>$ <span class="text-info" th:text="${#numbers.formatDecimal(consultanse, 0, 'COMMA', 2, 'POINT')}">  </span> / <span class="text-primary" th:text="${#numbers.formatDecimal(commission, 0, 'COMMA', 2, 'POINT')}">  </span></b>
+                                        </div>
+                              		</div>
+                              		<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                              			<div class="d-flex align-items-center mb-1">
+                                            <b class="font-size-14 mb-0 text-pink">Revenue</b>
+                                        </div>
+                                        <div class="text-muted mt-2">
+                                            <b>$ <span class="text-pink" th:text="${#numbers.formatDecimal(revenue, 0, 'COMMA', 2, 'POINT')}"></span></b>
+                                        </div>
+                              		</div>
+                              	</div>
+                         	</div>
+                      	</div>
+                 	</div>
+               	</div>
+          	</div>
+<!--             ================================================================ -->
+<!--             ================================================================ -->
+            <div class="main-content" >
+                <div class="page-content filter-padding-top">
+                    <div class="container-fluid">
+                        <div class="row" id="show-button">
+                        	<div class="col-xl-4 d-flex">
+                                <div class="card flex-fill">
+                                    <div class="card-body">
+                                        <h4 class="card-title mb-4">Sales Analytics</h4>
+<!--                                         <i class="mb-4 text-danger" > Revenue : $ <th:block th:text="${revenue}"></th:block></i> -->
+                                        <div>
+                                            <div id="donut-chart" class="apex-charts"></div>
+                                        </div>
+                                        <div class="text-muted">
+                                        	<div class="col-12">
+	                                            <div class="row m-t-2">
+	                                                <b> $ <th:block th:text="${#numbers.formatDecimal(revenue, 0, 'COMMA', 2, 'POINT')}">  </th:block></b>&nbsp; : &nbsp;
+	                                            	<p class="mb-2 text-truncate"><i class="mdi mdi-circle text-info mr-1"></i>Gross Revenue </p>
+	                                            </div>
+	                                        </div>
+	                                    	
+	                                        <div class="col-12">
+	                                            <div class="row m-t-2">
+	                                               <b>$ <th:block th:text="${#numbers.formatDecimal(consultanse, 0, 'COMMA', 2, 'POINT')}">  </th:block></b>&nbsp; : &nbsp;
+	                                            	<p class="mb-2 text-truncate"><i class="mdi mdi-circle text-primary mr-1"></i>Total expense </p>
+	                                            </div>
+	                                        </div>
+	                                        <div class="col-12">
+	                                            <div class="row m-t-2">
+	                                                <b>$ <th:block th:text="${#numbers.formatDecimal(netMargin, 0, 'COMMA', 2, 'POINT')}"></th:block></b> &nbsp; : &nbsp;
+	                                                <p class="mb-2 text-truncate"><i class="mdi mdi-circle text-success mr-1"></i>Net Margin  </p>
+	                                            </div>
+	                                        </div>
+	                                        <div class="col-12">
+	                                            <div class="row m-t-2">
+	                                                <b> $ <th:block th:text="${#numbers.formatDecimal(commission, 0, 'COMMA', 2, 'POINT')}">  </th:block></b>&nbsp; : &nbsp;
+	                                                <p class="mb-2 text-truncate"><i class="mdi mdi-circle text-danger mr-1"></i>Commission </p>
+	                                            </div>
+	                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-8 d-flex">
+                            	<div class="card flex-fill">
+	                            	<div class="card-body">
+	                                    <h4 class="card-title mb-4 float-sm-left userHoursChart"> <span class="userHoursChartTitle"></span></h4>
+	                                    <div class="col-sm-12">
+	                                    	<a href="javascript:void(0);" class="btn btn-outline-primary float-right" id="changeChartUserWise" onclick="changeChartUserWise()">User wise</a>
+	                                    	<a href="javascript:void(0);" class="btn btn-primary float-right mr-3" id="changeChartMonthly" onclick="changeChartMonthly()">Monthly</a>
+	                                    </div>
+	                                    <div class="clearfix"></div>
+	                                    <div id="stacked-column-chart-hours" class="apex-charts" dir="ltr"></div>
+	                                    <div class="legend row box">
+		                                	<label class="container1 daily">
+		                                		
+											  	<input class="" type="radio" name="revenue" checked onclick="toggleSeries(this)" value="Revenue">
+											  	<span class="checkmark"></span>
+											  	<span class="line">Revenue</span>
+											</label>
+<!-- 		                                    <label class="container1 extra"> -->
+<!-- 											  	<input type="radio" name="revenue" onclick="toggleSeries(this)" value="Gross Margin"> -->
+<!-- 										      	<span class="checkmark"></span> -->
+<!-- 										      	<span class="line">Gross Margin</span> -->
+<!-- 											</label> -->
+											<label class="container1 net">
+									  			<input type="radio" name="revenue" onclick="toggleSeries(this)" value="Net Margin">
+								      			<span class="checkmark"></span>
+								      			<span class="line">Net Margin</span>
+											</label>
+											<label class="container1 expense">
+									  			<input type="radio" name="revenue" onclick="toggleSeries(this)" value="Expense">
+								      			<span class="checkmark"></span>
+								      			<span class="line">Expense</span>
+											</label>
+											<label class="container1 commission">
+									  			<input type="radio" name="revenue" onclick="toggleSeries(this)" value="Commission">
+								      			<span class="checkmark"></span>
+								      			<span class="line">Commission</span>
+											</label>
+<!-- 											<label class="container1 all"> -->
+<!-- 									  			<input type="radio" name="revenue" onclick="toggleSeries(this)" value="All"> -->
+<!-- 								      			<span class="checkmark"></span> -->
+<!-- 								      			<span class="line">All</span> -->
+<!-- 											</label> -->
+						      			</div>
+	                              	 </div>
+	                           	</div>
+                            </div>
+                        </div>
+						<div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        	<div class="row mb-3">
+                                              
+												
+												<div class="dropdown col-sm-2 tableShowHide">
+                                                    <a href="javascript:void(0);" class="btn btn-secondary dropdown-toggle col-sm-12" onclick="tableColumnShowHide(this)" aria-haspopup="true" aria-expanded="false">
+                                                        Display  <i class="mdi mdi-chevron-down"></i>
+                                                    </a>
+                                                   
+                                                    <div class="dropdown-menu" id="tableShowHide">
+                                                    
+                                                     	<div style="padding-left: 60px;">
+                                                     	<a href="javascript:void(0);" id="showAllColumn">
+                                                       		<b>Display All</b><br>
+                                                     	</a>
+                                                     	</div>
+                                                     	
+                                                        <a class="dropdown-item" href="javascript:void(0);">
+	                                                        <div class="custom-control custom-checkbox custom-checkbox-primary mb-3">
+	                                                            <input type="checkbox" class="custom-control-input toggle-vis" data-column="3" id="total_daily_hours">
+	                                                            <label class="custom-control-label" for="total_daily_hours">Daily hours</label>
+	                                                        </div>
+	                                                        <div class="custom-control custom-checkbox custom-checkbox-primary mb-3">
+	                                                            <input type="checkbox" class="custom-control-input toggle-vis" data-column="4" id="total_extra_hours">
+	                                                            <label class="custom-control-label" for="total_extra_hours">Extra hours</label>
+	                                                        </div>
+	                                                        <div class="custom-control custom-checkbox custom-checkbox-primary mb-3">
+	                                                            <input type="checkbox" class="custom-control-input toggle-vis" data-column="5" id="total_vacation_hours">
+	                                                            <label class="custom-control-label" for="total_vacation_hours">Vacation hours</label>
+	                                                        </div>
+	                                                        <div class="custom-control custom-checkbox custom-checkbox-primary mb-3">
+	                                                            <input type="checkbox" class="custom-control-input toggle-vis" data-column="8" id="consultant_expense">
+	                                                            <label class="custom-control-label" for="consultant_expense">Consultant Expense</label>
+	                                                        </div>
+	                                                        <div class="custom-control custom-checkbox custom-checkbox-primary mb-3">
+	                                                            <input type="checkbox" class="custom-control-input toggle-vis" data-column="9" id="w2_ptax">
+	                                                            <label class="custom-control-label" for="w2_ptax">w2sPaytax</label>
+	                                                        </div>
+	                                                        <div class="custom-control custom-checkbox custom-checkbox-primary mb-3">
+	                                                            <input type="checkbox" class="custom-control-input toggle-vis" data-column="10" id="C2C">
+	                                                            <label class="custom-control-label" for="C2C">Other exp.</label>
+	                                                        </div>
+	                                                        <div class="custom-control custom-checkbox custom-checkbox-primary mb-3">
+	                                                            <input type="checkbox" class="custom-control-input toggle-vis" data-column="13" id="bdm_comm">
+	                                                            <label class="custom-control-label" for="bdm_comm">BDM comm</label>
+	                                                        </div>
+	                                                        <div class="custom-control custom-checkbox custom-checkbox-primary mb-3">
+	                                                            <input type="checkbox" class="custom-control-input toggle-vis" data-column="14" id="acm_comm">
+	                                                            <label class="custom-control-label" for="acm_comm">ACM comm</label>
+	                                                        </div>
+	                                                        <div class="custom-control custom-checkbox custom-checkbox-primary mb-3">
+	                                                            <input type="checkbox" class="custom-control-input toggle-vis" data-column="15" id="rec_comm">
+	                                                            <label class="custom-control-label" for="rec_comm">Rec comm</label>
+	                                                        </div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12"> 
+                                            <table id="datatable-buttons" class="table table-responsive table-bordered table-centered table-nowrap mb-0">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                         <th></th>
+                                                         <th></th>
+							                             <th></th>
+							                             <th class="text-center" colspan='4' style="background: #d6dbf9;">Hour</th>
+							                             <th></th>
+							                             <th class="text-center" colspan='4' style="background: rgba(52,195,143,0.5);">Expense</th>
+							                             <th></th>
+							                             <th class="text-center" colspan='4' style="background: rgba(244, 106, 106,0.5);">Commission</th>
+							                             <th></th>
+                                                    </tr>
+                                                    <tr>
+                                                         <th>No</th>
+                                                         <th>Actions</th>
+							                             <th>Name / Customer</th>
+							                             <th>Daily <br>Hour</th>
+							                             <th>Extra <br>Hour</th>
+							                             <th>Vacation <br>Hour</th>
+							                             <th>Total Hours</th>
+							                             <th>Revenue</th>
+							                             <th>Consultant<br> Expense</th>
+							                             <th>Ws2Paytax <br> Expense</th>
+							                             <th>Other <br> Expense</th>
+							                             <th>Total Expense</th>
+							                             <th>G.Margin</th>
+							                             <th>BDM <br>Commission</th>
+							                             <th>ACM <br>Commission</th>
+							                             <th>Rec <br>Commission</th>
+							                             <th>Total <br>Commission</th>
+							                             <th>N.Margin</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="odd gradeX" th:each="hour,index : ${userTotalHour}">
+		                                        
+						                               	<td th:text="${index.index + 1}"></td>
+						                               	<td>
+															<div>
+						                              			<a data-toggle="modal" data-target="#custom-hours-modal" th:onclick="'hoursDetails(\'' + ${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName} + '\','+ ${hour.userDetails.userDetailId} + ')'"><i class="far fa-calendar-alt" style="color: orange; font-size: 20px;" data-toggle="tooltip" title="Hours Details"></i></a>
+						                              			<a data-toggle="modal" data-target="#custom-width-modal" th:onclick="'bacisDetails(\'' + ${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName} + '\','+ ${hour.userDetails.userDetailId} + ')'"><i class="fas fa-info-circle" style="color: orange; font-size: 20px;" data-toggle="tooltip" title="Basic Details"></i></a>
+						                          			</div>
+														</td>
+						                                <td th:text="${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName}"></td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('Daily'),1,2)}">Total Daily Hours</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('Extra'),1,2)}">Total Extra Hours</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('Vacation'),1,2)}">Total Vacation Hours</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('Total'),1,2)}">Total Hours</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('revenue'),1,2)}">ConsultantRate</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('ConsultantRate'),1,2)}">ConsultantRate</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('W2Ptax'),1,2)}">W2Ptax</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('C2C'),1,2)}">C2C</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('Expense'),1,2)}">C2C</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('G.Margin'),1,2)}">G.Margin</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('BDMComm'),1,2)}">BDM Comm</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('ACMComm'),1,2)}">ACM Comm</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('RecComm'),1,2)}">Rec Comm</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('Commission'),1,2)}">Rec Comm</td>
+						                                <td th:text="${#numbers.formatDecimal(hour.total.get('N.Margin'),1,2)}">N.Margin</td>
+							                                        
+						                           	</tr>
+                                                </tbody>
+                                            </table>
+                                            </div>
+                                        <!-- end table-responsive -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div> <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+                <div id="custom-width-modal" class="modal fade bs-example-modal-lg"
+							tabindex="-1" role="dialog"
+							aria-labelledby="custom-width-modalLabel" aria-hidden="true"
+							style="display: none;">
+					<div class="modal-dialog modal-xl">
+						<div class="modal-content">
+							<div class="modal-body pb-0 mb-0">
+							<div>	<button type="button" class="close  details-close-button" data-dismiss="modal"
+											aria-hidden="true">×</button>
+								</div><div id="user-details-modal" class="pb-0"></div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				
+				<div id="custom-hours-modal" class="modal fade bs-example-modal-lg"
+							tabindex="-1" role="dialog"
+							aria-labelledby="custom-hours-modalLabel" aria-hidden="true"
+							style="display: none;position: fixed;"  >
+					<div class="modal-dialog modal-xl">
+						<div class="modal-content">
+							<div class="modal-body pb-0 mb-0">
+							<div class="hours-model-user-detail mt-0 p-0">
+								<h5 class="modal-title mt-0 mr-3 user-detail" id="custom-width-modalLabel">Hours
+										 Details : <span id="view_title_hour_name"> </span></h5>
+								<button type="button" class="close details-close-button" data-dismiss="modal"
+											aria-hidden="true">×</button>
+							</div>
+								<div id="user-hours-modal"></div>	
+						</div>
+						</div>
+					</div>
+				</div>
+				
+                <footer class="footer">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <script>document.write(new Date().getFullYear())</script> © Aimtechnolabs.
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="text-sm-right d-none d-sm-block">
+                                    Design & Develop by Aimtechnolabs.com
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+            <!-- end main content-->
+
+        </div>
+
+
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			var consultanse = [[${consultanse}]];
+			var netMargin = [[${netMargin}]];
+			var commission = [[${commission}]];
+			
+			var netMargins = [[${netMargins}]];
+			var grossMargins = [[${grossMargins}]];
+			var revenues = [[${revenues}]];
+			var expenses = [[${expenses}]];
+			var commissions = [[${commissions}]];
+			var users = [[${users}]];
+			var xChart = [[${xChart}]];
+			
+			var hours = [[${adminUserHoursChart.hours}]];
+			var extra = [[${adminUserHoursChart.extra}]];
+			var vacation = [[${adminUserHoursChart.vacation}]];
+			var selectYear = [[${selectYear}]];
+			
+			var userRevenues = [[${userTotalRevenueChart.revenue}]];
+			var userGrossMargins = [[${userTotalRevenueChart.grossMargin}]];
+			var userNetMargins = [[${userTotalRevenueChart.netMargin}]];
+			var userexpenses = [[${userTotalRevenueChart.expenseTotal}]];
+			var usercommission = [[${userTotalRevenueChart.commissionTotal}]];
+			
+			var userCommissionsBDM = [[${userTotalRevenueChart.commissionsBDM}]];
+			var userCommissionsACM = [[${userTotalRevenueChart.commissionsACM}]];
+			var userCommissionsREC = [[${userTotalRevenueChart.commissionsREC}]];
+			
+			var userExpenseCon = [[${userTotalRevenueChart.expenseCon}]];
+			var userExpenseW2p = [[${userTotalRevenueChart.expenseW2p}]];
+			var userExpenseOther = [[${userTotalRevenueChart.expenseOther}]];
+
+			var commissionsBDM = [[${commissionsBDM}]];
+			var commissionsACM = [[${commissionsACM}]];
+			var commissionsREC = [[${commissionsREC}]];
+			
+			var expensesWs2P = [[${expensesWs2P}]];
+			var expensesCon = [[${expensesCon}]];
+			var expensesOther = [[${expensesOther}]];
+			/*]]>*/
+		</script>
+		
+        <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+
+		<!-- Required datatable js -->
+        <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+        
+        <!-- Responsive examples -->
+        <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+        <!-- Datatable init js -->
+        <script th:src="@{/assets_new/js/adminHomePage.js}"></script>  
+        <!-- apexcharts -->
+        <script th:src="@{/assets_new/libs/apexcharts/apexcharts.min.js}"></script>
+        <!-- Saas dashboard init -->
+        <script th:src="@{/assets_new/js/pages/saas-dashboard.init.js}"></script>
+        <script th:src="@{/assets_new/js/app.js}"></script>
+        <script th:src="@{/assets/js/fstdropdown.js}"></script>
+        <script th:src="@{/assets_new/js/home-page-filter.js}"></script>
+          <script th:src="@{/assets_new/js/monthHours.js}"></script>
+
+        <th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+        
+    </body>
+</html>

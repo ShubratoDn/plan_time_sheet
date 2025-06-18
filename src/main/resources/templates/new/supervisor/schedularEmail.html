@@ -1,0 +1,97 @@
+<div id="schedularEmailId">
+<!-- Always hidden and used on change subject in send email popup -->
+	<div class="approveDiv">
+		<input type="hidden" class="subject" value="Timesheet reminder" />
+		<input type="hidden" class="message" th:value="${'Hello, <br />hi<br /><br />Please send your approved time sheets sent to ManageTP (email timesheet@pddninc.net)<br />
+			or fax to (866)371-7890).<br /><br /><br /> Time sheet for ' + schedular.startDate + ' To ' + schedular.endDate +' pay period must be turned in at the earlist.
+			If the time sheet are not turned in properly by deadline then pay roll/pay ment will be delayed.<br /><br /><br />
+			NEED TIME SHEET BEFORE ___ 01:00PM <br /><br /><br /> If you have already turned in your approved time sheet for the entire pay period then you may dis regard this message. <br /><br /> Thanks'}" />
+	</div>
+<!--END Always hidden and used on change subject in send email popup -->
+
+	<div id="Email-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Email-modal" aria-hidden="true" style="display: none;">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				</div>
+				<div class="modal-body">
+					<div class="table-detail mail-right">
+						<form id="form" enctype="multipart/form-data" th:action="@{/supervisor/schedular-send-email}" method="post">
+							<div class="row" id="email-form">
+		                    	<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+									<div class="m-t-20">
+	                                	Email template name :
+										<select class="form-control" onchange="changeMailTemplate(this)">
+	                                    	<option th:value="${'Hello, <br />hi<br /><br />Please send your approved time sheets sent to PDDN (email timesheet@pddninc.net)<br />
+												or fax to (866)371-7890).<br /><br /><br /> Time sheet for ' + schedular.startDate + ' To ' + schedular.endDate +' pay period must be turned in at the earlist.
+												If the time sheet are not turned in properly by deadline then pay roll/pay ment will be delayed.<br /><br /><br />
+												NEED TIME SHEET BEFORE ___ 01:00PM <br /><br /><br /> If you have already turned in your approved time sheet for the entire pay period then you may dis regard this message. <br /><br /> Thanks'}"
+												data-subjecttext="Timesheet reminder">Timesheet reminder</option>
+											<option th:each="template : ${templates}" th:attr="data-subjecttext=${template.subject}"
+												th:value="${template.htmlDate}" th:text="${template.templateName}">
+		                               		</option>
+	                         			</select>
+										<div class="user mt-1">
+			                            	<label>To<span class="text-danger">*</span> ( <span id="selectedUserSize" th:text="${#lists.size(users)}"></span> selected mail )</label>
+												<p class="text-danger toEmailError m-0" style="display: none;"> Please select minimum one email</p>
+												<div class="btn-group col-12 pr-0 pl-0" style="border: 1px solid #ced4da;border-radius: .25rem;">
+	                                                <button type="button" onclick="userShow(this)" class="btn text-left userShow" style="width: 80%;white-space: nowrap;overflow: hidden;">
+	                                                	<span class="badge badge-info" th:each="user,index:${users}" th:value="${'USER_' + #strings.replace(user.email,'.','_')}" th:text="${user.email}"></span>
+	                                                </button>
+	                                                <button type="button" onclick="userShow(this)" class="btn dropdown-toggle dropdown-toggle-split m-0 p-0 text-right" aria-haspopup="true" aria-expanded="false">
+	                                                    <i class="mdi mdi-menu-down" style="font-size: 18px"></i>
+	                                                    <i class="mdi mdi-close" style="font-size: 18px;display: none;"></i>
+	                                                </button>
+	                                                <div class="dropdown-menu pt-0 col-12" id="theList">
+		                                                <span class="dropdown-item p-1 search">
+			                                                <div class="form-group">
+	                                                                 <input type="text" id="filterId" onkeyup="filter(this,'theList')" class="form-control" placeholder="Search" value="">
+	                                                              </div>
+		                                                </span>
+		                                                <span class="dropdown-item" th:each="user:${users}" > 
+															<div class="custom-control custom-checkbox">
+		                                                        <input type="checkbox" name="toEmail" class="custom-control-input" th:id="${user.id}" th:value="${user.email}" checked>
+		                                                        <label class="custom-control-label" th:for="${user.id}" >
+			                                                        <p class="m-0 p-0" th:text="${user.email}"></p>
+			                                                        <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'Name: ' + user.firstName + ' ' + user.lastName}"></sup></p>
+		                                                        </label>
+		                                                    </div>
+														</span>
+		                                                <span class="dropdown-item" id="mailNameNotfound" style="display: none;"> 
+															<p class="m-0 text-danger">No mail or user found</p>
+														</span>
+	                                                </div>
+												</div>
+											</div>
+	                                        <div class="form-group mt-1">
+	                                         	<label>CC<span class="text-danger"></span></label>
+	                                         	<input type="text" id="email-to" name="ccEmail" class="form-control" placeholder="CC" th:value="${session.company.timesheetSubmitEmail}">
+	                                        </div>
+	                                        <div class="form-group">
+	                                       	 	<label>Subject<span class="text-danger">*</span></label>
+	                                             <input type="text" id="email-subject" name="subject" class="form-control subject" placeholder="Subject">
+	                                            <p class="text-danger valueSubjectError m-0" style="display: none;"> Please enter subject</p>
+	                                            <input type="hidden" id="description" name="description">
+	                                            <input type="hidden" name="year" th:value="${selectedYear}">
+	                                            <input type="hidden" name="month" th:value="${selectedMonth}">
+	                                        </div>
+	                                        <div class="btn-toolbar form-group m-b-0">
+	                   							<button type="submit" class="btn btn-info waves-effect waves-light">Submit</button>
+	                                        </div>
+										</div>
+									</div>
+	                       			<div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+	                       				<div class="form-group">
+	                                           <div class="summernote">
+	                                           </div>
+	                                       </div>
+	                       			</div>
+		                         </div>
+	                         </form>
+	                    </div>
+	             	</div>
+	         	</div>
+	     	</div>
+	</div>
+</div>

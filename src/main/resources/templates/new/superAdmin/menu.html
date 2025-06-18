@@ -1,0 +1,39 @@
+<!-- ========== Left Sidebar Start ========== -->
+<div id="sidebar-menu" th:fragment="menu">
+    <!-- Left Menu Start -->
+    <ul class="metismenu list-unstyled" id="side-menu">
+        <li>
+            <a th:href="@{/super-admin/home}" class="waves-effect">
+                <i class="bx bx-home-circle"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                <i class="bx bxs-business"></i>
+                <span>Company</span>
+            </a>
+            <ul class="sub-menu" aria-expanded="false">
+                <li><a th:href="@{/super-admin/add-company}">Add Company</a></li>
+       			<li><a th:href="@{/super-admin/company-list}">Company List</a></li>
+<!--                 <li><a th:href="@{/super-admin/add-user}">Add Company</a></li> -->
+<!--        			<li><a th:href="@{/super-admin/user-list}">Users Company</a></li> -->
+            </ul>
+        </li>
+<!--         <li> -->
+<!--             <a href="javascript: void(0);" class="has-arrow waves-effect"> -->
+<!--                 <i class="bx bx-user"></i> -->
+<!--                 <span>Users</span> -->
+<!--             </a> -->
+<!--             <ul class="sub-menu" aria-expanded="false"> -->
+<!--                 <li><a href="javascript: void(0);">Add User</a></li> -->
+<!--        			<li><a href="javascript: void(0);">User List</a></li> -->
+<!-- <!--                 <li><a th:href="@{/super-admin/add-user}">Add User</a></li> --> 
+<!-- <!--        			<li><a th:href="@{/super-admin/user-list}">Users List</a></li> -->
+<!--             </ul> -->
+<!--         </li> -->
+        
+    </ul>
+</div>
+<!-- Sidebar -->

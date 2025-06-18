@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<meta charset="utf-8" />
+<title>Add time sheet</title>
+<!--     <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+<!--     <meta content="TimeSheet" name="description"> -->
+<!--     <meta content="TimeSheet" name="author"> -->
+<link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+<link th:href="@{/assets_new/css/bootstrap.min.css}"
+	id="bootstrap-style" rel="stylesheet" type="text/css" />
+<link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet"
+	type="text/css" />
+<link th:href="@{/assets_new/css/app.min.css}" id="app-style"
+	rel="stylesheet" type="text/css" />
+<link
+	th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}"
+	rel="stylesheet" type="text/css" />
+<link
+	th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}"
+	rel="stylesheet" type="text/css" />
+
+<link th:href="@{/assets_new/libs/sweetalert2/sweetalert2.min.css}"
+	rel="stylesheet" type="text/css" />
+<link rel="stylesheet"
+	th:href="@{/assets_new/libs/summernote/summernote-bs4.min.css}">
+<link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet"
+	type="text/css" />
+<link rel="stylesheet"
+	th:href="@{/assets_new/css/fixedHeader.dataTables.min.css}">
+<style>
+.hide {
+	display: none !important;
+}
+
+.hourNum {
+	width: 70% !important;
+	border-radius: 4px;
+	padding-left: 5px;
+	border: 1px solid grey;
+}
+
+.fa-angle-down {
+	font-size: 15px !important;
+}
+
+.fstselected {
+	min-height: 35px;
+}
+
+.main-content {
+	overflow: visible !important;
+}
+
+.white_space_break {
+	white-space: pre-line !important;
+	word-break: break-all !important;
+}
+
+.back-g {
+	background-color: #f7f7f7;
+}
+
+.td-next-p-0 td {
+	padding-top: 2px !important;
+	padding-bottom: 2px !important;
+}
+
+#viewer body img {
+	width: 100% !important;
+}
+
+.currentFileView {
+	background: #dedede;
+}
+
+.conversation-name {
+	font-weight: 600;
+	color: #556ee6;
+	margin-bottom: 4px;
+}
+
+.ctext-wrap {
+	background: #eef0fc;
+	padding: 15px;
+	margin-bottom: 20px;
+	word-break: break-all;
+	border-radius: 15px 15px 15px 15px;
+}
+
+.chat-scroll {
+	max-height: calc(100vh - 200px);
+	overflow-y: scroll;
+}
+
+.chat-input {
+	width: 350px
+}
+
+.height-file-popup {
+	height: calc(100vh - 220px);
+	left: 0;
+	overflow-y: scroll;
+}
+
+.height-file-popup::-webkit-scrollbar {
+	width: 5px;
+}
+
+/* Track */
+.height-file-popup::-webkit-scrollbar-track {
+	background: #ffffff;
+}
+
+/* Handle */
+.height-file-popup::-webkit-scrollbar-thumb {
+	background: #e6e6e6;
+}
+
+/* Handle on hover */
+.height-file-popup::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+.no-file {
+	background-color: #f8f9fa;
+	background-image:
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px'%0Awidth='64' height='64'%0AviewBox='0 0 172 172'%0Astyle=' fill:%23000000;'%3E%3Cg fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'%3E%3Cpath d='M0,172v-172h172v172z' fill='none'%3E%3C/path%3E%3Cg%3E%3Cpath d='M126.98438,150.5h-81.96875c-7.39062,0 -13.4375,-6.04687 -13.4375,-13.4375v-107.5c0,-7.39062 6.04688,-13.4375 13.4375,-13.4375h81.96875c7.39063,0 13.4375,6.04688 13.4375,13.4375v107.5c0,7.39063 -6.04687,13.4375 -13.4375,13.4375z' fill='%23ffffff'%3E%3C/path%3E%3Cpath d='M45.01563,29.5625h81.96875v20.15625h-81.96875zM118.92188,76.59375h-68.53125c-2.28438,0 -4.03125,-1.74688 -4.03125,-4.03125c0,-2.28437 1.74687,-4.03125 4.03125,-4.03125h68.53125c2.28437,0 4.03125,1.74688 4.03125,4.03125c0,2.28437 -1.74688,4.03125 -4.03125,4.03125zM118.92188,96.75h-68.53125c-2.28438,0 -4.03125,-1.74688 -4.03125,-4.03125c0,-2.28437 1.74687,-4.03125 4.03125,-4.03125h68.53125c2.28437,0 4.03125,1.74688 4.03125,4.03125c0,2.28437 -1.74688,4.03125 -4.03125,4.03125zM86,116.90625h-35.60937c-2.28438,0 -4.03125,-1.74688 -4.03125,-4.03125c0,-2.28437 1.74687,-4.03125 4.03125,-4.03125h35.60938c2.28437,0 4.03125,1.74688 4.03125,4.03125c0,2.28437 -1.74688,4.03125 -4.03125,4.03125z' fill='%23d2e8fc'%3E%3C/path%3E%3Cpath d='M126.98438,154.53125h-81.96875c-9.675,0 -17.46875,-7.79375 -17.46875,-17.46875v-107.5c0,-9.675 7.79375,-17.46875 17.46875,-17.46875h81.96875c9.675,0 17.46875,7.79375 17.46875,17.46875v107.5c0,9.675 -7.79375,17.46875 -17.46875,17.46875zM45.01563,20.15625c-5.24063,0 -9.40625,4.16563 -9.40625,9.40625v107.5c0,5.24062 4.16562,9.40625 9.40625,9.40625h81.96875c5.24062,0 9.40625,-4.16563 9.40625,-9.40625v-107.5c0,-5.24062 -4.16563,-9.40625 -9.40625,-9.40625z' fill='%23abb1f1'%3E%3C/path%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 400px;
+}
+
+.vertical-collpsed .vertical-menu {
+	position: fixed;
+	z-index: 110;
+}
+</style>
+</head>
+<body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+	<div id="layout-wrapper">
+		<th:block th:replace="new/user/header :: header"></th:block>
+		<!-- ========== Left Sidebar Start ========== -->
+		<div class="vertical-menu">
+			<div data-simplebar class="h-100"
+				th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+				<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+			</div>
+			<div data-simplebar class="h-100"
+				th:if="${session.user.role == 'ROLE_ADMIN'}">
+				<th:block th:replace="new/admin/menu :: menu"></th:block>
+			</div>
+		</div>
+		<!-- Left Sidebar End -->
+		<!-- ============================================================== -->
+		<!-- Start right Content here -->
+		<!-- ============================================================== -->
+		<div class="main-content">
+			<div class="page-content pb-0">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+							<div
+								class="page-title-box d-flex align-items-center justify-content-between">
+								<h4 class="mb-0 font-size-18">Add time sheet</h4>
+								<div class="page-title-right">
+									<ol class="breadcrumb m-0">
+										<li class="breadcrumb-item"><a th:href="@{/user/home}">Dashboards</a></li>
+										<li class="breadcrumb-item active">Add time sheet</li>
+									</ol>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+							<div id="successDiv"></div>
+							<div id="errorDiv"></div>
+							<div class="alert alert-danger alert-dismissible" role="alert"
+								th:if="${error}">
+								<button type="button" class="close" data-dismiss="alert"
+									aria-label="Close">
+									<span aria-hidden="true">×</span>
+								</button>
+								<strong>Oh snap!</strong>
+								<th:block th:text="${error}"></th:block>
+							</div>
+							<div class="alert alert-success alert-dismissible" role="alert"
+								th:if="${success}">
+								<button type="button" class="close" data-dismiss="alert"
+									aria-label="Close">
+									<span aria-hidden="true">×</span>
+								</button>
+								<strong>Success</strong>
+								<th:block th:text="${success}"></th:block>
+							</div>
+							<div class="card">
+								<div class="card-body">
+									<div class="row">
+
+										<div
+											class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 height-file-popup">
+											<div id="viewFileSelected">
+												<div
+													class="hide col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12"
+													id="filePdfView">
+													<iframe id="viewer" th:src="@{/assets/images/logo.png}"
+														frameborder="0" scrolling="no" width="100%" height="450"></iframe>
+												</div>
+												<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12"
+													id="fileImgView">
+													<img th:src="@{/assets_new/images/filenotview.svg}"
+														alt="img" width="100%" class="">
+												</div>
+											</div>
+										</div>
+										<div
+											class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 height-file-popup">
+											<div
+												class="row">
+												<div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5">
+													<label class="control-label" for="example-input1-group3">User</label>
+													<select id="user-name"
+														class="form-control fstdropdown-select"
+														onchange="if (this.value) window.location.href=this.value">
+														<option th:each="user : ${users}"
+															th:text="${user.firstName + ' ' + user.lastName}"
+															th:value="'?user='+ ${user.id}"
+															th:selected="${user == userSelect}"></option>
+													</select>
+												</div>
+												<div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+													<label class="control-label" for="example-input1-group3">Customer</label>
+													<select id="user-client" class="form-control client-box"
+														onchange="if (this.value) window.location.href=this.value"
+														th:disabled="${isEdit}">
+														<option value="" th:if="${userDetail == null}">
+															Any Customer are not active</option>
+														<option th:if="${userDetail != null}"
+															th:text="${userDetail.clientName}"
+															th:value="'?userDetailId='+ ${userDetail.userDetailId}">
+														</option>
+													</select>
+												</div>
+
+												<div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3">
+													<label class="control-label" for="example-input1-group3">Year</label>
+													<select class="form-control year-box"
+														onchange="if (this.value) window.location.href=this.value"
+														th:disabled="${addUserTimeSheet.userDetailId == null}">
+														<option
+															th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2017)}"
+															th:if="${startYear <= year}" class="year-box-option"
+															th:text="${year}"
+															th:value="'?user='+${userSelect.id} +'&year=' + ${year}"
+															th:selected="${year == selectedYear}"></option>
+													</select>
+												</div>
+											</div>
+
+											<div class="mt-3" id="addTimeSheet"
+												th:fragment="addTimeSheet">
+												<form id="form" th:object="${addUserTimeSheet}"
+													enctype="multipart/form-data"
+													th:action="@{/supervisor/add-user-time-sheet}"
+													method="post" data-parsley-validate>
+													<div class="row">
+														<div class="col-md-6">
+															<div class="form-group">
+																<label for="startDate">Start Date To End Date<span
+																	class="text-danger">*</span></label> <select
+																	class="form-control fstdropdown-select"
+																	onchange="changeStartDateSuperviser(this.value)"
+																	th:field="*{startDate}" required>
+																	<option th:if="${isEdit}"
+																		th:value="${addUserTimeSheet.startDate}"
+																		th:text="${#dates.format(addUserTimeSheet.startDate, 'E, MMM dd yyyy') +' To ' + #dates.format(addUserTimeSheet.endDate,'E, MMM dd yyyy')}"></option>
+																	<option th:if="${isEdit == null or !isEdit}"
+																		th:each="userTimeSheetDate : ${userTimeSheetDates}"
+																		th:text="${userTimeSheetDate.startDate +' To ' + userTimeSheetDate.endDate}"
+																		th:value="${userTimeSheetDate.dateString}"></option>
+																</select>
+																<ul id="startDateError"
+																	class="parsley-errors-list filled hide">
+																	<li class="parsley-required">This value is
+																		required.</li>
+																</ul>
+																<input class="form-control hide"
+																	data-inputmask-alias="mm/dd/yyyy"
+																	th:disabled="${addUserTimeSheet.userDetailId == null}"
+																	data-inputmask="'yearrange': { 'minyear': '1917', 'maxyear': '2025' }"
+																	data-val="true" onchange="changeEndDate(this.value)"
+																	data-val-required="Required" id="DATE1"
+																	placeholder="mm/dd/yyyy" type="text"
+																	th:field="*{endDate}" required />
+															</div>
+														</div>
+														<div class="col-md-6">
+															<div class="form-group">
+																<label for="hour-log-file">File</label> <input
+																	class="form-control" id="hourLogFile" name="file"
+																	type="file" multiple
+																	accept=".pdf,.xls,.xlsx,.png,.jpg,.jpeg,.docx"
+																	th:disabled="${addUserTimeSheet.userDetailId == null}" />
+																<input type="hidden" th:field="*{userDetailId}" required />
+															</div>
+															<div id='selectFileButton' class="col-md-12"></div>
+														</div>
+													</div>
+													<div class="col-sm-12">
+														<div id='selectFile' class="col-sm-12"></div>
+													</div>
+													<div class=""
+														th:if="${addUserTimeSheet.userDetailId != null}">
+														<button type="button" onclick="setSchedulTimesheet()"
+															class="btn btn-sm btn-primary">
+															<i class="mdi mdi-calendar-clock icon-back-color"></i>
+															Copy from schedular
+														</button>
+
+														<button type="button" onclick="setDailyTimesheet()"
+															class="btn btn-sm btn-primary">
+															<i class="mdi mdi-calendar-clock icon-back-color"></i>
+															Set weekdays 8 hours
+														</button>
+
+														<button type="button" class="btn btn-sm btn-primary"
+															onclick="addRemark()">Add remark</button>
+													</div>
+													<div class="row">
+														<div class="col-md-12 mt-2">
+															<div id="remark" hidden>
+																<label for="">Remark</label>
+																<textarea style="min-height: 100px;"
+																	class="form-control" th:value="${remarkOld}"
+																	name="remark" th:text="${remarkOld}"></textarea>
+															</div>
+															<br>
+														</div>
+													</div>
+													<div class=""
+														th:if="${addUserTimeSheet.userDetailId != null}">
+
+														<table id="defaultDatatable"
+															class="table table-responsive">
+															<thead>
+																<tr>
+																	<th>No</th>
+																	<th>Date</th>
+																	<th>Daily Hours</th>
+																	<th>Extra Hours</th>
+																	<th>Vacation</th>
+																	<th>Notes</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr class="back-ground">
+																	<th class="m-0">Total</th>
+																	<th></th>
+																	<th>
+																		<p class="totalDailyHours mg-l-12 m-0"></p>
+																	</th>
+																	<th>
+																		<p class="totalExtraHours mg-l-12 m-0"></p>
+																	</th>
+																	<th>
+																		<p class="totalVacationHours mg-l-12 m-0"></p>
+																	</th>
+																	<th></th>
+																</tr>
+																<tr class="odd gradeX td-next-p-0"
+																	th:each="hourLog,index : *{calendarResponse}">
+																	<td>
+																		<p class="m-0">
+																			<label th:text="${index.index + 1}"></label>
+																		</p>
+																	</td>
+																	<td><input type="hidden"
+																		th:field="*{calendarResponse[__${index.index}__].date}" />
+																		<p class="m-0 date-text"
+																			th:text="${hourLog.dateFormate}"></p></td>
+																	<td class=""><a class="col-lg-offset-1 m-0"
+																		th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}"
+																		onclick="setDailyHoursNextLine(this)"> <i
+																			class="fa fa-angle-down" data-toggle="tooltip"
+																			title="copy to next line"></i>
+																	</a> <input type="text"
+																		th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}"
+																		th:field="*{calendarResponse[__${index.index}__].dailyHours}"
+																		onchange="sumOfDailyHours()"
+																		class="hourNum dailyHours"> <input
+																		type="hidden"
+																		th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}"
+																		th:field="*{calendarResponse[__${index.index}__].dailyHours}">
+																		<p
+																			th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}"
+																			th:text="${addUserTimeSheet.calendarResponse[__${index.index}__].dailyHours}"></p>
+																	</td>
+																	<td><a class="col-lg-offset-1 m-0"
+																		onclick="setExtraHoursNextLine(this)"
+																		th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}">
+																			<i class="fa fa-angle-down" data-toggle="tooltip"
+																			title="copy to next line"></i>
+																	</a> <input type="text"
+																		th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}"
+																		th:field="*{calendarResponse[__${index.index}__].extraHours}"
+																		onchange="sumOfExtraHours()"
+																		class="hourNum extraHours"> <input
+																		type="hidden"
+																		th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}"
+																		th:field="*{calendarResponse[__${index.index}__].extraHours}">
+																		<p
+																			th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}"
+																			th:text="${addUserTimeSheet.calendarResponse[__${index.index}__].extraHours}"></p>
+																	</td>
+																	<td><a class="col-lg-offset-1 m-0"
+																		onclick="setVacationHoursNextLine(this)"
+																		th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}">
+																			<i class="fa fa-angle-down" data-toggle="tooltip"
+																			title="copy to next line"></i>
+																	</a> <input type="text"
+																		th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}"
+																		th:field="*{calendarResponse[__${index.index}__].vacationHours}"
+																		onchange="sumOfVacationHours()"
+																		class="hourNum vacationHours"> <input
+																		type="hidden"
+																		th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}"
+																		th:field="*{calendarResponse[__${index.index}__].vacationHours}">
+																		<p
+																			th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}"
+																			th:text="${addUserTimeSheet.calendarResponse[__${index.index}__].vacationHours}"></p>
+																	</td>
+																	<td><a href="javascript:void(0);"
+																		onclick="addNotes(this)"
+																		th:id="${'new_notes_'+index.index}"> <i
+																			class="far fa-file-alt"
+																			th:classappend="${#strings.isEmpty(addUserTimeSheet.calendarResponse[__${index.index}__].oldNotes) ? '' : 'text-danger'}"></i></a>
+																		<input type="hidden"
+																		th:attr="data-oldnotes=${addUserTimeSheet.calendarResponse[__${index.index}__].oldNotes}"
+																		th:field="*{calendarResponse[__${index.index}__].newNotes}">
+																	</td>
+
+
+																</tr>
+															</tbody>
+														</table>
+													</div>
+													<div class=""
+														th:if="${addUserTimeSheet.userDetailId != null}">
+														<div class="table-detail mail-right">
+															<div id="email-form" class="row m-t-20">
+																<div
+																	class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+																	<div class="form-group">
+																		Email template name: <select class="form-control"
+																			onchange="changeMailTemplate(this)">
+																			<option th:if="${resubmit == true}"
+																				th:attr="data-subjecttext=${'Timesheet resubmit, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+userDetail.clientName }"
+																				th:value="${'Hello, <br /><br />Timesheet is re-submit for client : '+ userDetail.clientName +'<br /><br />for time period:'+ addUserTimeSheet.startDate +' To '+ addUserTimeSheet.endDate +'<br /><br />Please check and approve.  <br /><br />Thank you.'}"
+																				th:text="${'Timesheet resubmit, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+userDetail.clientName }"></option>
+																			<option th:if="${resubmit != true}"
+																				th:attr="data-subjecttext=${'Timesheet submit, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+userDetail.clientName}"
+																				th:value="${'Hello, <br /><br />Timesheet is submit for client : '+ userDetail.clientName +'<br /><br />for time period:'+ addUserTimeSheet.startDate +' To '+ addUserTimeSheet.endDate +'<br /><br />Please check and approve. <br /><br />Thank you.'}"
+																				th:text="${'Timesheet submit, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+userDetail.clientName}"></option>
+																			<option th:each="template : ${templates}"
+																				th:attr="data-subjecttext=${template.subject}"
+																				th:value="${template.htmlDate}"
+																				th:text="${template.templateName}"></option>
+																		</select>
+																	</div>
+																	<div class="form-group">
+																		TO: <span class="form-control"
+																			style="background-color: #d1d6f6;"
+																			th:if="${session.user.role != 'ROLE_ADMIN'}"
+																			th:text="${session.company.timesheetSubmitEmail}"></span>
+																		<input
+																			th:type="${session.user.role == 'ROLE_ADMIN'?'text':'hidden'}"
+																			id="email-to" name="email" class="form-control"
+																			placeholder="To"
+																			th:value="${session.company.timesheetSubmitEmail}">
+																	</div>
+																	<div class="form-group">
+																		CC: <input type="text" id="email-to" name="ccEmail"
+																			class="form-control" placeholder="CC"
+																			th:value="${userDetail.user.email}">
+																	</div>
+																	<div class="form-group">
+																		Subject : <input type="text" id="email-subject"
+																			name="subject" class="form-control subject"
+																			placeholder="Subject"> <input type="hidden"
+																			id="description" th:field="*{description}">
+																	</div>
+
+																</div>
+																<div
+																	class="form-group col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+																	<div class="summernote"></div>
+																</div>
+																<div class="btn-toolbar form-group">
+																	<button type="submit"
+																		class="btn btn-info waves-effect waves-light">Submit</button>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div th:if="${userDetail != null}">
+														<div class="rejectDiv">
+															<input type="hidden" class="subject"
+																th:value="${'Timesheet resubmit, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+userDetail.clientName }" />
+															<input type="hidden" class="message"
+																th:value="${'Hello, <br /><br />Timesheet is re-submit for client : '+ userDetail.clientName +'<br /><br />for time period:'+ addUserTimeSheet.startDate +' To '+ addUserTimeSheet.endDate +'<br /><br />Please check and approve.  <br /><br />Thank you.'}" />
+														</div>
+
+														<div class="approveDiv">
+															<input type="hidden" class="subject"
+																th:value="${'Timesheet submit, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+userDetail.clientName}" />
+															<input type="hidden" class="message"
+																th:value="${'Hello, <br /><br />Timesheet is submit for client : '+ userDetail.clientName +'<br /><br />for time period:'+ addUserTimeSheet.startDate +' To '+ addUserTimeSheet.endDate +'<br /><br />Please check and approve. <br /><br />Thank you.'}" />
+														</div>
+													</div>
+												</form>
+												<div id="add-notes" class="modal fade" tabindex="-1"
+													role="dialog" aria-labelledby="myModalLabel"
+													style="display: none;" aria-hidden="true">
+													<div class="modal-dialog">
+														<div class="modal-content">
+															<div class="modal-header">
+																<button type="button" class="close" data-dismiss="modal"
+																	aria-label="Close">
+																	<span aria-hidden="true">×</span>
+																</button>
+															</div>
+															<div class="modal-body">
+																<div>
+																	<b>Date </b>: <span id="note-date"></span>
+																</div>
+																<div>
+																	<b>User </b>: <span id="note-user"></span>
+																</div>
+																<div>
+																	<b>Client </b>: <span id="note-client"></span>
+																</div>
+																<div class="chat-conversation chat-scroll">
+																	<div class="conversation-list"></div>
+																	<div id="oldNote"></div>
+																</div>
+															</div>
+															<div class="modal-footer">
+																<div class="row">
+																	<div class="col">
+																		<div class="position-relative">
+																			<input type="text" id="new-note"
+																				class="form-control chat-input"
+																				placeholder="Add notes"> <input
+																				type="hidden" id="new-note-id">
+																		</div>
+																	</div>
+																	<div class="col-auto">
+																		<button onclick="saveNote()"
+																			class="btn btn-primary btn-rounded">
+																			<i class="fa fa-plus"></i> <span
+																				class="d-none d-sm-inline-block mr-2">Add</span>
+																		</button>
+																	</div>
+																</div>
+															</div>
+														</div>
+														<!-- /.modal-content -->
+													</div>
+													<!-- /.modal-dialog -->
+												</div>
+												<script th:inline="javascript">
+													/*<![CDATA[*/
+														var startDate = [[${addUserTimeSheet.startDate}]];
+														var endDate = [[${addUserTimeSheet.endDate}]];
+														var context = [[@{/}]];
+														var userDId = [[${addUserTimeSheet.userDetailId}]];
+														var resubmit = [[${resubmit}]];
+														var isEdit = [[${isEdit}]];
+														var userSelect = [[${userSelect}]];
+													/*]]>*/
+											  </script>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+       var resizefunc = [];
+    </script>
+
+		<script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+		<script
+			th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+		<script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+		<script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+		<script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+		<script th:src="@{/assets_new/js/app.js}"></script>
+		<script
+			th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+		<script
+			th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+		<script
+			th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+		<script
+			th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+		<script th:src="@{/assets_new/js/dataTables.fixedHeader.min.js}"></script>
+		<script th:src="@{/assets_new/libs/sweetalert2/sweetalert2.min.js}"></script>
+		<script th:src="@{/assets/plugins/moment/moment.js}"></script>
+		<script th:src="@{/assets_new/libs/summernote/summernote-bs4.min.js}"></script>
+		<script src="https://momentjs.com/downloads/moment.min.js"></script>
+		<script th:src="@{/assets/js/jquery.inputmask.bundle.js}"></script>
+		<script th:src="@{/assets/js/fstdropdown.js}"></script>
+		<script th:src="@{/assets/js/javascript/common.js}"></script>
+		<script th:src="@{/assets/js/javascript/user-hour-log.js}"></script>
+		<script th:src="@{/assets/js/javascript/add-notes.js}"></script>
+
+		<th:block
+			th:replace="new/genaralMailSend/genaral-mail-send :: mailSend"
+			th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+</body>
+</html>

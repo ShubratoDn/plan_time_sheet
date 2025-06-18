@@ -1,0 +1,90 @@
+<!-- ========== Left Sidebar Start ========== -->
+<div id="sidebar-menu" th:fragment="menu">
+    <!-- Left Menu Start -->
+    <ul class="metismenu list-unstyled" id="side-menu">
+                <li th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CONSULTANT_DASHBOARD,T(com.aim.enums.Permission).READ, false) || permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).HOURS_DASHBOARD,T(com.aim.enums.Permission).READ, false)}">
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                    	<i class="mdi mdi-view-dashboard"></i>
+                    	<span th:text="#{dashboard}"> Dashboard </span> 
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+		                <li><a th:href="@{/supervisor/home}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CONSULTANT_DASHBOARD,T(com.aim.enums.Permission).READ, false)}">Consultant Dashboard</a></li>
+		                <li><a th:href="@{/user/home}" th:if="${userTotalCount > 0 && permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).HOURS_DASHBOARD,T(com.aim.enums.Permission).READ, false)}">Hours Dashboard</a></li>
+		            </ul>
+                </li>
+                <li th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER,T(com.aim.enums.Permission).CREATE, false) || 
+                	permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER,T(com.aim.enums.Permission).READ, false) || 
+                	permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).INTERNAL_USER,T(com.aim.enums.Permission).READ, false) ||
+                	permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).INTERNAL_USER,T(com.aim.enums.Permission).CREATE, false)}">
+		            <a href="javascript: void(0);" class="has-arrow waves-effect">
+		                <i class="bx bx-user"></i>
+		                <span>Users</span>
+		            </a>
+		            <ul class="sub-menu" aria-expanded="false">
+		                <li><a th:href="@{/admin/add-user}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER,T(com.aim.enums.Permission).CREATE, false)}">Add User</a></li>
+		       			<li><a th:href="@{/admin/user-list}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER,T(com.aim.enums.Permission).READ, false)}">Users List</a></li>
+		       			<li 
+		       			th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).INTERNAL_USER,T(com.aim.enums.Permission).CREATE, false) }">
+		       				<a th:if="${permissionService.getPermissionPlan().commission == true}" th:href="@{/admin/internal-user}">
+		       				Internal User Add</a>
+		       				<a data-toggle="modal" data-target="#not-permit" th:if="${permissionService.getPermissionPlan().commission == false}" href="javascript:void(0);">
+		       				<i class="fa fa-lock"></i> Internal User Add</a>
+		       			</li>
+		       			<li 
+		       			th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).INTERNAL_USER,T(com.aim.enums.Permission).READ, false)}">
+		       				<a th:if="${permissionService.getPermissionPlan().commission == true}" th:href="@{/admin/internal-user/list}">
+		       				Internal User List</a>
+		       				<a data-toggle="modal" data-target="#not-permit" th:if="${permissionService.getPermissionPlan().commission == false}" href="javascript:void(0);">
+		       				<i class="fa fa-lock"></i> Internal User List</a>
+		       			</li>
+		            </ul>
+		        </li>
+                
+                
+                
+				<li th:if="${userTotalCount > 0 && (permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TIMESHEET,T(com.aim.enums.Permission).CREATE, false)  ||  permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TIMESHEET,T(com.aim.enums.Permission).READ, false) )}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect">
+	                    <i class="mdi mdi-timetable"></i><span> Time Sheet </span> 
+                   	</a>
+                   	<ul class="sub-menu" aria-expanded="false">
+		                <li><a th:href="@{/supervisor/add-user-time-sheet}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TIMESHEET,T(com.aim.enums.Permission).CREATE, false)}">Add User time Sheet</a></li>
+		                <li><a th:href="@{'/supervisor/time-sheet'}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TIMESHEET,T(com.aim.enums.Permission).READ, false)}">Manage Time Sheet</a></li>
+		            </ul>
+                </li>
+                <li th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).ADD_SCHEDULAR,T(com.aim.enums.Permission).CREATE, false) || permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TIME_SHEET_SCHEDULAR,T(com.aim.enums.Permission).READ, false)}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect">
+	                    <i class="mdi mdi-calendar-clock"></i><span> Schedular </span> 
+	                    <span class="menu-arrow"></span>
+                   	</a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).ADD_SCHEDULAR,T(com.aim.enums.Permission).CREATE, false)}"><a th:href="@{/supervisor/schedular}" class="waves-effect">
+	                    	<i class="mdi mdi-calendar-clock"></i><span>Manage Schedular </span> 
+                   			</a>
+                   		</li>
+                        <li th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TIME_SHEET_SCHEDULAR,T(com.aim.enums.Permission).READ, false)}"><a th:href="@{/supervisor/time-sheet-schedular}">
+                        <i class="mdi mdi-timetable"></i><span>Time sheet</span></a></li>
+                    </ul>
+                </li>
+                <li th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER_ACTIVITY,T(com.aim.enums.Permission).READ, false) || permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).SUPERVISOR_ACTIVITY,T(com.aim.enums.Permission).READ, false)}">
+		            <a href="javascript: void(0);" class="has-arrow waves-effect">
+		                <i class="bx bx-chat"></i>
+		                <span>Activity</span>
+		            </a>
+		            <ul class="sub-menu" aria-expanded="false">
+		                <li><a th:href="@{/admin/activity?role=ROLE_SUPERVISOR}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).SUPERVISOR_ACTIVITY,T(com.aim.enums.Permission).READ, false)}">Supervisor Activity</a></li>
+		                <li><a th:href="@{/admin/activity?role=ROLE_USER}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER_ACTIVITY,T(com.aim.enums.Permission).READ, false)}">User Activity</a></li>
+		            </ul>
+		        </li>
+		        <li>
+		            <a href="javascript: void(0);" class="has-arrow waves-effect">
+		                <i class="bx bxs-factory"></i>
+		                <span>Configuration</span>
+		            </a>
+		            <ul class="sub-menu" aria-expanded="false">
+		                <li><a th:href="@{/supervisor/configuration}">Configuration</a></li>
+		            </ul>
+		        </li>
+            </ul>
+</div>
+<!-- Sidebar -->
+

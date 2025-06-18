@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
+        <meta name="author" content="Coderthemes">
+
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Time Sheet</title>
+
+        <!-- App css -->
+        <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/core.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/components.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/icons.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/pages.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/menu.css}" rel="stylesheet" type="text/css" />
+        <!-- Summernote CSS -->
+		<link rel="stylesheet" th:href="@{/assets/plugins/summernote/summernote.css}">
+         
+        <link th:href="@{/assets/plugins/sweetalert2/sweetalert2.min.css}" rel="stylesheet" type="text/css" />
+        
+        <link th:href="@{/assets/css/responsive.css}" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" th:href="@{/assets/plugins/switchery/switchery.min.css}">
+		
+		<link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+		<link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+        <script th:src="@{/assets/js/modernizr.min.js}"></script>
+        <link th:href="@{/assets/css/style.css}" rel="stylesheet" type="text/css" />
+    </head>
+
+
+    <body class="fixed-left">
+
+        <!-- Begin page -->
+        <div id="wrapper">
+			
+			<th:block th:replace="user/header :: header"></th:block>
+        
+        	<th:block  th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+        		<th:block th:replace="supervisor/menu :: menu"></th:block>
+        	</th:block>
+        	
+        	<th:block  th:if="${session.user.role == 'ROLE_ADMIN'}">
+        		<th:block th:replace="admin/menu :: menu" ></th:block>
+        	</th:block>
+			
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="content-page">
+                <!-- Start content -->
+                <div class="content">
+                    <div class="container">
+						<div class="row">
+							<div class="col-xs-12">
+								<div class="page-title-box">
+                                    <h4 class="page-title">Time Sheet </h4>
+                                    <ol class="breadcrumb p-0 m-0">
+                                        <li>
+                                            <a th:href="@{/supervisor/home}">Home</a>
+                                        </li>
+                                        <li class="active">
+                                            <a>Time Sheet</a>
+                                        </li>
+                                    </ol>
+                                    <div class="clearfix"></div>
+                                </div>
+							</div>
+						</div>
+						<div class="alert alert-danger alert-dismissible fade in" role="alert" th:if="${error}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <strong>Oh snap!</strong> <th:block th:text="${error}"></th:block>
+                        </div>
+                        <div class="alert alert-success alert-dismissible fade in" role="alert" th:if="${success}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <strong>Success</strong> <th:block th:text="${success}"></th:block>
+                        </div>
+                    
+						<div class="card-box">
+							<h4 class="m-t-0 header-title"><b>User added hour log files</b></h4>
+							<div class="row mb-20">
+                        		<div class="col-sm-4">
+									<label class="control-label" for="example-input1-group3">Year</label>
+	                                <select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value">
+										<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2015)}"
+	                                        	th:text="${year}" th:value="'?yearFile=' + ${year}"
+	                                        	th:selected="${year == selectYear}">
+	                                        		
+	                                   	</option>
+	                         		</select>
+                          		</div>
+                        		<div class="col-sm-4">
+									<label class="control-label" for="example-input1-group3">User</label>
+	                                <select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value">
+										<option th:value="'?yearFile=' + ${selectYear}" th:selected="${selectUserId == ''}">All</option>
+										<option th:each="user : ${users}"
+	                                        	th:text="${user.firstName + ' ' + user.lastName }" th:value="'?yearFile=' + ${selectYear} + '&userId=' + ${user.id} "
+	                                        	th:selected="${user.id == selectUserId}">
+	                                        		
+	                                   	</option>
+	                         		</select>
+                          		</div>
+                        		<div class="col-sm-4">
+                             		<label class="control-label" for="example-input1-group3">Sort by</label>
+                                 	<select name="sort" class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value" id="sortByAction">
+		  								<option th:each="adminTimeSheetAction : ${T(com.aim.enums.AdminTimeSheetAction).values()}" 
+		  										th:value="'?yearFile=' + ${selectYear} + '&userId=' + ${selectUserId} +'&sort=' + ${adminTimeSheetAction.urlParam}"
+		  										th:selected="${adminTimeSheetAction} == ${selectedSort}" th:text="${adminTimeSheetAction.displayLabel}"></option>
+									</select>
+                                </div>
+                      		</div>
+                      		  
+                      		<div class="table-responsive">
+								<table id="datatable" class="table table-striped table-colored table-info">
+								    <thead>
+										<tr>
+											<th>No</th>
+											<th>User / Client</th>
+									     	<th>Period</th>
+									     	<th>Upload Date</th>
+									     	<th>Description</th>
+									     	<th>Action</th> 
+								      	</tr>
+									</thead>
+								    <tbody>
+										<tr th:each="hourLogFile,i : ${hourLogFiles}">
+								        	<td th:text="${i.index+1}"></td>
+								        	<td th:text="${hourLogFile.userDetail.user.firstName + ' ' + hourLogFile.userDetail.user.lastName + ' / ' + hourLogFile.userDetail.clientName}"></td>
+									     	<td th:text="${#dates.format(hourLogFile.startDate , 'MMM-dd-yyyy') + ' TO ' + #dates.format(hourLogFile.endDate , 'MMM-dd-yyyy')}"></td>
+									     	<td th:text="${#dates.format(hourLogFile.createdDatetime, 'MMM-dd-yyyy HH:MM')}"></td>
+									     	<td th:utext="${hourLogFile.description}"></td>
+									     	<td> 
+							     			<!-- Download btn -->
+								     			
+								     			<div>
+								     				<a th:if="${hourLogFile.fileOriginalName} and ${hourLogFile.filePath}" th:href="@{|/supervisor/user-hour-log-file/download/${hourLogFile.id}|}" th:attr="download=${hourLogFile.fileOriginalName}">
+									     				<i class="ion-ios7-cloud-download icon-size-24" data-toggle="tooltip" data-placement="left" title="Download"></i>
+									     			</a>
+									     			<a data-toggle="modal" data-target="#custom-width-modal" th:onclick="'bacisDetails(\'' + ${hourLogFile.userDetail.userDetailId} + '\')'"><i class="ion-information round-icon-1" data-toggle="tooltip" title="Basic Details"></i></a>
+<!-- 										     		<a th:href="@{${'/supervisor/add-hours?id=' + {hourLogFile.userDetail.userDetailId} } }"><i class="ion-ios7-timer icon-size-24" data-toggle="tooltip" title="Add Hour Log"></i></a> -->
+													<a data-toggle="modal" data-target="#file-view-model" th:onclick="'fileView(\'' + ${hourLogFile.id} + '\', \'' + ${hourLogFile.filePath} + '\')'"><i class="ion-eye icon-size-24" data-toggle="tooltip" title="File View"></i></a>
+				                                   	
+				                                   	<th:block th:if="${#strings.equals(selectedSort.urlParam,'rejected')}">
+														<div id='panel-modal' class='modal fade' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true' style='display: none;'>
+								                           <div class='modal-dialog'>
+								                               <div class='modal-content p-0 b-0'>
+								                                   <div class='panel panel-color panel-primary'>
+								                                  		<div class='panel-heading'>
+								                                       		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button>
+								                                      		<h3 class='panel-title'>Reason</h3>
+								                                       	</div>
+								                                       	<div class='panel-body'>
+								                                       		<p th:text="${'Reject Date:-' + #dates.format(hourLogFile.rejectedDate, 'MMM-dd-yyyy')}"></p>
+								                                          	<p th:text="${hourLogFile.rejectReason}"></p>
+								                                       	</div>
+								                                   </div>
+								                               </div>
+								                           </div>
+								                       </div>
+						                       		</th:block>
+					                       		</div>
+									     	</td>
+								      	</tr>
+								    </tbody>
+							  	</table>
+							</div>
+						</div>
+                </div> <!-- content -->
+            </div>
+
+
+			<div id="custom-width-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="custom-width-modalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" id="custom-width-modalLabel">View More Details</h4>
+                        </div>
+                        <div class="modal-body">
+                          <div id="detail-body"></div>  
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal --> 
+            
+            <div id="reject-reason-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+	            <div class="modal-dialog">
+					<div class="modal-content">
+					<div class="modal-header">
+	                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	                    <h4 class="modal-title">Reject Reason</h4>
+	                   </div>
+	                   <form th:action="@{/supervisor/user-hour-log-file/reject}" method="POST">
+	             			<div class="modal-body">
+			                   	<div class="row">
+			                       	<div class="col-md-12">
+			                           	<div class="form-group no-margin">
+			                               	<label for="field-7" class="control-label">Reason</label>
+			                               	<textarea class="form-control autogrow" id="field-7" name="reason" placeholder="Write reason...." style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 104px;" required></textarea>
+			                           		<input type="hidden" name="id" value="" id="reasonId">
+			                           	</div>
+			                       	</div>
+			                   	</div>
+	              			</div>
+	                       <div class="modal-footer">
+	                           <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
+	                           <button type="submit" class="btn btn-info waves-effect waves-light">Reject</button>
+	                       </div>
+	                   </form>
+	                </div>
+	            </div>
+	       	</div><!-- /.modal -->
+	       	
+	       	<div id="file-view-model" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="custom-width-modalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog w-100">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" onclick="closeViewPopUp()" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" id="custom-width-modalLabel"></h4>
+                        </div>
+                        <div class="modal-body">
+                        	<div class="row">
+                        	  <div class="hide" id="view-body"></div>
+                        	  <div id="view-table"></div>
+                        	</div>  
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal --> 
+        </div>
+        </div>
+        <script>
+            var resizefunc = [];
+        </script>
+        <script th:inline="javascript">
+			/*<![CDATA[*/
+				var context = [[@{/}]];
+				/*]]>*/
+		</script>
+
+        <!-- jQuery  -->
+        <script th:src="@{/assets/js/jquery.min.js}"></script>
+        <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+        <script th:src="@{/assets/js/detect.js}"></script>
+        <script th:src="@{/assets/js/fastclick.js}"></script>
+        <script th:src="@{/assets/js/jquery.blockUI.js}"></script>
+        <script th:src="@{/assets/js/waves.js}"></script>
+        <script th:src="@{/assets/js/jquery.slimscroll.js}"></script>
+        <script th:src="@{/assets/js/jquery.scrollTo.min.js}"></script>
+        <script th:src="@{/assets/plugins/switchery/switchery.min.js}"></script>
+
+        <!-- App js -->
+        <script th:src="@{/assets/js/jquery.app.js}"></script>
+		<script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.29.2/sweetalert2.all.js"></script>
+        <script th:src="@{/assets/plugins/sweetalert2/sweetalert2.min.js}"></script>
+        <script th:src="@{/assets/plugins/sweetalert2/sweet-alerts.init.js}"></script> 
+        <script th:src="@{/assets/js/jquery.blockUI.js}"></script>
+	    <script th:src="@{/assets/plugins/summernote/summernote.min.js}"></script>
+		<script th:src="@{/assets/js/fstdropdown.js}"></script>
+		<script th:src="@{/assets/js/javascript/supervisor-time-sheet.js}"></script>
+	</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Activity</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+		 <!-- DataTables -->
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+
+ 		<!-- Responsive datatable examples -->
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+		
+		<link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+		<style>
+			div.dataTables_wrapper div.dataTables_filter input {
+			     margin-left: 0em; 
+			     display: block; 
+			     width: auto; 
+			}
+		</style>
+    </head>
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="vertical-menu">
+				<div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+                </div>
+            </div>
+            <!-- Left Sidebar End -->
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+						<div class="row">
+							<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+								<div class="page-title-box d-flex align-items-center justify-content-between">
+									<h4 class="mb-0 font-size-18">Activity</h4>
+									<div class="page-title-right">
+	                                       <ol class="breadcrumb m-0">
+	                                           <li class="breadcrumb-item"><a th:href="@{/admin/home}">Dashboards</a></li>
+	                                           <li class="breadcrumb-item active">Activity</li>
+	                                       </ol>
+	                                   </div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+								<div class="card">
+									<div class="card-body">
+										<div class="row" style="margin-bottom: 20px;">
+											<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+												<label class="control-label" for="example-input1-group3">Role</label>
+						                        <select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value">
+							                       <option th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER_ACTIVITY,T(com.aim.enums.Permission).READ, false)}" value="?role=ROLE_USER" th:selected="${'ROLE_USER' == role}" > User</option>
+							                       <option th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).SUPERVISOR_ACTIVITY,T(com.aim.enums.Permission).READ, false)}" value="?role=ROLE_SUPERVISOR" th:selected="${'ROLE_SUPERVISOR' == role}" > Supervisor</option>
+							                       <option th:if="${session.user.role == 'ROLE_ADMIN'}" value="?role=ROLE_ADMIN" th:selected="${'ROLE_ADMIN' == role}" > Admin</option>
+						                     	</select>
+						                   	</div>
+											<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+												<label class="control-label" for="example-input1-group3">User</label>
+						                        <select class="form-control fstdropdown-select" onchange="window.location.href=this.value">
+							                       <option th:value="'?role=' + ${role}"> All</option>
+							                       <option th:each="user : ${users}" th:value="'?role=' + ${role} + '&id=' + ${user.id}" th:selected="${user.id == id}" th:text="${user.firstName + ' ' + user.lastName}"> </option>
+						                     	</select>
+						                   	</div>
+											<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+												<label class="control-label" for="example-input1-group3">Activities</label>
+						                        <select class="form-control fstdropdown-select" onchange="window.location.href=this.value">
+						                        <option th:value="'?role=' + ${role} + '&id=' + ${id}"> All</option>
+												<option th:if="${'ROLE_USER' == role}" th:value="'?role=' + ${role}+ '&id=' + ${id} + '&type=DELETE_TIMESHEET'" th:selected="${'DELETE_TIMESHEET' == type}" >Delete timesheet</option>
+												<option th:if="${'ROLE_SUPERVISOR' == role} or ${'ROLE_ADMIN' == role}" th:value="'?role=' + ${role} +'&id=' + ${id} + '&type=REJECT_TIMESHEET'" th:selected="${'REJECT_TIMESHEET' == type}">Reject timesheet</option>
+												<option th:if="${'ROLE_SUPERVISOR' == role} or ${'ROLE_ADMIN' == role}" th:value="'?role=' + ${role} +'&id=' + ${id}+ '&type=APPROVE_TIMESHEET'" th:selected="${'APPROVE_TIMESHEET' == type}">Approve timesheet</option>
+												<option th:value="'?role=' + ${role} +'&id=' + ${id} + '&type=DOWNLOAD_FILE'" th:selected="${'DOWNLOAD_FILE' == type}">Download file</option>
+												<option th:if="${'ROLE_USER' == role}" th:value="'?role=' + ${role} +'&id=' + ${id} + '&type=RESUBMIT_TIMESHEET'" th:selected="${'RESUBMIT_TIMESHEET' == type}">Resubmit timesheet</option>
+												<option th:if="${'ROLE_USER' == role}" th:value="'?role=' + ${role} +'&id=' + ${id} + '&type=SUBMIT_TIMESHEET'" th:selected="${'SUBMIT_TIMESHEET' == type}">Submit timesheet</option>
+												<option th:if="${'ROLE_ADMIN' == role}" th:value="'?role=' + ${role} +'&id=' + ${id} + '&type=ADD_USER'" th:selected="${'ADD_USER' == type}">Add user</option>
+												<option th:if="${'ROLE_ADMIN' == role}" th:value="'?role=' + ${role} +'&id=' + ${id} + '&type=EDIT_USER'" th:selected="${'EDIT_USER' == type}">Edit user</option>
+												<option th:if="${'ROLE_ADMIN' == role}" th:value="'?role=' + ${role} +'&id=' + ${id} + '&type=DELETE_USER'" th:selected="${'DELETE_USER' == type}">Delete user</option>
+												<option th:if="${'ROLE_ADMIN' == role}" th:value="'?role=' + ${role} +'&id=' + ${id} + '&type=ACTIVE_USER'" th:selected="${'ACTIVE_USER' == type}">Active user</option>
+												<option th:if="${'ROLE_ADMIN' == role}" th:value="'?role=' + ${role} +'&id=' + ${id} + '&type=DEACTIVE_USER'" th:selected="${'DEACTIVE_USER' == type}">Deactive user</option>
+												<option th:if="${'ROLE_ADMIN' == role}" th:value="'?role=' + ${role} +'&id=' + ${id} + '&type=SET_USER_DETAILS'" th:selected="${'SET_USER_DETAILS' == type}">Set user details</option>
+						                     	</select>
+						                   	</div>
+										</div>
+										
+										<table id="datatable"
+											class="table table-bordered table-responsive nowrap"
+											style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+											<thead>
+												<tr>
+													<th>No</th>
+						                            <th>Note</th>
+						                            <th>Create by</th>
+						                            <th>Date</th>
+						                            <th>Ip Address</th>
+												</tr>
+											</thead>
+	
+											<tbody>
+												<tr class="odd gradeX" th:each="activity,index : ${activities}">
+					                               	<td th:text="${index.index + 1}"></td>
+					                                <td th:text="${activity.note}"></td>
+					                                <td th:text="${activity.activityByUser.firstName + ' ' + activity.activityByUser.lastName}"></td>
+					                                <td th:text="${#dates.format(activity.createdDatetime, 'MMM-dd-yyyy HH:mm')}"></td>
+					                           		<td th:text="${activity.ipAddress}"></td>
+					                           	</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+            </div>
+            <!-- end main content-->
+        </div>
+        
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			/*]]>*/
+		</script>
+        <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+			
+        <!-- Required datatable js -->
+        <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+        
+        <!-- Responsive examples -->
+        <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+       
+        <!-- Datatable init js -->
+        <script th:src="@{/assets_new/js/pages/datatables.init.js}"></script>    
+
+        <script th:src="@{/assets_new/js/app.js}"></script>
+		
+		<script th:src="@{/assets/js/fstdropdown.js}"></script>
+		
+		<th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
+        <meta name="author" content="Coderthemes">
+
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Hours Log</title>
+        <!-- App css -->
+<!--         <link th:href="@{/assets/plugins/sweetalert2/sweet-alert.css}" rel="stylesheet" type="text/css"> -->
+        <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/core.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/components.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/icons.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/pages.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/menu.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/plugins/sweetalert2/sweetalert2.min.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/responsive.css}" rel="stylesheet" type="text/css" />
+        
+        <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        
+		<link rel="stylesheet" th:href="@{/assets/plugins/switchery/switchery.min.css}">
+		<link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+		
+
+        <script th:src="@{/assets/js/modernizr.min.js}"></script>
+        <script th:src="@{/assets/css/style.css}"></script>
+
+    </head>
+
+
+    <body class="fixed-left">
+
+        <!-- Begin page -->
+        <div id="wrapper">
+
+         <th:block th:replace="user/header :: header"></th:block>
+        
+       	 <th:block th:replace="admin/menu :: menu"></th:block>
+         
+		 <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="content-page">
+                <!-- Start content -->
+                <div class="content">
+                    <div class="container">
+
+                       <div class="row">
+							<div class="col-xs-12">
+								<div class="page-title-box">
+                                    <h4 class="page-title">Hour Log </h4>
+                                    <ol class="breadcrumb p-0 m-0">
+                                        <li>
+                                            <a th:href="@{/admin/user-list}">Users</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" th:text="${userDetail.user.firstName + ' ' + userDetail.user.lastName}"> </a>
+                                        </li>
+                                        <li>
+                                        	<a th:href="@{'/admin/user-detail/' + ${userDetail.user.id} }">Client Details</a>
+                                        </li>
+                                        <li class="active">
+                                            Hour Log
+                                        </li>
+                                    </ol>
+                                    <div class="clearfix"></div>
+                                </div>
+							</div>
+						</div>
+                       
+                       
+                       	<div class="row">
+                           	<div class="col-xs-12">
+                                <div class="card-box">
+                                	<div id="user-details-modal" th:fragment="user-detail" >
+	                                	<div class="text-center">
+	                                        <div class="member-card row">
+	                                            <div class="text-left col-sm-6">
+	                                                <p class="text-muted font-13"><strong>Client Name :</strong> <span class="m-l-15" th:text="${userDetail.clientName}"></span></p>
+	
+	                                                <p class="text-muted font-13"><strong>Vendor Name :</strong><span class="m-l-15" th:text="${userDetail.vendorName}"></span></p>
+	
+	                                                <p class="text-muted font-13"><strong>Employer Name :</strong> <span class="m-l-15" th:text="${userDetail.employerName}"></span></p>
+	
+	                                                <p class="text-muted font-13"><strong>Employer Phone :</strong> <span class="m-l-15" th:text="${userDetail.employerPhone}"></span></p>
+	                                                
+	                                                <p class="text-muted font-13"><strong>Employer Email :</strong> <span class="m-l-15" th:text="${userDetail.employerEmail}"></span></p>
+	                                                
+	                                                <p class="text-muted font-13"><strong>Address :</strong><span class="m-l-15" th:text="${userDetail.address}"></span></p>
+	                                                
+	                                                <p th:if="${session.user.role == 'ROLE_ADMIN'}" class="text-muted font-13"><strong>Client Rate :</strong> <span class="m-l-15" th:text="${userDetail.clientRate}"></span></p>
+	
+	                                                <p th:if="${session.user.role == 'ROLE_ADMIN'}" class="text-muted font-13"><strong>Consultant Rate :</strong> <span class="m-l-15" th:text="${userDetail.consultantRate}"></span></p>
+	                                                
+	                                                <p class="text-muted font-13"><strong>Account Manager Name :</strong> <span class="m-l-15" th:text="${userDetail.accountManagerName}"></span></p>
+	
+	                                                <p th:if="${session.user.role == 'ROLE_ADMIN'}" class="text-muted font-13"><strong>Account Manager Commission :</strong><span class="m-l-15" th:text="${userDetail.aCMCommission}"></span></p>
+	                                                
+	                                            </div>
+	                                            <div class="text-left col-sm-6">
+	                                            	<p class="text-muted font-13"><strong>BD Manager Name :</strong> <span class="m-l-15" th:text="${userDetail.businessDevelopmentManagerName}"></span></p>
+	
+	                                                <p th:if="${session.user.role == 'ROLE_ADMIN'}" class="text-muted font-13"><strong>BD Commission :</strong> <span class="m-l-15" th:text="${userDetail.bDMCommission}"></span></p>
+	                                                
+	                                                <p class="text-muted font-13"><strong>Recruiter Name :</strong> <span class="m-l-15" th:text="${userDetail.recruiterName}"></span></p>
+	                                                
+	                                                <p th:if="${session.user.role == 'ROLE_ADMIN'}" class="text-muted font-13"><strong>Recruiter Commission :</strong> <span class="m-l-15" th:text="${userDetail.recCommission}"></span></p>
+	                                                
+	                                                <p th:if="${session.user.role == 'ROLE_ADMIN'}" class="text-muted font-13"><strong>W2 :</strong> <span class="m-l-15" th:text="${userDetail.w2}"></span></p>
+	                                                
+	                                                <p th:if="${session.user.role == 'ROLE_ADMIN'}" class="text-muted font-13"><strong>Ptax :</strong> <span class="m-l-15" th:text="${userDetail.ptax}"></span></p>
+	                                                
+	                                                <p th:if="${session.user.role == 'ROLE_ADMIN'}" class="text-muted font-13"><strong>C2C/other :</strong> <span class="m-l-15" th:text="${userDetail.c2cOrother}" ></span></p>
+	                                                
+	                                                <p class="text-muted font-13"><strong>Start Date :</strong> <span class="m-l-15" th:text="${#dates.format(userDetail.startDate, 'MMM-dd-yyyy')}"></span></p>
+	                                                
+	                                                <p class="text-muted font-13"><strong>End Date :</strong> <span class="m-l-15" th:text="${#dates.format(userDetail.endDate, 'MMM-dd-yyyy')}"></span></p>
+	                                                
+	                                            </div>
+	                                            
+	                                        </div>
+	                                    </div>
+                                    </div>
+                                    <div class="row mb-20">
+                                		<div class="col-sm-3">
+	                                    	<label class="control-label" for="example-input1-group3">Year</label>
+	                                        <select class="form-control" onchange="if (this.value) window.location.href=this.value">
+	                                        	<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2015)}"
+	                                        	 th:text="${year}" th:value="'?year=' + ${year}"
+	                                        	 th:selected="${year == selectYear}">
+	                                        		
+	                                        	</option>
+	                                        </select>
+                                        </div>
+                                     </div>
+                                     
+                        			<div class="row" >
+                                    	
+                                    	<div class="table-responsive">
+									
+		                                    <table id="datatable" class="table table-striped  table-colored table-info">
+		                                        <thead>
+			                                        <tr>
+			                                            <th>No</th>
+			                                            <th>Month</th>
+			                                            <th>Daily Hours</th>
+			                                            <th>Extra Hours</th>
+			                                            <th>Total Hours</th>
+			                                            <th>Consultant Rate <br/>( <th:block th:text="${userDetail.consultantRate}"> </th:block> )</th>
+			                                            <th>W2 + ptax <br/> ( <th:block th:text="${userDetail.w2 +'+'+userDetail.ptax}"> </th:block> )</th>
+			                                            <th>C2C/Other <br/>( <th:block th:text="${userDetail.c2cOrother}"> </th:block> )</th>
+			                                            <th>G.Margin</th>
+			                                            <th>Recruiter Commission <br/>( <th:block th:text="${userDetail.recCommission}"> </th:block> )</th>
+			                                            <th>BDM Commission <br/>( <th:block th:text="${userDetail.bDMCommission}"> </th:block> )</th>
+			                                            <th>ACM Commission <br/>( <th:block th:text="${userDetail.aCMCommission}"> </th:block> )</th>
+			                                            <th>N.Margin</th>
+			                                        </tr>
+		                                        </thead>
+		                                        <tbody>
+			                                        <tr class="odd gradeX" th:each="hourLog,index : ${hourLogs}" th:if="${index.index}<12">
+			                                            <td th:text="${index.index + 1}"></td>
+			                                            <td th:text="${hourLog.key}"></td>
+			                                            <td th:text="${hourLog.value.get('Daily')} ? ${#numbers.formatDecimal(hourLog.value.get('Daily'),1,2)} : '0.0'"></td>
+			                                            <td th:text="${hourLog.value.get('Extra')} ? ${#numbers.formatDecimal(hourLog.value.get('Extra'),1,2)} : '0.0'"></td>
+			                                            <td th:text="${hourLog.value.get('Total')} ? ${#numbers.formatDecimal(hourLog.value.get('Total'),1,2)} : '0.0'"></td>
+			                                            <td th:text="${hourLog.value.get('ConsultantRate')} ? ${#numbers.formatDecimal(hourLog.value.get('ConsultantRate'),1,2)} : '0.0'"></td>
+			                                            <td th:text="${hourLog.value.get('W2Ptax')} ? ${#numbers.formatDecimal(hourLog.value.get('W2Ptax'),1,2)} : '0.0'"></td>
+			                                            <td th:text="${hourLog.value.get('C2C')} ? ${#numbers.formatDecimal(hourLog.value.get('C2C'),1,2)} : '0.0'"></td>
+			                                            <td th:text="${hourLog.value.get('G.Margin')} ? ${#numbers.formatDecimal(hourLog.value.get('G.Margin'),1,2)} : '0.0'"></td>
+			                                            <td th:text="${hourLog.value.get('RecComm')} ? ${#numbers.formatDecimal(hourLog.value.get('RecComm'),1,2)} : '0.0'"></td>
+			                                            <td th:text="${hourLog.value.get('BDMComm')} ? ${#numbers.formatDecimal(hourLog.value.get('BDMComm'),1,2)} : '0.0'"></td>
+			                                            <td th:text="${hourLog.value.get('ACMComm')} ? ${#numbers.formatDecimal(hourLog.value.get('ACMComm'),1,2)} : '0.0'"></td>
+			                                            <td th:text="${hourLog.value.get('N.Margin')} ? ${#numbers.formatDecimal(hourLog.value.get('N.Margin'),1,2)} : '0.0'"></td>
+			                                        </tr>
+                                        		</tbody>
+		                                        <tbody>
+			                                        <tr class="odd gradeX">
+			                                        	<th></th>
+			                                        	<th>Total</th>
+			                                            <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('Daily'),1,2)}"></th>
+			                                            <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('Extra'),1,2)}"></th>
+			                                            <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('Total'),1,2)}"></th>
+			                                            <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('ConsultantRate'),1,2)}"></th>
+			                                            <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('W2Ptax'),1,2)}"></th>
+			                                            <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('C2C'),1,2)}"></th>
+			                                            <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('G.Margin'),1,2)}"></th>
+			                                            <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('RecComm'),1,2)}"></th>
+			                                            <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('BDMComm'),1,2)}"></th>
+			                                            <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('ACMComm'),1,2)}"></th>
+			                                            <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('N.Margin'),1,2)}"></th>
+			                                        </tr>
+                                        		</tbody>
+	                                        </table>
+	                                     </div>
+                                   	</div>
+                       			</div>
+                      		</div><!-- end ard-box -->
+                          </div><!-- end col -->
+                        </div>
+                        
+                        
+
+                    </div> <!-- container -->
+                    
+                    
+
+                </div> <!-- content -->
+
+            </div>
+		
+
+        </div>
+        <!-- END wrapper -->
+		<footer class="footer text-right"> 2016 - 2018 © Zircos. </footer>
+        <script>
+            var resizefunc = [];
+        </script>
+        
+        <script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			/*]]>*/
+		</script>
+
+        <!-- jQuery  -->
+        <script th:src="@{/assets/js/jquery.min.js}"></script>
+        <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+        <script th:src="@{/assets/js/detect.js}"></script>
+        <script th:src="@{/assets/js/fastclick.js}"></script>
+        <script th:src="@{/assets/js/jquery.blockUI.js}"></script>
+        <script th:src="@{/assets/js/waves.js}"></script>
+        <script th:src="@{/assets/js/jquery.slimscroll.js}"></script>
+        <script th:src="@{/assets/js/jquery.scrollTo.min.js}"></script>
+        <script th:src="@{/assets/plugins/switchery/switchery.min.js}"></script>
+
+        <script type="text/javascript" th:src="@{/assets/plugins/parsleyjs/parsley.min.js}"></script>
+
+		<script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+
+        <script th:src="@{/assets/js/jquery.core.js}"></script>
+        <script th:src="@{/assets/js/jquery.app.js}"></script>
+       	<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.29.2/sweetalert2.all.js"></script>
+       	<script th:src="@{/assets/plugins/sweetalert2/sweetalert2.min.js}"></script>
+        <script th:src="@{/assets/plugins/sweetalert2/sweet-alerts.init.js}"></script> 
+     	<script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+     	<script th:src="@{/assets/js/javascript/admin-hour-log.js}"></script>
+
+		<style>
+			.validation-message{color: red;}
+		</style>
+    </body>
+</html>

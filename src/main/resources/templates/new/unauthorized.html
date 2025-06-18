@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+		<meta charset="utf-8" />
+        <title>Unauthorized</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+   		
+    </head>
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+            <div class="vertical-menu">
+
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+					
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+					
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_USER'}">
+					<th:block th:replace="new/user/menu :: menu"></th:block>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+           	<div class="main-content">
+              	<div class="page-content filter-padding-top">
+                   	<div class="container-fluid">
+                       	<div class="d-flex justify-content-center align-items-center">
+                       		<div class="col-12 col-sm-12 col-md-7 col-lg-5 col-xl-4">
+	                       		<img th:src="@{'/assets_new/images/unauthorized_cuate.svg'}" alt="" class="">
+                       		</div>
+	               		</div>
+	               		<div class="text-center col-sm-12">
+                     		<h3>You have not permission to access this</h3>
+                     	</div>
+                    </div> <!-- container -->
+                </div> <!-- content -->
+            </div>
+        </div>
+        <!-- END wrapper -->
+		<footer class="footer text-right">  </footer>
+        <script>
+            var resizefunc = [];
+        </script>
+        
+        <!-- jQuery  -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+
+        <!-- Saas dashboard init -->
+        <script th:src="@{/assets_new/js/app.js}"></script>	
+        
+		<script th:src="@{/assets/js/javascript/common.js}"></script>
+    </body>
+</html>

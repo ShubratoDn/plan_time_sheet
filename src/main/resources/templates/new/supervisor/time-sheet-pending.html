@@ -1,0 +1,438 @@
+]]<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<title>Time sheet</title>
+
+<link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+
+<link th:href="@{/assets_new/css/bootstrap.min.css}"
+	id="bootstrap-style" rel="stylesheet" type="text/css" />
+
+<link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet"
+	type="text/css" />
+
+<link
+	th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}"
+	rel="stylesheet" type="text/css" />
+
+<link
+	th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}"
+	rel="stylesheet" type="text/css" />
+
+<link th:href="@{/assets_new/css/app.min.css}" id="app-style"
+	rel="stylesheet" type="text/css" />
+<link rel="stylesheet"
+	th:href="@{/assets_new/libs/summernote/summernote-bs4.min.css}">
+<link th:href="@{/assets/plugins/sweetalert2/sweetalert2.min.css}"
+	rel="stylesheet" type="text/css" />
+<link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet"
+	type="text/css" />
+<link th:href="@{/assets/css/style.css}" rel="stylesheet"
+	type="text/css" />
+<style type="text/css">
+.hourNum {
+	width: 50% !important;
+	border-radius: 4px;
+	padding-left: 5px;
+	border: 1px solid grey;
+}
+
+.no-file {
+	background-color: #f8f9fa;
+	background-image:
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px'%0Awidth='64' height='64'%0AviewBox='0 0 172 172'%0Astyle=' fill:%23000000;'%3E%3Cg fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'%3E%3Cpath d='M0,172v-172h172v172z' fill='none'%3E%3C/path%3E%3Cg%3E%3Cpath d='M126.98438,150.5h-81.96875c-7.39062,0 -13.4375,-6.04687 -13.4375,-13.4375v-107.5c0,-7.39062 6.04688,-13.4375 13.4375,-13.4375h81.96875c7.39063,0 13.4375,6.04688 13.4375,13.4375v107.5c0,7.39063 -6.04687,13.4375 -13.4375,13.4375z' fill='%23ffffff'%3E%3C/path%3E%3Cpath d='M45.01563,29.5625h81.96875v20.15625h-81.96875zM118.92188,76.59375h-68.53125c-2.28438,0 -4.03125,-1.74688 -4.03125,-4.03125c0,-2.28437 1.74687,-4.03125 4.03125,-4.03125h68.53125c2.28437,0 4.03125,1.74688 4.03125,4.03125c0,2.28437 -1.74688,4.03125 -4.03125,4.03125zM118.92188,96.75h-68.53125c-2.28438,0 -4.03125,-1.74688 -4.03125,-4.03125c0,-2.28437 1.74687,-4.03125 4.03125,-4.03125h68.53125c2.28437,0 4.03125,1.74688 4.03125,4.03125c0,2.28437 -1.74688,4.03125 -4.03125,4.03125zM86,116.90625h-35.60937c-2.28438,0 -4.03125,-1.74688 -4.03125,-4.03125c0,-2.28437 1.74687,-4.03125 4.03125,-4.03125h35.60938c2.28437,0 4.03125,1.74688 4.03125,4.03125c0,2.28437 -1.74688,4.03125 -4.03125,4.03125z' fill='%23d2e8fc'%3E%3C/path%3E%3Cpath d='M126.98438,154.53125h-81.96875c-9.675,0 -17.46875,-7.79375 -17.46875,-17.46875v-107.5c0,-9.675 7.79375,-17.46875 17.46875,-17.46875h81.96875c9.675,0 17.46875,7.79375 17.46875,17.46875v107.5c0,9.675 -7.79375,17.46875 -17.46875,17.46875zM45.01563,20.15625c-5.24063,0 -9.40625,4.16563 -9.40625,9.40625v107.5c0,5.24062 4.16562,9.40625 9.40625,9.40625h81.96875c5.24062,0 9.40625,-4.16563 9.40625,-9.40625v-107.5c0,-5.24062 -4.16563,-9.40625 -9.40625,-9.40625z' fill='%23abb1f1'%3E%3C/path%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 400px;
+}
+
+.btn-sm:disabled {
+	background: red !important;
+	cursor: help !important;
+}
+
+.td-next-p-0 td {
+	padding-top: 2px !important;
+	padding-bottom: 2px !important;
+}
+
+.progress{
+ 	height:20px;
+}
+</style>
+<link th:href="@{/assets_new/css/page/adminHome.css}" rel="stylesheet"
+	type="text/css" />
+<link rel="stylesheet"
+	th:href="@{/assets_new/css/fixedHeader.dataTables.min.css}">
+</head>
+<body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+
+	<!-- Begin page -->
+	<div id="layout-wrapper">
+
+		<th:block th:replace="new/user/header :: header"></th:block>
+
+		<!-- ========== Left Sidebar Start ========== -->
+		<div class="vertical-menu">
+
+			<div data-simplebar class="h-100"
+				th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+
+				<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+
+			</div>
+			<div data-simplebar class="h-100"
+				th:if="${session.user.role == 'ROLE_ADMIN'}">
+
+				<th:block th:replace="new/admin/menu :: menu"></th:block>
+
+			</div>
+		</div>
+		<!-- Left Sidebar End -->
+
+		<!-- ============================================================== -->
+		<!-- Start right Content here -->
+		<!-- ============================================================== -->
+		<div class="main-content">
+			<div class="page-content">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-12">
+							<div
+								class="page-title-box d-flex align-items-center justify-content-between">
+								<h4 class="mb-0 font-size-18">Time Sheet</h4>
+								<div class="page-title-right">
+									<ol class="breadcrumb m-0">
+										<li class="breadcrumb-item"><a th:href="@{/admin/home}">Dashboards</a></li>
+										<li class="breadcrumb-item active">Time Sheet</li>
+									</ol>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="alert alert-danger alert-dismissible" role="alert"
+						th:if="${error}">
+						<button type="button" class="close" data-dismiss="alert"
+							aria-label="Close">
+							<span aria-hidden="true">×</span>
+						</button>
+						<strong>Oh snap!</strong>
+						<th:block th:text="${error}"></th:block>
+					</div>
+					<div class="alert alert-success alert-dismissible" role="alert"
+						th:if="${success}">
+						<button type="button" class="close" data-dismiss="alert"
+							aria-label="Close">
+							<span aria-hidden="true">×</span>
+						</button>
+						<strong>Success</strong>
+						<th:block th:text="${success}"></th:block>
+					</div>
+
+
+					<div class="card">
+						<div class="card-body">
+
+									<!-- Nav tabs -->
+									<ul class="nav nav-tabs" role="tablist">
+									
+										<li class="nav-item">
+											<a class="nav-link active" th:href="@{'/supervisor/time-sheet/pending?yearFile='+ ${#dates.year(#dates.createNow())} + '&userId=' + ${selectUserId}}">
+											<span class="d-none d-sm-block">Pending</span>
+										</a></li>
+										<li class="nav-item">
+											<a class="nav-link" th:href="@{'/supervisor/time-sheet?yearFile='+ ${#dates.year(#dates.createNow())} + '&userId=' + ${selectUserId} + '&sort=toBeapprove'}">
+											<span class="d-none d-sm-block"> To be approved</span>
+										</a></li>
+										<li class="nav-item">
+											<a class="nav-link" th:href="@{'/supervisor/time-sheet?yearFile='+ ${#dates.year(#dates.createNow())} + '&userId=' + ${selectUserId} + '&sort=rejected'}">
+											<span class="d-none d-sm-block">Rejected</span>
+										</a></li>
+										<li class="nav-item">
+											<a class="nav-link" th:href="@{'/supervisor/time-sheet?yearFile='+ ${#dates.year(#dates.createNow())} + '&userId=' + ${selectUserId} + '&sort=approved'}">
+											<span class="d-none d-sm-block">Approved</span>
+										</a></li><li class="nav-item">
+											<a class="nav-link" th:href="@{'/supervisor/time-sheet?yearFile='+ ${#dates.year(#dates.createNow())} + '&userId=' + ${selectUserId} + '&sort=all'}">
+											<span class="d-none d-sm-block">All submitted</span>
+										</a></li>
+										
+									</ul>
+									
+									<br>
+								<div class="row mb-20">
+									<div class="col-sm-6">
+										<label class="control-label" for="example-input1-group3">Year</label>
+										<select class="form-control fstdropdown-select"
+											onchange="if (this.value) window.location.href=this.value">
+											<option
+												th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2015)}"
+												th:text="${year}" th:value="'?yearFile=' + ${year}"
+												th:selected="${year == selectYear}"></option>
+										</select>
+									</div>
+							
+									<div class="col-sm-6">
+										<label class="control-label" for="example-input1-group3">User</label>
+										<select class="form-control fstdropdown-select"
+											onchange="if (this.value) window.location.href=this.value">
+											<option th:value="'?yearFile=' + ${selectYear}"
+												th:selected="${selectUserId == ''}">All</option>
+											<option th:each="user : ${users}"
+												th:text="${user.firstName + ' ' + user.lastName }"
+												th:value="'?yearFile=' + ${selectYear} + '&userId=' + ${user.id} "
+												th:selected="${user.id == selectUserId}"></option>
+										</select>
+									</div>
+								</div>
+									<br>
+									<div class="col-sm-12 mb-4">
+										<div class="">
+                                            <div class="progress">
+                                                <div class="progress-bar bg-info" role="progressbar" th:style="${'width:'+ (newFileByFilter*100)/totalFile + '%'}" th:attr="aria-valuenow=${(newFileByFilter*100)/totalFile}" aria-valuemin="0" aria-valuemax="100"><span>To be approved: <b><span th:text="${newFileByFilter}"></span></b></span> </div>
+                                                <div class="progress-bar bg-danger" role="progressbar" th:style="${'width:'+ (rejectFileByFilter*100)/totalFile+ '%'}" th:attr="aria-valuenow=${(rejectFileByFilter*100)/totalFile}" aria-valuemin="0" aria-valuemax="100"><span>Rejected: <b><span th:text="${rejectFileByFilter}"></span></b></span></div>
+                                                <div class="progress-bar bg-success" role="progressbar" th:style="${'width:'+ (approvedFileByFilter*100)/totalFile+ '%'}" th:attr="aria-valuenow=${(approvedFileByFilter*100)/totalFile}" aria-valuemin="0" aria-valuemax="100"><span>Approved:<b> <span th:text="${approvedFileByFilter}"></span></b></span></div>
+                                                <div class="progress-bar bg-warning" role="progressbar" th:style="${'width:'+ (pendingFileByFilter*100)/totalFile+ '%'}" th:attr="aria-valuenow=${(pendingFileByFilter*100)/totalFile}" aria-valuemin="0" aria-valuemax="100"><span>Pending:<b> <span th:text="${pendingFileByFilter}"></span></b></span> </div>
+                                            </div>
+                                        </div>
+									</div>
+
+										<div class="">
+											<div class="">
+												<table id="datatablePending" class="table">
+													<thead>
+														<tr>
+															<th>No</th>
+															<th>User / Customer</th>
+															<th>Period</th>
+															<th>Status</th>
+															<th>Action</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr th:each="hourLogFile,i : ${pendingHourLogFiles}">
+															<td th:text="${i.index+1}"></td>
+															<td
+																th:text="${hourLogFile.userDetail.user.firstName + ' ' + hourLogFile.userDetail.user.lastName + ' / ' + hourLogFile.userDetail.clientName}"></td>
+															<td
+																th:text="${#dates.format(hourLogFile.startDate , 'MMM dd yyyy') + ' TO ' + #dates.format(hourLogFile.endDate , 'MMM dd yyyy')}"></td>
+															<td><span class="badge badge-danger">Pending
+															</span></td>
+															<td><a data-toggle="modal"
+																data-target="#custom-width-modal"
+																th:onclick="'bacisDetails(\'' + ${hourLogFile.userDetail.user.firstName + ' ' + hourLogFile.userDetail.user.lastName + ' / ' + hourLogFile.userDetail.clientName} + '\',' + ${hourLogFile.userDetail.userDetailId} + ')'">
+																	<i class="fas fa-info-circle"
+																	style="color: orange; font-size: 20px;"></i>
+															</a> <a
+																th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TIMESHEET,T(com.aim.enums.Permission).CREATE, false)}"
+																th:href="@{|/supervisor/add-user-time-sheet?user=${hourLogFile.userDetail.user.id}&startDate=${#dates.format(hourLogFile.startDate , 'MM/dd/yyyy')}|}">
+																	<i class="fas fa-calendar-plus"
+																	style="font-size: 17px;" data-toggle="tooltip"
+																	data-placement="left" title="Add timesheet"></i>
+															</a> <a
+																th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).PENDING_TIMESHEET_MAIL,T(com.aim.enums.Permission).CREATE, false)}"
+																href="javascript:void(0);"
+																th:onclick="'sendMailSelectedType(\'' + pendingTimesheet+'\' ,\''+ ${hourLogFile.userDetail.userDetailId} + '\',\''+${#dates.format(hourLogFile.startDate , 'MMM dd yyyy')}+'\',\''+${#dates.format(hourLogFile.endDate , 'MMM dd yyyy')}+'\' )'">
+																	<i class="fas fa-envelope-square"
+																	style="font-size: 17px;" data-toggle="tooltip"
+																	data-placement="left" title="Send reminder mail"></i>
+															</a></td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+						</div>
+					</div>
+			
+					 <div id="custom-width-modal" class="modal fade bs-example-modal-lg"
+							tabindex="-1" role="dialog"
+							aria-labelledby="custom-width-modalLabel" aria-hidden="true"
+							style="display: none;">
+					<div class="modal-dialog modal-xl">
+						<div class="modal-content">
+							<div class="modal-body pb-0 mb-0">
+							<div>	<button type="button" class="close  details-close-button" data-dismiss="modal"
+											aria-hidden="true">×</button>
+								</div><div id="user-details-modal"></div>
+							</div>
+							
+						</div>
+					</div>
+				</div> 
+					<div id="reject-reason-modal"
+						class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog"
+						aria-labelledby="myModalLabel" aria-hidden="true"
+						style="display: none;">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h4 class="modal-title">Reject Reason</h4>
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true">×</button>
+								</div>
+								<form th:action="@{/supervisor/user-hour-log-file/reject}"
+									method="POST">
+									<div class="modal-body">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group no-margin">
+													<label for="field-7" class="control-label">Reason</label>
+													<textarea class="form-control autogrow" id="field-7"
+														name="reason" placeholder="Write reason...."
+														style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 104px;"
+														required></textarea>
+													<input type="hidden" name="id" value="" id="reasonId">
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-default waves-effect"
+											data-dismiss="modal">Close</button>
+										<button type="submit"
+											class="btn btn-info waves-effect waves-light">Reject</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<!-- /.modal -->
+
+					<div id="file-view-model"
+						class="modal p-0 fade bs-example-modal-lg" tabindex="-1"
+						role="dialog" aria-labelledby="custom-width-modalLabel"
+						aria-hidden="true" style="display: none;">
+						<div class="modal-dialog border-0 m-0"
+							style="max-width: 100%; width: 100%; border-radius: 0px;">
+							<div class="modal-content" style="border-radius: 0px;">
+								<div class="modal-body">
+									<button type="button" class="close" onclick="closeViewPopUp()"
+										data-dismiss="modal" aria-hidden="true"
+										style="width: 50px; height: 50px; background-color: grey; position: absolute; border-radius: 50%; right: 30px; z-index: 100; color: white;">×</button>
+									<div class="row">
+										<div class="hide" id="view-body"></div>
+										<div id="view-table"></div>
+									</div>
+
+									<div id="more-file-submit"
+										style="position: absolute; display: none; z-index: 20000000000; top: 0; left: 0; background: rgba(255, 255, 255, 0.5); width: 100%; height: 100%; justify-content: center; align-items: center; transition: all .5s; opacity: 1; cursor: pointer;">
+										<div>
+											<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+												width="48" height="48" viewBox="0 0 172 172"
+												style="fill: #000000;">
+												<defs>
+												<linearGradient x1="157.28683" y1="157.28683" x2="42.48758"
+													y2="42.48758" gradientUnits="userSpaceOnUse"
+													id="color-1_Z4lBdSu2GAl2_gr1">
+												<stop offset="0" stop-color="#ffffff"></stop>
+												<stop offset="0.242" stop-color="#f2f2f2"></stop>
+												<stop offset="1" stop-color="#cccccc"></stop></linearGradient>
+												<linearGradient x1="13.66683" y1="13.66683" x2="117.01017"
+													y2="117.01017" gradientUnits="userSpaceOnUse"
+													id="color-2_Z4lBdSu2GAl2_gr2">
+												<stop offset="0" stop-color="#5aa9ef"></stop>
+												<stop offset="1" stop-color="#218ded"></stop></linearGradient></defs>
+												<g fill="none" fill-rule="nonzero" stroke="none"
+													stroke-width="1" stroke-linecap="butt"
+													stroke-linejoin="miter" stroke-miterlimit="10"
+													stroke-dasharray="" stroke-dashoffset="0"
+													font-family="none" font-weight="none" font-size="none"
+													text-anchor="none" style="mix-blend-mode: normal"
+													transform="rotate(307.237 86 86)">
+					    			<animateTransform xmlns="http://www.w3.org/2000/svg"
+													attributeType="xml" attributeName="transform" type="rotate"
+													from="0 86 86" to="360 86 86" dur="0.6s"
+													repeatCount="indefinite"></animateTransform>
+					    			<path d="M0,172v-172h172v172z" fill="none"></path>
+												<g>
+												<path
+													d="M86,14.33333c-39.5815,0 -71.66667,32.08517 -71.66667,71.66667c0,39.5815 32.08517,71.66667 71.66667,71.66667c39.5815,0 71.66667,-32.08517 71.66667,-71.66667c0,-39.5815 -32.08517,-71.66667 -71.66667,-71.66667zM86,139.75c-29.68433,0 -53.75,-24.06567 -53.75,-53.75c0,-29.68433 24.06567,-53.75 53.75,-53.75c29.68433,0 53.75,24.06567 53.75,53.75c0,29.68433 -24.06567,53.75 -53.75,53.75z"
+													fill="url(#color-1_Z4lBdSu2GAl2_gr1)"></path>
+												<path
+													d="M86,18.02058v10.75717c0,1.935 1.53725,3.45792 3.46867,3.57975c28.896,1.84183 51.58567,26.51667 50.224,56.17592c-1.25775,27.3695 -23.779,49.89433 -51.15208,51.15567c-29.66283,1.36525 -54.33767,-21.32442 -56.1795,-50.224c-0.12542,-1.92783 -1.64833,-3.46508 -3.58333,-3.46508h-10.75717c-2.021,0 -3.698,1.67342 -3.59408,3.69083c1.98517,39.13 35.35317,69.97892 75.43275,67.8755c36.17375,-1.89558 65.80792,-31.53333 67.7035,-67.70708c2.10342,-40.08317 -28.7455,-73.44758 -67.87192,-75.43275c-2.01742,-0.10033 -3.69083,1.57667 -3.69083,3.59408z"
+													fill="url(#color-2_Z4lBdSu2GAl2_gr2)"></path></g></g>
+					    		</svg>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="more-file-add-model" class="modal fade" tabindex="-1"
+						role="dialog" aria-labelledby="custom-width-modalLabel"
+						aria-hidden="true" style="display: none; z-index: 15000">
+						<div class="modal-dialog modal-sm">
+							<div class="modal-content" style="border: 1px solid #556ee6;">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true">×</button>
+								</div>
+								<div class="modal-body">
+									<p>
+										<b>User name : </b><span id="add-more-file-user"></span>
+									</p>
+									<p>
+										<b>Client name : </b><span id="add-more-file-client"></span>
+									</p>
+									<form id="time-sheet-more-file"
+										th:action="@{/supervisor/time-sheet-more-file}" method="post"
+										enctype="multipart/form-data">
+										<input type="hidden" name="hourLogFileId">
+										<div class="form-group">
+											<label for="imagePath">Add more file<span
+												class="text-danger">*</span></label> <input id="file-more-added"
+												class="form-control" type="file" name="file" value=""
+												multiple>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="pending-mail-send-div"></div>
+				</div>
+			</div>
+			<script>
+            var resizefunc = [];
+        </script>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+				var context = [[@{/}]];
+				var companyUrl = [[${session.company.urlSlug}]];
+				/*]]>*/
+		</script>
+
+			<!-- jQuery  -->
+			<script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+			<script
+				th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+			<script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+			<script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+
+			<!-- Required datatable js -->
+			<script
+				th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+			<script
+				th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+
+			<!-- Responsive examples -->
+			<script
+				th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+			<!--         <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script> -->
+			<script th:src="@{/assets_new/js/dataTables.fixedHeader.min.js}"></script>
+			<script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+			<script th:src="@{/assets_new/libs/sweetalert2/sweetalert2.min.js}"></script>
+			<script th:src="@{/assets_new/js/app.js}"></script>
+			<script th:src="@{/assets_new/libs/summernote/summernote-bs4.min.js}"></script>
+			<script th:src="@{/assets/js/fstdropdown.js}"></script>
+			<script th:src="@{/assets_new/js/supervisor-time-sheet.js}"></script>
+			<script th:src="@{/assets_new/js/typeMailChange.js}"></script>
+			<th:block
+				th:replace="new/genaralMailSend/genaral-mail-send :: mailSend"
+				th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+</body>
+</html>

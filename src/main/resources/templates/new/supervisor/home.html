@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+
+        <meta charset="utf-8" />
+        <title>Supervisor Dashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css"/>
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+        
+        <!-- DataTables -->
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+ 		<!-- Responsive datatable examples -->
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        <!-- App Css-->
+        
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css"/>
+		<link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css"/>
+		<link th:href="@{/assets_new/css/page/adminHome.css}" rel="stylesheet" type="text/css" />
+		<style>
+			.hide{
+				display: none !important;
+			}  .vertical-collpsed .vertical-menu { 
+    position: fixed;
+    z-index: 110;}
+    .btn-secondary.buttons-pdf.buttons-html5{
+    		border-radius: 5px;
+    	}
+    	.buttons-html5{
+        	margin: 5px;
+    	}
+    	.btn.btn-secondary.buttons-excel.buttons-html5{
+       		border-radius: 5px; 		
+    	}
+		</style>
+    </head>
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+        <div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+            <div class="vertical-menu">
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+					
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+					
+                </div>
+            </div>
+            <div id="myHeader" class="main-content hide" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CONSULTANT_DASHBOARD,T(com.aim.enums.Permission).READ, false)}">
+                <div id="filter-second-div" class="page-content filter-padding-bottom">
+                <button type="button" class="btn btn-sm btn-primary" onclick="showFilter()" ><i class="fa fa-filter"></i> Filter</button>
+                </div>
+           	</div>
+            <div id="filter-first-div" class="main-content filter-stick" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CONSULTANT_DASHBOARD,T(com.aim.enums.Permission).READ, false)}">
+                <div id="filter-second-div" class="page-content filter-padding-bottom">
+                    <div class="container-fluid">
+                    	<div class="card p-0 ml-0 mr-0 row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" style="flex-direction: row;">
+                    	 	<div class="bg-soft-primary col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                    	 		<button id="filterRemove" type="button" class="hide filter-remove btn btn-sm btn-primary" onclick="removeFilter()" ><i class="fa fa-times"></i></button>
+                            	<div class="row">
+                                	<div class="col-12">
+	                                    <div class="text-primary p-3">
+	                                        <h5 class="text-primary">Welcome to dashboard !</h5>
+	                                        <p th:text="${session.user.firstName + ' ' + session.user.lastName }">Dashboard</p>
+	                                    </div>
+                                   	</div>
+                              	</div>
+                           	</div>
+		                   	<div class="card-body pt-0 col-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
+	                       		<div class="row p-0 ml-0 mr-0 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+	                            	<div class="text-primary col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+	                                	<b class="text-primary">Select Year</b>
+						                <select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value">
+									    	<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2015)}"
+						                              	th:text="${year}" th:value="'?year=' + ${year}"
+													th:selected="${year == selectedYear}">
+						                    </option>
+						              	</select>
+	                              	</div>
+	                               	<div class="text-primary col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+	                               		<b class="text-primary">Select Month</b>
+		                              	<select name="sort" class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value" id="sortByAction">
+			 								<option th:value="'?year='+${selectedYear}" default>All month</option>
+			 								<option th:each="month : ${T(com.aim.enums.Month).values()}" 
+			 										th:value="'?year='+${selectedYear} +'&month=' + ${month.urlParam}"
+			 										th:selected="${month} == ${selectedMonth}" th:text="${month.displayLabel}">
+			 							    </option>
+										</select>
+	                              	</div>
+	                              	<div class="col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+                                  		<a th:href="@{/supervisor/home}" class="btn btn-info mt-3"><i class="fas fa-sync-alt"></i></a>
+                                  	</div>
+	                          	</div>
+	                          	<hr>
+	                          	<div class="row p-0 ml-0 mr-0 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+		                          	<div class="text-primary col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+		                            	<div class="d-flex align-items-center mb-1">
+                                            <b class="font-size-14 mb-0">Time sheet</b>
+                                        </div>
+                                        <div class="text-muted mt-1">
+                                        	<b><span class="mr-3" style="color:#546de6"> Approved : <th:block th:text="${approvedFileByFilter}"></th:block></span>
+                                            <span class="mr-3" style="color:#34c38f"> Submitted : <th:block th:text="${newFileByFilter}"></th:block></span>
+                                            <span class="mr-3" style="color:#f46a6a"> Rejected : <th:block th:text="${rejectFileByFilter}"></th:block></span></b>
+                                        </div>
+		                            </div>
+		                          	<div class="text-primary col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+		                            	<div class="d-flex align-items-center mb-1">
+                                             <b class="font-size-14 mb-0">Consultant</b>
+                                         </div>
+                                         <div class="text-muted mt-1">
+                                             <b> <span class="mr-3">Total : <th:block th:text="${totalActiveUsers}"></th:block></span>
+                                             	<span class="mr-3" style="color:#f1b44c"> C2C : <th:block th:text="${totalActiveC2CUsers}"></th:block></span>
+                                             	<span class="mr-3" style="color:#0f78ea"> W2 : <th:block th:text="${totalActivePtaxUsers}"></th:block></span>
+                                             </b>
+                                         </div>
+		                            </div>
+	                          	</div>
+		                 	</div>
+		             	</div>
+                    </div>
+               	</div>
+           	</div>
+			
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+        	<div class="main-content" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CONSULTANT_DASHBOARD,T(com.aim.enums.Permission).READ, false)}">
+                <div class="page-content filter-padding-top">
+                    <div class="container-fluid">
+                        <div class="row ml-0 mr-0 p-0 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                       			<div class="row ml-0 mr-0 p-0 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" id="show-button">
+					   				<div class="col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+				            			<div class="card">
+                       						<div class="card-body">
+				                    			<h4 class="card-title mb-4">Time sheet Analytics</h4>
+                                        	<div>
+                                           	<br/><br/>
+                                            <div id="donut-chart-1" class="apex-charts"></div>
+                                        </div>
+                                        <div class="text-center text-muted">
+                                            <div class="row">
+                                                <div class="col-4">
+                                                    <div class="mt-4">
+	                                                    <a th:href="@{'/supervisor/time-sheet?yearFile='+ ${selectedYear} + '&sort=approved'}" class="mt-4">
+	                                                        <p class="mb-2 text-truncate"><i class="mdi mdi-circle text-primary mr-1"></i>Approved</p>
+	                                                        <h5><th:block th:text="${approvedFileByFilter}"></th:block></h5>
+	                                                    </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                	<div class="mt-4">
+	                                                    <a th:href="@{'/supervisor/time-sheet?yearFile='+ ${selectedYear} + '&sort=toBeapprove'}" class="mt-4">
+	                                                        <p class="mb-2 text-truncate"><i class="mdi mdi-circle text-success mr-1"></i>Submitted  </p>
+	                                                        <h5> <th:block th:text="${newFileByFilter}">  </th:block></h5>
+                                                    	</a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                	<div class="mt-4">
+	                                                    <a th:href="@{'/supervisor/time-sheet?yearFile='+ ${selectedYear} + '&sort=rejected'}" class="mt-4">
+	                                                        <p class="mb-2 text-truncate"><i class="mdi mdi-circle text-danger mr-1"></i> Rejected </p>
+	                                                        <h5> <th:block th:text="${rejectFileByFilter}">  </th:block></h5>
+	                                                    </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+			                        </div>
+			                     </div>
+				              </div>
+                            <div class="col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7">
+                                <div class="card">
+                                    <div class="card-body">
+                                    	<div id="consultantChartCard">
+	                                        <h4 class="card-title mb-4 float-sm-left">Consultant</h4>
+	                                        <div class="col-sm-12">
+		                                    	<a href="javascript:void(0);" class="btn btn-outline-primary float-right" onclick="changeChart('HOURSCHARTCARD')">User Hours</a>
+		                                    	<a href="javascript:void(0);" class="btn btn-primary float-right mr-3" >Consultant</a>
+		                                    </div>
+	                                        <div class="clearfix"></div>
+	                                        <div id="stacked-column-chart-1" class="apex-charts" dir="ltr"></div>
+<!-- 	                                        <div class="legend row box"> -->
+<!-- 	                                        	<label class="container1 consultantAll"> -->
+<!-- 												  <input type="radio" class="consultantAll123"name="consultant" checked onclick="toggleSeries(this)" value="All Consultant"> -->
+<!-- 											      <span class="checkmark"></span> -->
+<!-- 											      <span class="line">All Consultant</span> -->
+<!-- 												</label> -->
+<!-- 			                                 	<label class="container1 consultantC2C"> -->
+<!-- 												  <input class="" type="radio" name="consultant" onclick="toggleSeries(this)" value="C2C Consultant"> -->
+<!-- 												  <span class="checkmark"></span> -->
+<!-- 												  <span class="line">C2C Consultant</span> -->
+<!-- 												</label> -->
+<!-- 			                                 	<label class="container1 consultantPtax"> -->
+<!-- 												  <input type="radio" name="consultant" onclick="toggleSeries(this)" value="W2 Consultant"> -->
+<!-- 											      <span class="checkmark"></span> -->
+<!-- 											      <span class="line">W2 Consultant</span> -->
+<!-- 												</label> -->
+<!-- 									      	</div> -->
+								      	</div>
+                                    	<div id="hoursChartCard" class="hide">
+	                                        <h4 class="card-title mb-4 float-sm-left userHoursChart">User Hours</h4>
+		                                   	<div class="col-sm-12">
+		                                    	<a href="javascript:void(0);" class="btn btn-primary float-right" >User Hours</a>
+		                                    	<a href="javascript:void(0);" class="btn btn-outline-primary float-right mr-3" onclick="changeChart('CONSULTANTCHARTCARD')">Consultant</a>
+		                                    </div>
+		                                    <div class="clearfix"></div>
+		                                    <div id="stacked-column-chart-hours" class="apex-charts" dir="ltr"></div>
+		                                    <div class="legend row box">
+			                                	<label class="container1 daily">Daily hours
+												  	<input class="revenue123" type="radio" name="revenue" checked onclick="toggleSeriesHours(this)" value="Daily hours">
+												  	<span class="checkmark"></span>
+												</label>
+			                                    <label class="container1 extra">Extra hours
+												  	<input type="radio" name="revenue" onclick="toggleSeriesHours(this)" value="Extra hours">
+											      	<span class="checkmark"></span>
+												</label>
+												<label class="container1 vacation">Vacation
+										  			<input type="radio" name="revenue" onclick="toggleSeriesHours(this)" value="Vacation">
+									      			<span class="checkmark"></span>
+												</label>
+							      			</div>
+								      	</div>
+								     </div>
+                                    </div>
+                                </div>
+                            </div>
+                    	</div>
+              		
+            	</div>
+             	<div class="row">
+              		<div class="col-lg-12">
+                    	<div class="card">
+                        	<div class="card-body">
+                            	<div class="">
+	                                <table id="datatable-buttons" class="table table-responsive table-centered table-nowrap mb-0">
+	                                    <thead class="thead-light">
+	                                        <tr>
+	                                            <th>No</th>
+						                        <th>Name / Client</th>
+						                        <th>Daily <br>Hours</th>
+						                        <th>Extra <br>Hours</th>
+						                        <th>Vacation <br>Hours</th>
+						                        <th>Total Hours</th>
+						                        <th>Status</th>
+						                        <th>Action</th>
+	                                        </tr>
+	                                    </thead>
+	                                    <tbody>
+	                                        <tr class="odd gradeX" th:each="hour,index : ${userTotalHour}">
+		                         				<td th:text="${index.index + 1}"></td>
+					                          	<td th:text="${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName}"></td>
+					                          	<td th:text="${#numbers.formatDecimal(hour.total.get('Daily'),1,2)}">Total Daily Hours</td>
+					                          	<td th:text="${#numbers.formatDecimal(hour.total.get('Extra'),1,2)}">Total Extra Hours</td>
+					                          	<td th:text="${#numbers.formatDecimal(hour.total.get('Vacation'),1,2)}">Total Extra Hours</td>
+					                         	<td th:text="${#numbers.formatDecimal(hour.total.get('Total'),1,2)}">Total Hours</td>
+					                          	<td>
+					                          		<span th:if="${hour.userDetails.ptax != 0.0}">W2 Consultant</span>
+					                          		<span th:if="${hour.userDetails.ptax == 0.0}">C2C Consultant</span>
+					                          	</td>
+		                          				<td>
+		                          					<a data-toggle="modal" data-target="#custom-width-modal" 
+		                          						th:onclick="'bacisDetails(\'' + ${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName} + '\','+ ${hour.userDetails.userDetailId} + ')'">
+		                          						<i class="fas fa-info-circle" style="color: orange; font-size: 20px;" 
+		                          						data-toggle="tooltip" title="Basic Details"></i></a>
+		                          				</td>
+	                     					</tr>
+	                                    </tbody>
+	                                </table>
+                             	</div>
+                       		</div>
+                      	</div>
+                 	</div>
+             	</div>
+                <div id="custom-width-modal" class="modal fade bs-example-modal-lg"
+							tabindex="-1" role="dialog"
+							aria-labelledby="custom-width-modalLabel" aria-hidden="true"
+							style="display: none;">
+					<div class="modal-dialog modal-xl">
+						<div class="modal-content">
+							<div class="modal-body pb-0 mb-0">
+							<div>	<button type="button" class="close  details-close-button" data-dismiss="modal"
+											aria-hidden="true">×</button>
+								</div><div id="user-details-modal"></div>
+							</div>
+							
+						</div>
+					</div>
+				</div> 
+		  	</div>
+		</div>
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <script>document.write(new Date().getFullYear())</script> © Aimtechnolabs.
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-sm-right d-none d-sm-block">
+                            Design & Develop by Aimtechnolabs.com
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+	</div>
+	<div class="main-content" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CONSULTANT_DASHBOARD,T(com.aim.enums.Permission).READ, false) == false}">
+      	<div class="page-content">
+           	<div class="container-fluid">
+               	<div class="d-flex justify-content-center align-items-center">
+               		<div class="col-12 col-sm-12 col-md-7 col-lg-5 col-xl-4">
+                		<img th:src="@{'/assets_new/images/welcome_cuate.svg'}" alt="" class="">
+               		</div>
+        		</div>
+            </div> <!-- container -->
+        </div> <!-- content -->
+    </div>
+        <script>
+            var resizefunc = [];
+        </script>
+        <script th:inline="javascript">
+		/*<![CDATA[*/
+			
+			var context = [[@{/}]];
+		
+			var approvedFile = [[${approvedFileByFilter}]];
+			var newFile = [[${newFileByFilter}]];
+			var rejectFile = [[${rejectFileByFilter}]];
+			
+			var xChart = [[${xChart}]];
+			var c2cUserList = [[${userTypeChartResponse.c2cUser}]];
+			var ptaxUserList = [[${userTypeChartResponse.ptaxUser}]];
+			var totalUserList = [[${userTypeChartResponse.totalUser}]];
+			
+			var hours = [[${adminUserHoursChart.hours}]];
+			var extra = [[${adminUserHoursChart.extra}]];
+			var vacation = [[${adminUserHoursChart.vacation}]];
+			/*]]>*/
+		</script>
+
+		<script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+        <!-- Required datatable js -->
+        <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+        
+        <!-- Responsive examples -->
+        <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+       
+                
+        <script th:src="@{/assets/js/excel-pdf/dataTables.buttons.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.bootstrap4.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/jszip.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/pdfmake.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/vfs_fonts.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.html5.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.print.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.colVis.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/datatables.init.js}"></script> 
+        
+        
+        <script th:src="@{/assets/js/fstdropdown.js}"></script>
+        <script th:src="@{/assets_new/libs/apexcharts/apexcharts.min.js}"></script>
+        <script th:src="@{/assets_new/js/pages/superviser-dashboard.init.js}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CONSULTANT_DASHBOARD,T(com.aim.enums.Permission).READ, false)}"></script>
+        <script th:src="@{/assets_new/js/app.js}"></script>		
+        <script th:src="@{/assets_new/js/pages/datatables.init.js}"></script> 
+        <script th:src="@{/assets_new/js/home-page-filter.js}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CONSULTANT_DASHBOARD,T(com.aim.enums.Permission).READ, false)}"></script>
+        <th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

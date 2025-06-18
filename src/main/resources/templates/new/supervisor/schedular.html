@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8" />
+        <title>schedular</title>
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" th:href="@{/assets_new/libs/summernote/summernote-bs4.min.css}">
+        <link rel="stylesheet" th:href="@{/assets_new/css/fixedHeader.dataTables.min.css}">
+		<style>
+			.mb-20{
+				margin-bottom: 20px !important;
+			}
+			.hourNum{
+				width: 50% !important;
+				border-radius: 4px;
+			    padding-left: 5px;
+			    border: 1px solid grey;
+			}
+			.user .dropdown-menu{
+			    max-height: 340px;
+   				overflow-y: scroll;
+   				overflow-x: hidden;
+			}
+			.user .dropdown-menu::-webkit-scrollbar {
+			  width: 5px;
+			}
+			
+			/* Track */
+			.user .dropdown-menu::-webkit-scrollbar-track {
+			  background: #ffffff; 
+			}
+			 
+			/* Handle */
+			.user .dropdown-menu::-webkit-scrollbar-thumb {
+			  background: #a1c8ea; 
+			}
+			
+			/* Handle on hover */
+			.user .dropdown-menu::-webkit-scrollbar-thumb:hover {
+			  background: #555; 
+			}
+			
+			.user .dropdown-menu{
+				background-color: #ffffff;
+				border: 1px solid #50a4f1;
+			}
+			.user .btn:focus{
+				box-shadow: 0 0 0 0 rgba(85,110,230,.25) !important;
+			}
+			#theList .search{
+				background: #cde5f9;
+			}
+			.dayList .dateRoundBox:last-child{
+				border-bottom-right-radius:50% !important; 
+				border-top-right-radius:50% !important; 
+			}
+			.dayList .dateRoundBox[data-weekday="Fri"]{
+				border-bottom-right-radius:50% !important; 
+				border-top-right-radius:50% !important; 
+			}
+			.dayList .dateRoundBox[data-weekday="Sat"],.dayList .dateRoundBox[data-weekday="Sun"]{
+				background: #fde378;
+			}
+			.dayList .dateRoundBox[data-weekday="Sat"], .dayList .dateRoundBox[data-weekday="Mon"]{
+				border-bottom-left-radius:50% !important; 
+				border-top-left-radius:50% !important; 
+			}
+			.dayList .dateRoundBox[data-weekday="Sun"]{
+				border-bottom-right-radius:50% !important; 
+				border-top-right-radius:50% !important; 
+			}
+			
+			.dayList .dateRoundBox[data-datestartvalue="01"]{
+				border-bottom-left-radius:50% !important; 
+				border-top-left-radius:50% !important; 
+			}
+			.dayList [data-off="true"]{
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px'%0Awidth='50' height='50'%0AviewBox='0 0 172 172'%0Astyle=' fill:%23000000;'%3E%3Cg fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'%3E%3Cpath d='M0,172v-172h172v172z' fill='none'%3E%3C/path%3E%3Cg fill='%23ff301c'%3E%3Cpath d='M86,165.12c-43.62608,0 -79.12,-35.49392 -79.12,-79.12c0,-43.62608 35.49392,-79.12 79.12,-79.12c43.62608,0 79.12,35.49392 79.12,79.12c0,43.62608 -35.49392,79.12 -79.12,79.12z'%3E%3C/path%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
+				color: #ffffff;
+				background-repeat: no-repeat !important;
+    			background-size: 100% !important;
+			}
+			.p-set th{
+				padding: 2px !important;
+			}
+			.dayList .dateRoundBox{
+				background: #e7e7fb;
+				cursor:pointer;
+				padding: 4px !important;
+			}
+			.monthLabel{
+			
+			}
+			.popover{border: 1px solid #556ee6;}
+			.popover-body{padding: 0px !important;}
+			.hide{display: none !important;}
+		</style>
+    </head>
+
+
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+        <div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="vertical-menu">
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+						<div class="row">
+							<div class="col-12">
+								<div class="page-title-box d-flex align-items-center justify-content-between">
+                                    <h4 class="mb-0 font-size-18">Schedular</h4>
+                                    <div class="page-title-right">
+	                                    <ol class="breadcrumb m-0">
+	                                        <li class="breadcrumb-item">
+	                                            <a th:href="@{/supervisor/home}">Home</a>
+	                                        </li>
+	                                        <li class="breadcrumb-item active">
+	                                            <a>Schedular</a>
+	                                        </li>
+	                                    </ol>
+									</div>
+                                </div>
+							</div>
+						</div>
+						
+						<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}">
+	                  		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+	                       		<span aria-hidden="true">×</span>
+	                     	</button>
+	                  		<strong>Oh snap!</strong> <th:block th:text="${error}"></th:block>
+	                 	</div>
+	                  	<div class="alert alert-success alert-dismissible" role="alert" th:if="${success}">
+	                		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+	                   			<span aria-hidden="true">×</span>
+	                  		</button>
+	                  		<strong>Success</strong> <th:block th:text="${success}"></th:block>
+	           			</div>
+                        
+                        <div class="card">
+                           	<div class="card-body">
+								<div class="row mb-20">
+									<div class="col-sm-3">
+	                             		<label class="control-label" for="example-input1-group3">Year</label>
+	                                 	<select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value" >
+											<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2017)}"
+		                                        	class="year-box-option" th:text="${year}" th:value="${'?year=' + year}" th:selected="${year == selectedYear}">
+		                                   	</option>
+		                         		</select>
+	                               	</div>
+	                        		<div class="col-sm-3">
+	                        			<label class="control-label" for="example-input1-group3">&nbsp;</label>
+	                        			<div>
+	                        				<button th:if="${permissionService.getPermissionPlan().schedularCanSet == true}" type="button" onclick="hidePopover()" data-toggle="modal" data-target="#default-hours" class="btn btn-sm btn-primary mg-b-20">
+											 	<i class="mdi mdi-calendar-clock icon-back-color"></i> Set default 8 hours
+											</button>
+	                        				<button th:if="${permissionService.getPermissionPlan().schedularCanSet != true}" type="button" onclick="hidePopover()" data-toggle="modal" data-target="#not-permit" class="btn btn-sm btn-primary mg-b-20">
+											 	<i class="fa fa-lock icon-back-color"></i> Set default 8 hours
+											</button>
+	                        			</div>
+	                                </div>
+	                        		<div class="col-sm-4">
+	                                </div>
+	                        		<div class="col-sm-2">
+		                        		<div style="float: right;"> 
+		                        			<label class="control-label" for="example-input1-group3">&nbsp;</label>
+		                        			<div>
+		                        				<button onclick="viewHours()" type="button" class="btn btn-sm btn-primary">
+												 	<i class="mdi mdi-equal-box"></i>
+												</button>
+		                        			</div>
+	                        			</div>
+	                                </div>
+                      			</div>
+                      			<div class="row">
+	                      			<div class="col-sm-9" id="table-1">
+		                      			<table id="" class="table table-responsive">
+								   			<thead>
+								   				<tr class="p-set">
+								   					<th class="p-0 m-0"></th>
+								   					<th class="m-0" th:each="week : ${T(com.aim.enums.Week).values()}" th:text="${week.displayLabel}"></th>
+								   					<th class="m-0" th:each="week : ${T(com.aim.enums.Week).values()}" th:text="${week.displayLabel}"></th>
+								   					<th class="m-0" th:each="week : ${T(com.aim.enums.Week).values()}" th:text="${week.displayLabel}"></th>
+								   					<th class="m-0" th:each="week : ${T(com.aim.enums.Week).values()}" th:text="${week.displayLabel}"></th>
+								   					<th class="m-0" th:each="week : ${T(com.aim.enums.Week).values()}" th:text="${week.displayLabel}"></th>
+								   					<th class="m-0">Su</th>
+								   					<th class="m-0">Mo</th>
+								   				</tr>
+								   			</thead>
+								   			<tbody>
+								   				<tr class="dayList" th:each="month:${schedular}">
+								   					<td class="p-0 m-0"> <a href="javascript:void(0);" th:onclick="|sendEmail(${month.month.urlParam}, ${selectedYear})|" > <i class="mdi mdi-email-send"></i></a> </td>
+								   					<td class="p-0 m-0"> 
+								   						<b th:text="${month.month.displayLabel}"></b>
+								   					</td>
+								   					<td class="p-0 m-0" th:each="day:${month.calendarResponse}" th:attr="data-datestartvalue=${day.dateFormate},
+								   						data-weekday=${day.weekday},data-off=${day.offDay}" th:id="${'id_'+day.dateFormate+'_'+month.month.urlParam}" 
+								   						th:classappend="${day.dateFormate != null}?'dateRoundBox':''"
+								   						th:onclick="|datePopover(${day.dateFormate}, ${month.month.urlParam}, ${selectedYear}, this)|">
+								   						<span class="" th:if="${day.dateFormate != null}" th:text="${day.dateFormate}"></span>
+								   					</td>
+								   				</tr>
+								   			</tbody>
+		                      			</table>
+	                      			</div>
+	                      			<div class="col-sm-3 p-0" id="table-2">
+								   			<div id="accordion" style="height: 377px;overflow-y: scroll;">
+                                            
+	                                            <div class="card mb-1 shadow-none" th:each="month,index:${schedular}">
+	                                                <div class="card-header" th:id="${'heading'+index.index}">
+	                                                    <h6 class="m-0">
+	                                                        <a th:href="${'#collapse'+index.index}" class="text-dark collapsed col-sm-12" data-toggle="collapse" aria-expanded="false" th:aria-controls="${'collapse'+index.index}">
+	                                                        	<span th:text="${month.month.displayLabel}"></span>
+	                                                        	<span class="badge badge-pill badge-danger" th:text="${offHours.get(month.month.urlParam).get('off')}"></span>
+	                                                        	<span class="badge badge-pill badge-success" th:text="${offHours.get(month.month.urlParam).get('dailyHours')}"></span>
+<!-- 	                                                        	<span th:text="${month.month.displayLabel}"></span> -->
+	                                                        	<span style="float: right;"><i class="mdi mdi-arrow-expand"></i></span>
+	                                                        </a>
+	                                                    </h6>
+	                                                </div>
+	        
+	                                                <div th:id="${'collapse'+index.index}" class="collapse" th:aria-labelledby="${'heading'+index.index}" data-parent="#accordion" style="">
+	                                                    <div class="card-body p-0">
+	                                                        <table class="table table-responsive">
+	                                                    		<tbody> 
+		                                                    		<tr class="" th:attr="data-date-row=${#dates.format(day.dateDay, 'dd-MM-yyyy')},data-off=${day.offDay}" th:each="day:${month.calendarResponse}" th:if="${day.dateFormate != null}">
+													   					<td class="">
+													   						<span class="" th:text="${#dates.format(day.dateDay, 'dd MMM')}"></span>
+													   					</td>
+													   					<td class="">
+													   						<span class="badge badge-success" th:text="${day.dailyHours}"></span>
+													   					</td>
+													   					<td class="">
+													   						<span class="badge badge-info" th:text="${day.extraHours}"></span>
+													   					</td>
+													   					<td class="">
+													   						<span class="badge badge-warning" th:text="${day.vacationHours}"></span>
+													   					</td>
+													   				</tr>
+												   				</tbody>
+	                                                    	</table>
+	                                                    </div>
+	                                                </div>
+	                                            </div>
+                                        </div>
+	                      			</div>
+                      			</div>
+							</div>
+						</div>
+						<div class="card" th:if="${not #lists.isEmpty(dayOffSchedular)}">
+							<div class="card-body">
+								<div>
+						   			<div class="row border" th:each="off:${dayOffSchedular}">
+						   				<div class="col-sm-6 p-3" ><b th:text="${off.remark}"></b></div>
+						   				<div class="col-sm-6 p-3" ><p th:text="${#dates.format(off.hoursDate, 'dd MMM')}"></p></div>
+						   			</div>
+                      			</div>
+							</div>
+						</div>
+                	</div> <!-- content -->
+           		 </div>
+        	</div>
+        </div>
+        
+        <div id="default-hours" class="modal fade bs-example-modal-lg"
+			tabindex="-1" role="dialog"
+			aria-labelledby="custom-width-modalLabel" aria-hidden="true"
+			style="display: none;">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title m-0"></h5>
+						<button type="button" class="close" data-dismiss="modal"
+									aria-hidden="true">×</button>
+					</div>
+					<div class="modal-body text-center"> 
+						<div class="alert alert-danger" role="alert">
+	                       If any hours are set between 1 Jan <span th:text="${selectedYear}"></span> To 31 Dec <span th:text="${selectedYear}"></span>, so it's reset and set according below.
+	                    </div>
+						<div>
+							<h4> 1 Jan <span th:text="${selectedYear}"></span> To 31 Dec <span th:text="${selectedYear}"></span></h4>
+						</div>
+						<div>
+							<table class="table">
+								<thead>
+									<tr>
+										<th></th>
+										<th>Daily hours</th>
+										<th>Extra hours</th>
+										<th>Vacation hours</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Monday - Friday</td>
+										<td>
+											<span class="badge badge-success">8.0</span>
+										</td>
+										<td>
+											<span class="badge badge-info">0.0</span>
+										</td>
+										<td>
+											<span class="badge badge-warning">0.0</span>
+										</td>
+									</tr>
+									<tr>
+										<td>Saturday, Sunday</td>
+										<td>
+											<span class="badge badge-success">0.0</span>
+										</td>
+										<td>
+											<span class="badge badge-info">0.0</span>
+										</td>
+										<td>
+											<span class="badge badge-warning">0.0</span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="col-sm-12 align-items-center justify-content-between">
+								<div class="">
+                                    <a th:href="@{'/user/schedular/default-time-sheet?year='+${selectedYear}}" class="btn btn-outline-primary waves-effect waves-light">Set default hours</a>
+                                </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id="schedularEmailId">
+		
+		</div>
+				
+		<footer class="footer text-right"> 2016 - 2021 © Zircos. </footer>
+		<th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend"></th:block>
+
+        <script>
+            var resizefunc = [];
+        </script>
+        <script th:inline="javascript">
+        /*<![CDATA[*/
+			var context = [[@{/}]];
+			var selectedYear = [[${selectedYear}]];
+			var permission = [[${permissionService.getPermissionPlan().schedularCanSet}]];
+		/*]]>*/
+        </script>
+        <!-- jQuery  -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+<!--         <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script> -->
+<!--         <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script> -->
+<!--         <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script> -->
+<!--         <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script> -->
+<!--         <script th:src="@{/assets_new/js/dataTables.fixedHeader.min.js}"></script> -->
+       
+        <script th:src="@{/assets_new/js/app.js}"></script>
+        <script th:src="@{/assets_new/libs/summernote/summernote-bs4.min.js}"></script>
+        <script th:src="@{/assets/js/javascript/common.js}"></script>
+        <script th:src="@{/assets/js/fstdropdown.js}"></script>
+        <script th:src="@{/assets/js/javascript/schedular.js}"></script>
+        <th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

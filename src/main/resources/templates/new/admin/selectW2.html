@@ -1,0 +1,20 @@
+<div id="select-w2" th:fragment="select-w2">
+	<div class="row">
+		<div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-6">
+			<label for="recruiterName">W2<span
+				class="text-danger">*</span></label> <input type="text"
+				th:field="*{w2}" parsley-trigger="change" required
+				placeholder="Enter w2" class="form-control set-require hourNum setValueSelect">
+			<div th:if="${#fields.hasErrors('w2')}" th:errors="*{w2}"
+				class="validation-message"></div>
+		</div>
+		<div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+			<label for="recruiterName">Pay tax<span
+				class="text-danger">*</span></label> <input type="text"
+				th:field="*{ptax}" parsley-trigger="change" required
+				placeholder="Enter ptax" class="form-control set-require hourNum setValueSelect">
+			<div th:if="${#fields.hasErrors('ptax')}"
+				th:errors="*{ptax}" class="validation-message"></div>
+		</div>
+	</div>
+</div>

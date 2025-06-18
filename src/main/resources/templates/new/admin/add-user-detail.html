@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8" />
+		<!-- App favicon -->
+		<link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+		<!-- App title -->
+		<title>Users</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+		<!-- DataTables -->
+		<link
+			th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}"
+			rel="stylesheet" type="text/css" />
+		
+		<!-- Responsive datatable examples -->
+		<link
+			th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}"
+			rel="stylesheet" type="text/css" />
+		
+		<!-- Bootstrap Css -->
+		<link th:href="@{/assets_new/css/bootstrap.min.css}"
+			id="bootstrap-style" rel="stylesheet" type="text/css" />
+		<!-- Icons Css -->
+		<link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet"
+			type="text/css" />
+		<!-- App Css-->
+		<link th:href="@{/assets_new/css/app.min.css}" id="app-style"
+			rel="stylesheet" type="text/css" />
+		
+		<link th:href="@{/assets_new/libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css}"
+			rel="stylesheet" type="text/css">
+		
+		<link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet"
+			type="text/css" />
+		<link th:href="@{/assets/css/style.css}" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+        
+		<style>
+			.validation-message {
+				width: 100%;
+				margin-top: .25rem;
+				font-size: 80%;
+				color: #f46a6a;
+			}
+			
+			.datepicker {
+				z-index: 100000 !important;
+			}
+			.client-name,.client-button{
+				height: calc(1.3em + .94rem + 2px);
+			}
+			.select-client .fstdiv .fstselected{
+				height: calc(1.2em + .94rem + 2px);
+			}
+			.client-button{
+				-webkit-box-flex: 0;
+			    -ms-flex: 0 0 11.00%;
+			    flex: 0 0 11.00%;
+			    max-width: 11.00%;
+			    position: relative;
+	    		width: 100%;
+	    		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000000' viewBox='0 0 50 50' width='10%' height='10%'%3E%3Cpath d='M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 24 13 L 24 24 L 13 24 L 13 26 L 24 26 L 24 37 L 26 37 L 26 26 L 37 26 L 37 24 L 26 24 L 26 13 L 24 13 z'/%3E%3C/svg%3E");
+				background-repeat:no-repeat !important;
+				background-color: #e9e9f2 !important;
+			}
+			.client-name,.select-client .fstdiv{
+				-webkit-box-flex: 0;
+			    -ms-flex: 0 0 89.00%;
+			    flex: 0 0 89.00%;
+			    max-width: 89.00%;
+			    position: relative;
+	    		width: 100%;
+			}
+			.select-client .fstdiv .fstdropdown{
+				border: 0px solid black !important;
+			}
+			.select-client .fstdiv .fstdropdown.open{
+				border: 1px solid #337ab7 !important;
+			}
+			.select-client select{
+				background-color: white !important;
+			}
+			.set-row{
+				display: -webkit-box !important;
+			    display: -ms-flexbox !important;
+			    display: flex !important;
+			    -ms-flex-wrap: wrap !important;
+			    flex-wrap: wrap !important;
+			}
+			.hide{
+	        	display: none !important;
+	        }
+	        .iti__selected-flag {
+			    height: calc(1.5em + .94rem + 2px) !important;
+			}
+			.iti {
+	    		display: block !important;
+	    	}
+	        .iti__country-list {
+		    
+		    	overflow-y: overlay !important;
+		    }
+		    .iti__country-list li{
+				width: 250px !important;	    
+		    }
+		    .custom-control {
+/* 			    padding-left: 2.5rem !important; */
+			}
+			.requiedClassAlert{
+				border-color: #f46a6a !important;
+			    padding-right: calc(1.5em + .94rem);
+			    background-image: url(data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23f46a6…%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E);
+			    background-repeat: no-repeat;
+			    background-position: right calc(.375em + .235rem) center;
+			    background-size: calc(.75em + .47rem) calc(.75em + .47rem);
+			}
+			fieldset{
+				border-top: 1px solid #9e9fa0 !important;
+				text-align: center;
+			}
+			hr{
+				border-top: 1px solid #9e9fa0 !important;
+			}
+			legend {
+			    display: block;
+			    width: auto !important;
+			    max-width: auto !important;
+			    padding: 0;
+			    margin-bottom: .5rem;
+			    font-size: 0.8rem;
+			    font-weight: 500;
+			    padding: 5px;
+    		}
+			#c2cOrotherRecurssiveMonth:disabled {
+			    background-color: #d1d6f6 !important;
+			}
+			#aCMRecurssiveMonth:disabled {
+			    background-color: #d1d6f6 !important;
+			}
+			#bDMRecurssiveMonth:disabled {
+			    background-color: #d1d6f6 !important;
+			}
+			#recRecurssiveMonth:disabled {
+			    background-color: #d1d6f6 !important;
+			}
+			.form-control:readonly{
+				background-color: #d1d6f6 !important;
+			}
+			.readonlyPortion.show{
+				display:flex !important;
+			}
+			.readonlyPortion.hide{
+				display:none !important;
+			}
+			.readonlyColor{
+				background-color: #d1d6f6 !important;
+			}
+			.readonlyPortion{
+				position: absolute;
+				display:none;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				align-items: center;
+				transition: all .5s;
+				opacity:1;
+				background: white;
+				
+			}
+			
+			#canNotChangeCoverBDM, #canNotChangeCoverAMN,#canNotChangeCoverREN{
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+			}
+			.readOnlyClass{background: #d1d6f6 !important;}
+			.hide.show{display: block !important; }
+			.card-header{background: #ffffff !important;}
+		</style>
+	</head>
+	<body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+		<div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+			<!-- ========== Left Sidebar Start ========== -->
+			<div class="vertical-menu">
+				<div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+                </div>
+			</div>
+			<!-- ============================================================== -->
+			<!-- Start right Content here -->
+			<!-- ============================================================== -->
+		<div class="main-content">
+			<div class="page-content">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-12">
+							<div class="page-title-box d-flex align-items-center justify-content-between">
+								<h4 class="mb-0 font-size-18">User Details</h4>
+								<div class="page-title-right">
+									<ol class="breadcrumb m-0">
+										<li class="breadcrumb-item"><a
+											th:href="@{/admin/user-list}">Users</a></li>
+										<li class="breadcrumb-item"><a href="javascript:;"
+											th:text="${userDetail.user.firstName + ' ' + userDetail.user.lastName}">
+										</a></li>
+										<li class="breadcrumb-item active">User Details</li>
+									</ol>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="alert alert-danger alert-dismissible" role="alert"
+						th:if="${error}">
+						<button type="button" class="close" data-dismiss="alert"
+							aria-label="Close">
+							<span aria-hidden="true">×</span>
+						</button>
+						<strong>Oh snap!</strong>
+						<th:block th:text="${error}"></th:block>
+					</div>
+					<div class="alert alert-success alert-dismissible" role="alert"
+						th:if="${success}">
+						<button type="button" class="close" data-dismiss="alert"
+							aria-label="Close">
+							<span aria-hidden="true">×</span>
+						</button>
+						<strong>Success</strong>
+						<th:block th:text="${success}"></th:block>
+					</div>
+					
+			       		 <div class="" th:if="${userDetail.user.role == 'ROLE_USER' && permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CLIENT_ASSIGN_USER,T(com.aim.enums.Permission).CREATE, false)}">
+						<div id="accordion1">
+						<div class="row mb-3">
+							<div class="col-sm-10"></div>
+							<div class="col-sm-2" th:classappend="${userDetail.userDetailId != null?'hide':''}">
+				                    <button class="btn btn-primary shadow-none col-sm-12" data-toggle="collapse" data-target="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
+				                     Add New Client
+				                    </button>
+				       		 </div>
+						</div>
+						
+			              <div class="mb-2">
+
+			                <div id="collapse-1" class="collapse" th:classappend="${userDetail.userDetailId != null OR show == true?'show':''}" data-parent="#accordion1">
+			                  <div class="card">
+			                  <div class="card-body mt-5">
+			                  
+								<div class="" id="client_details">
+								<div class="p-20">
+									<form th:action="@{/admin/add-user-detail}" id="userDetailsSaveFormId"
+										th:object="${userDetail}" method="post"
+										class="needs-validation" data-parsley-validate novalidate>
+										<div class="row">
+											<div class="form-group col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+												<label for="endDate">Invoice To (Customer)
+													<span class="text-danger">*</span>
+												</label> 
+												<select th:field="*{invoiceTo}" onchange="setInvoiceTo(this.value)"
+													class="form-control fstdropdown-select">
+													<option
+														th:each="invoiceTo : ${T(com.aim.enums.InvoiceTo).values()}"
+														th:value="${invoiceTo.urlParam}"
+														th:text="${invoiceTo.displayLabel}"></option>
+												</select>
+											</div>
+											<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+												<label>Client Name</label>
+												<input type="hidden" th:field="*{user}" required> 
+												<input type="hidden" th:field="*{userDetailId}"> 
+												<div class="form-control select-client set-row p-0 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+													<button type="button" class="btn border-0 client-button" onclick="clientAddModal()">
+													</button>
+													<select th:field="*{clientId}" id="clientNameSelect" data-parsley-error-message="" 
+														class="client-name border-0 fstdropdown-select" th:required="${userDetail.invoiceTo != T(com.aim.enums.InvoiceTo).VENDOR.urlParam}">
+													</select>
+													<input type="text" th:field="*{clientName}"
+														placeholder="Enter client name"  
+														class="hide">
+												</div>
+												<div th:if="${#fields.hasErrors('clientName')}"
+													th:errors="*{clientName}" class="validation-message"></div>
+											</div>
+											<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+												<label for="vendorName">Vendor Name<span
+													class="text-danger"></span></label> 
+													<div class="form-control select-client set-row p-0 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+													<button type="button" class="btn border-0 client-button" onclick="vendorAddModal()">
+													</button>
+													<select th:field="*{vendorId}" id="vendorNameSelect" th:required="${userDetail.invoiceTo == T(com.aim.enums.InvoiceTo).VENDOR.urlParam}"
+														class="client-name form-control border-0 fstdropdown-select">
+													</select>
+													<input type="text"
+													th:field="*{vendorName}" parsley-trigger="change"
+													class="form-control hide">
+												</div>
+													
+											</div>
+											<div class="form-group col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+												<label for="clientRate">Customer Rate<span
+													class="text-danger">*</span></label> 
+												<input type="text"
+													th:field="*{clientRate}" parsley-trigger="change" required
+													placeholder="Enter client rate"
+													class="form-control hourNum">
+												<div th:if="${#fields.hasErrors('clientRate')}"
+													th:errors="*{clientRate}" class="validation-message"></div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+												<label for="endDate">Select submit time sheet period
+													<span class="text-danger">*</span>
+												</label> 
+												<input th:if="${hoursLogFileList == true}" type="hidden" th:field="*{timeSheetPeriod}" >
+												<span th:if="${hoursLogFileList == true}" style="background: #d1d6f6" class="form-control" th:text="${T(com.aim.enums.TimeSheetPeriod).getAdminTimeSheetAction(userDetail.timeSheetPeriod).displayLabel}"></span>
+												<select th:field="*{timeSheetPeriod}" th:if="${hoursLogFileList != true}" 
+													class="form-control fstdropdown-select">
+													<option
+														th:each="timeSheet : ${T(com.aim.enums.TimeSheetPeriod).values()}"
+														th:value="${timeSheet.urlParam}"
+														th:text="${timeSheet.displayLabel}"></option>
+												</select>
+											</div>
+											<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+												<label for="startDate">Start Date<span
+													class="text-danger">*</span></label> 
+													
+												<span th:if="${userDetail.userDetailId != null}" style="background: #d1d6f6" class="form-control" th:text="${#dates.format(userDetail.startDate, 'MM/dd/yyyy')}"></span>
+												
+												<input type="hidden" th:if="${userDetail.userDetailId != null}"
+													th:field="*{startDate}" required class="form-control"
+													placeholder="mm/dd/yyyy" data-provide="datepicker"
+													data-date-format="mm/dd/yyyy" id="datepicker" />
+												<input type="text" th:if="${userDetail.userDetailId == null}"
+													th:field="*{startDate}" required class="form-control"
+													placeholder="mm/dd/yyyy" data-provide="datepicker"
+													data-date-format="mm/dd/yyyy" id="datepicker" />
+												<div th:if="${#fields.hasErrors('startDate')}"
+													th:errors="*{startDate}" class="validation-message"></div>
+											</div>
+											<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+												<label for="endDate">End Date<span
+													class="text-danger">*</span></label> 
+												<input type="text"
+													th:field="*{endDate}" required class="form-control"
+													placeholder="mm/dd/yyyy" data-provide="datepicker"
+													data-date-format="mm/dd/yyyy" id="datepicker2" />
+												<div th:if="${#fields.hasErrors('endDate')}"
+													th:errors="*{endDate}" class="validation-message"></div>
+											</div>
+										</div>
+										
+										
+<!-- 		++++++++++++++++++++++++++++++++++++++++++++Client type ++++++++++++++++++++++++++++++++++++++++ -->
+										<div class="row"> 
+											
+											<div class="form-group col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+												<label for="recruiterName">Other<span
+													class="text-danger"></span></label> <input type="text"
+													th:field="*{c2cOrother}" parsley-trigger="change"
+													placeholder="Enter c2c/other" class="form-control hourNum setC2C setValueSelect">
+											</div>
+											
+											<div id="c2cOrotherRateTypeId" class="form-group row col-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
+												<div class="col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+													<label for="c2cOrotherRateType">Other rate type <span class="text-danger">*</span> </label>
+													<select class="form-control percentage"
+														th:field="*{c2cOrotherRateType}" id="c2cOrotherRateType" required>
+														<option value="PERCENTAGE"> Percentage</option>
+														<option value="FIX">Fix</option>
+													</select>
+												</div>
+									           	<div class="col-4 col-sm-12 col-md-3 col-lg-3 col-xl-3" > 
+									          		<label for="lb">&nbsp;<span class="text-danger"></span></label>
+													<div class="ml-0 custom-control custom-checkbox mb-3">
+									                	<input type="checkbox" th:field="*{c2cOrotherRecurssive}" class="custom-control-input" id="c2cOrotherRecurssive" value="true" data-toggle="tooltip" data-placement="top" title="Recurssive">
+									                	<label class="custom-control-label" for="c2cOrotherRecurssive">Recurssive</label>
+									       			</div>
+									         	</div>
+									           	<div class="col-3 col-sm-12 col-md-4 col-lg-4 col-xl-4" > 
+									           		<label for="lb">&nbsp;<span class="text-danger"></span></label>
+									          		<select class="form-control" th:required="${!userDetail.c2cOrotherRecurssive}" th:disabled="${userDetail.c2cOrotherRecurssive}" th:field="*{c2cOrotherRecurssiveMonth}" id="c2cOrotherRecurssiveMonth">
+														<option value="" th:text="${userDetail.c2cOrotherRecurssive?'On all month':'Select recurssive month'}">Recurssive Month</option>
+														<option th:each="month : ${T(com.aim.enums.Month).values()}" 
+				 											th:value="${month.urlParam}"
+				 											th:text="${month.displayLabel}">
+				 							   		 	</option>
+													</select>
+									         	</div>
+											</div>
+										</div>		
+										
+										<div class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+											<div class="ml-0 custom-control custom-radio custom-radio-success mb-3 col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                                <input type="radio" id="customRadiocolor1" th:field="*{w2OrC2cType}" value="W2" class="custom-control-input" th:checked="${userDetail.w2OrC2cType == 'W2'}">
+                                                <label class="custom-control-label" for="customRadiocolor1" style="color: #495057;">W2</label>
+                                            </div>
+											<div class="ml-0 custom-control custom-radio custom-radio-success mb-3 col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                                <input type="radio" id="customRadiocolor2" th:field="*{w2OrC2cType}" value="C2C" class="custom-control-input" th:checked="${userDetail.w2OrC2cType == 'C2C'}">
+                                                <label class="custom-control-label" for="customRadiocolor2" style="color: #495057;">1099 C2C</label>
+                                            </div>
+										</div>
+										
+										<th:block th:replace="new/admin/selectW2 :: select-w2"></th:block>
+										<th:block th:replace="new/admin/selectC2c :: select-c2c"></th:block>
+										
+										<th:block th:if="${permissionService.getPermissionPlan().commission == false}">
+											<div class="row">
+												<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+													<fieldset>
+  														<legend>Account Manager</legend>
+  													</fieldset>
+												</div>
+												<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+													<fieldset>
+  														<legend>Business Development Manager</legend>
+  													</fieldset>
+												</div>
+												<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+													<fieldset>
+  														<legend>Recruiter</legend>
+  													</fieldset>
+												</div>
+												<div class="form-group col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+													<div class="alert alert-danger" role="alert">
+														You have not permission to add this functionality, To access contact us.
+													</div>
+												</div>
+											</div>
+											
+											<div class="hide"> 
+											<select class=""
+												th:field="*{accountManagerId}" required onchange="setInternalUser('AMN',this.value)">
+												<option th:each="accountManager : ${accountManagers}"
+													th:text="${accountManager.firstname +' ' + accountManager.lastname}"
+													th:value="${accountManager.id}" th:if="${accountManager.defaultUser == true}" selected>
+												</option>
+											</select>
+											<select class=""
+												th:field="*{aCMCommission}" required>
+												<option value="00">00</option selected>
+											</select> 
+											<select class=""
+												th:field="*{aCMRateCountOn}" id="aCMRateCountOn" required>
+												<option value="G_MARGIN">Gross margin</option>
+											</select>
+											<select class=""
+												th:field="*{aCMRateType}" id="aCMRateType" required>
+												<option value="FIX" selected>Fix</option>
+											</select>
+											<select class=""
+												th:field="*{aCMRecurssive}" required>
+												<option value="true" selected>true</option>
+											</select>
+											<select class=""
+		                                   	 th:field="*{aCMRecurssiveMonth}">
+												<option value="" selected>On all month</option>
+											</select>			
+											
+											<br>
+											<select class="" 
+												th:field="*{businessDevelopmentManagerId}" required>
+												<option th:each="BDM : ${BDMList}" th:if="${BDM.defaultUser == true}" 
+													th:text="${BDM.firstname +' ' + BDM.lastname}"
+													th:value="${BDM.id}" selected>
+												</option>
+											</select>
+											<select class=""
+												th:field="*{bDMCommission}" required>
+												<option value="00">00</option selected>
+											</select> 
+											<select class=""
+												th:field="*{bDMRateCountOn}" id="aCMRateCountOn" required>
+												<option value="G_MARGIN">Gross margin</option>
+											</select>
+											<select class=""
+												th:field="*{bDMRateType}" id="aCMRateType" required>
+												<option value="FIX" selected>Fix</option>
+											</select>
+											<select class=""
+												th:field="*{bDMRecurssive}" required>   
+												<option value="true" selected>true</option>
+											</select>
+											<select class=""
+		                                   	 th:field="*{bDMRecurssiveMonth}" > 
+												<option value="" selected>On all month</option>
+											</select>	
+											
+											<br>
+											
+											
+											<select class="" 
+												th:field="*{recruiterId}" required>
+												<option th:each="BDM : ${BDMList}" th:if="${BDM.defaultUser == true}" 
+													th:text="${BDM.firstname +' ' + BDM.lastname}"
+													th:value="${BDM.id}" selected>
+												</option>
+											</select>
+											<select class=""
+												th:field="*{recCommission}" required>
+												<option value="00">00</option selected>
+											</select> 
+											<select class=""
+												th:field="*{recRateCountOn}" id="aCMRateCountOn" required>
+												<option value="G_MARGIN">Gross margin</option>
+											</select>
+											<select class=""
+												th:field="*{recRateType}" id="aCMRateType" required>
+												<option value="FIX" selected>Fix</option>
+											</select>
+											<select class=""
+												th:field="*{recRecurssive}" required>   
+												<option value="true" selected>true</option>
+											</select>
+											<select class=""
+		                                   	 th:field="*{recRecurssiveMonth}" > 
+												<option value="" selected>On all month</option>
+											</select>
+											
+											</div>
+											 
+										</th:block> 
+										<th:block th:if="${permissionService.getPermissionPlan().commission == true}"> 
+<!-- 		++++++++++++++++++++++++++++++++++++++++++++Account Manager Name++++++++++++++++++++++++++++++++++++++++ -->
+										<fieldset>
+  											<legend>Account Manager</legend>
+  										</fieldset>
+										<div class="row">
+											<div class="form-group col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+												<div>
+													<label for="recruiterName">AM Name<span
+														class="text-danger">*</span></label> 
+														<select class="form-control internalUserType fstdropdown-select"
+															th:field="*{accountManagerId}" required onchange="setInternalUser('AMN',this.value)">
+															<option value="">Select Account Manager</option>
+															<option th:each="accountManager : ${accountManagers}"
+																th:text="${accountManager.firstname +' ' + accountManager.lastname}"
+																th:value="${accountManager.id}" th:selected="${accountManager.id == userDetail.accountManagerId}">
+															</option>
+														</select>
+												</div>
+												<div th:if="${#fields.hasErrors('accountManagerName')}"
+													th:errors="*{accountManagerName}"
+													class="validation-message">
+												</div>
+
+											</div>
+											<div id="aCMCommissionId" class="form-group col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+												<label for="recruiterName">
+													Commission<span class="text-danger">*</span>
+												</label> <input type="text" th:field="*{aCMCommission}" th:classappend="${userDetail.aCMDefault}?'readonlyColor':''" th:readonly="${userDetail.aCMDefault == true}"
+													parsley-trigger="change" required
+													placeholder="Commission"
+													class="form-control hourNum">
+												<div th:if="${#fields.hasErrors('aCMCommission')}"
+													th:errors="*{aCMCommission}" class="validation-message"></div>
+											</div>
+											
+											<div class="form-group col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+												<label for="aCMRateCountOn">Commission on <span class="text-danger">*</span> </label>
+												<select class="form-control" th:classappend="${userDetail.aCMDefault}?'readonlyColor':''"
+													th:field="*{aCMRateCountOn}" id="aCMRateCountOn" required>
+													<option value="">Select on</option>
+													<option value="G_MARGIN">Gross margin</option>
+													<option value="REVENUE"> Revenue</option>
+													<option value="ON_HOURS">Hours</option>
+												</select>
+												
+												<div class="readonlyPortion"  id="aCMreadonlyCountOn" th:classappend="${userDetail.aCMDefault}?'show':''"></div>
+												
+											</div>
+											<div class="col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+												<div class="row"> 
+													<div class="col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+														<label for="aCMRateType">Rate type <span class="text-danger">*</span> </label>
+														<select class="form-control" th:classappend="${userDetail.aCMDefault}?'readonlyColor':''"
+															th:field="*{aCMRateType}" id="aCMRateType" required>
+															<option value="">Select rate</option>
+															<option value="FIX">Fix</option>
+															<option value="PERCENTAGE"> Percentage</option>
+														</select>
+														<div class="readonlyPortion" id="aCMreadonlyRateType" th:classappend="${userDetail.aCMDefault}?'show':''"></div>
+													</div>
+		                                            <div class="col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7" > 
+		<!--                                                	<label for="lb">&nbsp;<span class="text-danger"></span></label> -->
+		                                                <div class="custom-control custom-checkbox mb-3">
+		                                            		<input type="checkbox" th:field="*{aCMRecurssive}" th:checked=${userDetail.aCMRecurssive} class="custom-control-input" id="aCMRecurssive" value="true" data-toggle="tooltip" data-placement="top" title="Recurssive">
+		                                            		<label class="custom-control-label" for="aCMRecurssive">Recurssive</label>
+		                                   				</div>
+		                                   				<select class="form-control" th:required="${!userDetail.aCMRecurssive}"
+		                                   				 th:disabled=${userDetail.aCMRecurssive} th:field="*{aCMRecurssiveMonth}" id="aCMRecurssiveMonth">
+															<option value="" th:text="${userDetail.aCMRecurssive?'On all month':'Select recurssive month'}"></option>
+															<option th:each="month : ${T(com.aim.enums.Month).values()}" 
+					 											th:value="${month.urlParam}"
+					 											th:text="${month.displayLabel}">
+					 							   		 	</option>
+														</select>
+														
+														<div class="readonlyPortion"  id="aCMreadonlyRecurssive" th:classappend="${userDetail.aCMDefault}?'show':''"></div>
+		                                            </div>
+												</div>
+												<div class="col-sm-12 text-center">
+                                                	<sup class="col-sm-12 text-danger text-center mt-3" th:style="${userDetail.aCMRateCountOn == T(com.aim.enums.RateCountOn).ON_HOURS ? 'display:block' : 'display:none'}" id="canNotChangeAMN">You can not change</sup>
+                                                </div>
+                                                <div th:style="${userDetail.aCMRateCountOn == T(com.aim.enums.RateCountOn).ON_HOURS ? 'display:block' : 'display:none'}" id="canNotChangeCoverAMN"></div>
+                                               
+												
+											</div>
+										</div>
+										
+<!-- ++++++++++++++++++++++++++++++++++++++++Business Development Manager+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+										<fieldset>
+  											<legend>Business Development Manager</legend>
+  										</fieldset>
+										<div class="row" id="bdmId">
+											<div class="form-group col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+												<div>
+													<label for="recruiterName">BDM Name
+														<span class="text-danger">*</span>
+													</label> 
+													<select class="form-control fstdropdown-select internalUserType"
+														th:field="*{businessDevelopmentManagerId}" required onchange="setInternalUser('BDM',this.value)">
+														<option value="">select Business Development</option>
+														<option th:each="BDM : ${BDMList}"
+															th:text="${BDM.firstname +' ' + BDM.lastname}"
+															th:value="${BDM.id}" th:selected="${BDM.id == userDetail.businessDevelopmentManagerId}">
+														</option>
+													</select>
+												</div>
+												<div th:if="${#fields.hasErrors('businessDevelopmentManagerName')}"
+													th:errors="*{businessDevelopmentManagerName}"
+													class="validation-message"></div>
+
+											</div>
+											<div class="form-group col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+												<label for="recruiterName">
+													BDM Commission<span class="text-danger">*</span>
+												</label> <input type="text" th:field="*{bDMCommission}" th:readonly="${userDetail.bDMDefault == true}"
+															th:classappend="${userDetail.bDMDefault}?'readonlyColor':''"
+													parsley-trigger="change" required
+													placeholder="Enter business development manager commission"
+													class="form-control hourNum">
+												<div th:if="${#fields.hasErrors('bDMCommission')}"
+													th:errors="*{bDMCommission}" class="validation-message"></div>
+											</div>
+											
+											<div class="form-group col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+												<label for="bDMRateCountOn">Commission on<span class="text-danger">*</span></label> 
+												<select class="form-control" th:classappend="${userDetail.bDMDefault}?'readonlyColor':''"
+													th:field="*{bDMRateCountOn}" id="bDMRateCountOn" required>
+													<option value="">Select on</option>
+													<option value="G_MARGIN">Gross margin</option>
+													<option value="REVENUE"> Revenue</option>
+													<option value="ON_HOURS">Hours</option>
+												</select>
+												<div class="readonlyPortion"  id="bDMreadonlyCountOn" th:classappend="${userDetail.bDMDefault}?'show':''"></div>
+											</div>
+												<div class="col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+													<div class="row"> 
+														<div class="col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+															<label for="bDMRateType">Rate type <span class="text-danger">*</span> </label>
+															<select class="form-control" th:classappend="${userDetail.bDMDefault}?'readOnlyColor':''"
+																th:field="*{bDMRateType}" id="bDMRateType" required>
+																<option value="">Select rate</option>
+																<option value="FIX">Fix</option>
+																<option value="PERCENTAGE"> Percentage</option>
+															</select>
+															<div class="readonlyPortion"  id="bDMreadonlyRateType" th:classappend="${userDetail.bDMDefault}?'show':''"></div>
+														</div>
+			                                               
+			                                            <div class="col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7" > 
+			                                               	<label for="lb">&nbsp;<span class="text-danger"></span></label>
+			                                                <div class="ml-0 custom-control custom-checkbox mb-3">
+				                                            	<input type="checkbox" th:field="*{bDMRecurssive}" class="custom-control-input" id="bDMRecurssive" value="true" data-toggle="tooltip" data-placement="top" title="Recurssive">
+				                                            	<label class="custom-control-label" for="bDMRecurssive">Recurssive</label>
+			                                    			</div>
+			                                    			<select class="form-control" th:required="${!userDetail.bDMRecurssive}"
+			                                    			 th:disabled="${userDetail.bDMRecurssive}"
+			                                    			 th:field="*{bDMRecurssiveMonth}" id="bDMRecurssiveMonth">
+																<option value="" th:text="${userDetail.bDMRecurssive?'On all month':'Select recurssive month'}">Recurssive Month</option>
+																<option th:each="month : ${T(com.aim.enums.Month).values()}" 
+						 											th:value="${month.urlParam}"
+						 											th:text="${month.displayLabel}">
+						 							   		 	</option>
+															</select>
+															<div class="readonlyPortion"  id="bDMreadonlyRecurssive" th:classappend="${userDetail.bDMDefault}?'show':''"></div>
+			                                            </div>
+                                            		</div>
+                                            		
+                                            		<div class="col-sm-12 text-center">
+	                                                	<sup class="col-sm-12 text-danger text-center mt-3" th:style="${userDetail.bDMRateCountOn == T(com.aim.enums.RateCountOn).ON_HOURS ? 'display:block' : 'display:none'}" id="canNotChangeBDM">You can not change</sup>
+	                                                </div>
+	                                                <div th:style="${userDetail.bDMRateCountOn == T(com.aim.enums.RateCountOn).ON_HOURS ? 'display:block' : 'display:none'}" id="canNotChangeCoverBDM"></div>
+                                                
+												 </div>
+												 
+										</div>
+<!-- ++++++++++++++++++++++++++++++++++++++++++Recruiter Name++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+										<fieldset>
+  											<legend>Recruiter</legend>
+  										</fieldset>
+										<div id="renId" class="row">
+											<div class="form-group col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+												<div>
+													<label for="recruiterName ">Recruiter Name<span
+														class="text-danger">*</span></label> <select
+														class="form-control fstdropdown-select internalUserType"
+														th:field="*{recruiterId}" required onchange="setInternalUser('REN',this.value)">
+														<option value="">Select Recruiter</option>
+														<option th:each="recruiter : ${recruiters}"
+															th:text="${recruiter.firstname +' ' + recruiter.lastname}"
+															th:value="${recruiter.id}" th:selected="${recruiter.id == userDetail.recruiterId}">
+														</option>
+													</select>
+												</div>
+												<div th:if="${#fields.hasErrors('recruiterName')}"
+													th:errors="*{recruiterName}" class="validation-message"></div>
+											</div>
+											<div class="form-group col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+												<label for="recCommission">Commission<span
+													class="text-danger">*</span></label> <input type="text" th:classappend="${userDetail.rECDefault}?'readonlyColor':''" 
+													th:readonly="${userDetail.rECDefault == true}"
+													th:field="*{recCommission}" parsley-trigger="change"
+													required placeholder="Enter recruiter commission"
+													class="form-control hourNum">
+												<div th:if="${#fields.hasErrors('recCommission')}"
+													th:errors="*{recCommission}" class="validation-message"></div>
+											</div>
+											
+											<div class="col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+												<label for="recRateCountOn">Commission on<span class="text-danger">*</span></label> 
+												<select class="form-control" th:classappend="${userDetail.rECDefault}?'readonlyColor':''"
+													th:field="*{recRateCountOn}" id="recRateCountOn" required> 
+													<option value="">Select on</option>
+													<option value="G_MARGIN">Gross margin</option>
+													<option value="REVENUE"> Revenue</option>
+													<option value="ON_HOURS">Hours</option>
+												</select>
+												<div class="readonlyPortion"  id="rECreadonlyCountOn" th:classappend="${userDetail.rECDefault}?'show':''"></div>
+											</div>
+														
+											<div class="col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+												<div class="row"> 
+													
+													<div class="col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+														<label for="recRateType">Rate type <span class="text-danger">*</span> </label>
+														<select class="form-control" th:classappend="${userDetail.rECDefault}?'readonlyColor':''"
+															th:field="*{recRateType}" id="recRateType" required>
+															<option value="">Select rate</option>
+															<option value="FIX">Fix</option>
+															<option value="PERCENTAGE"> Percentage</option>
+														</select>
+														<div class="readonlyPortion"  id="rECreadonlyRateType" th:classappend="${userDetail.rECDefault}?'show':''"></div>
+													</div>
+													
+		                                             <div class="col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7" > 
+		                                             	<label for="lb">&nbsp;<span class="text-danger"></span></label>
+														<div class="ml-0 custom-control custom-checkbox mb-3">
+				                                           	<input type="checkbox" th:field="*{recRecurssive}" class="custom-control-input" id="recRecurssive" value="true" data-toggle="tooltip" data-placement="top" title="Recurssive">
+				                                           	<label class="custom-control-label" for="recRecurssive">Recurssive</label>
+		                                  				</div>
+		                                  				<select class="form-control" th:required="${!userDetail.recRecurssive}" 
+		                                  					th:disabled="${userDetail.recRecurssive}" th:field="*{recRecurssiveMonth}" id="recRecurssiveMonth">
+															<option value="" th:text="${userDetail.recRecurssive?'On all month':'Select recurssive month'}">Recurssive Month</option>
+															<option th:each="month : ${T(com.aim.enums.Month).values()}" 
+					 											th:value="${month.urlParam}"
+					 											th:text="${month.displayLabel}">
+					 							   		 	</option>
+														</select>
+														<div class="readonlyPortion"  id="rECreadonlyRecurssive" th:classappend="${userDetail.rECDefault}?'show':''"></div>
+		                                             </div>
+                                             
+                                             		<div class="col-sm-12 text-center">
+	                                                	<sup class="col-sm-12 text-danger text-center mt-3" th:style="${userDetail.recRateCountOn == T(com.aim.enums.RateCountOn).ON_HOURS ? 'display:block' : 'display:none'}" id="canNotChangeREN">You can not change</sup>
+	                                                </div>
+	                                                <div th:style="${userDetail.recRateCountOn == T(com.aim.enums.RateCountOn).ON_HOURS ? 'display:block' : 'display:none'}" id="canNotChangeCoverREN"></div>
+                                                
+											
+												</div>
+											</div>
+										</div>
+										
+									</th:block>
+										
+										<hr>
+<!-- 										========================================================== -->
+										
+										<div class="form-group text-center col-sm-12">
+											<button class="btn btn-primary waves-effect waves-light"
+												type="submit">Update Client Details</button>
+											<a class="btn btn-danger waves-effect m-l-5"
+												th:href="@{'/admin/user-detail/' + ${userDetail.user.id}}">
+												Cancel</a>
+										</div>
+									</form>
+								</div>
+							</div>
+<!-- 			                  _________________________________________________________________ -->
+			                  </div>
+			                  </div>
+			                </div>
+			              </div>
+            </div>
+							
+					</div>
+					
+					
+				
+			             
+					
+					<div class="card" th:if="${userDetail.user.role == 'ROLE_USER'}">
+						<div class="card-body ">
+							<table id="userDetailTable"  class="table table-responsive">
+								<thead>
+									<tr>
+										<th>No</th>
+										<th>Client</th>
+										<th>Timesheet period</th>
+										<th>Start Date</th>
+										<th>End Date</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="odd gradeX"
+										th:each="userDetail,index : ${userDetails}">
+										<td th:text="${index.index + 1}"></td>
+										<td th:text="${userDetail.clientName}"></td>
+										<td>
+											<span th:if="${userDetail.timeSheetPeriod == 'oneWeek'}">One Week</span>
+											<span th:if="${userDetail.timeSheetPeriod == 'twoWeek'}">Two Week</span>
+											<span th:if="${userDetail.timeSheetPeriod == 'oneMonth'}">One Month</span>
+										</td>
+										<td th:text="${#dates.format(userDetail.startDate, 'MMM-dd-yyyy')}"></td>
+										<td th:text="${#dates.format(userDetail.endDate, 'MMM-dd-yyyy')}"></td>
+										<td>
+										
+										<a data-toggle="modal"
+											data-target="#custom-width-modal"
+											th:onclick="'bacisDetails(\'' + ${userDetail.user.firstName + ' ' + userDetail.user.lastName} + ' / ' +${userDetail.clientName} +'\','+ ${userDetail.userDetailId} + ')'"><i
+												class="fas fa-info-circle"
+												style="color: orange; font-size: 20px;"
+												data-toggle="tooltip" data-placement="left"
+												data-placement="left" data-placement="right"
+												title="Basic Details"></i></a> 
+												
+												&nbsp; <a th:if="${session.user.role == 'ROLE_ADMIN'}" th:href="@{${'/admin/user-detail/client/' + userDetail.userDetailId}}"><span class="badge badge-info">More details</span></a>
+												
+												&nbsp; <a th:if="${session.user.role == 'ROLE_ADMIN'}"
+											th:href="@{${'/admin/user-detail/' + {userDetail.user.id} + '?userDetailId=' + {userDetail.userDetailId} } }"><i
+												class="fas fa-user-edit " style="font-size: 20px;"
+												data-toggle="tooltip" data-placement="right" title="Edit"></i></a> &nbsp;
+											<a th:if="${session.user.role == 'ROLE_ADMIN'}"
+											th:href="@{${'/admin/user-hour-log/' + {userDetail.userDetailId}}}"><i
+												class="far fa-calendar-alt" data-toggle="tooltip"
+												style="font-size: 20px; color: cornflowerblue;"
+												data-placement="right" title="Hour Log"></i></a>  &nbsp; <a
+											th:if="${!userDetail.active && permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CLIENT_ASSIGN_USER,T(com.aim.enums.Permission).UPDATE, false)}"
+											th:href="@{${'/admin/user-detail/active/' + userDetail.userDetailId}}"><i
+												class="fas fa-dot-circle text-danger"
+												style="font-size: 20px;" data-toggle="tooltip"
+												data-placement="left" title="Active"></i></a>  &nbsp; <a
+											th:if="${userDetail.active && permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CLIENT_ASSIGN_USER,T(com.aim.enums.Permission).UPDATE, false)}"
+											th:href="@{${'/admin/user-detail/de-active/' + userDetail.userDetailId}}"><i
+												class="fas fa-dot-circle text-success"
+												style="font-size: 20px;" data-toggle="tooltip"
+												data-placement="left" title="De-Active"></i></a></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<div class="card" th:if="${session.user.role == 'ROLE_ADMIN'}">
+						<div class="card-body">
+							<button class="btn btn-primary waves-effect waves-light"
+								data-toggle="modal" data-target="#custom-width-modal-file"
+								style="float: right;">Add Files</button>
+							<div class=""> 
+								<table id="userDetailTableFile" class="table table-responsive">
+									<thead>
+										<tr>
+											<th>No</th>
+											<th>Type</th>
+											<th>Link</th>
+											<th>Exp. Date</th>
+											<th>Remark</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr class="odd gradeX" th:each="userFile,index : ${userFiles}">
+											<td th:text="${index.index + 1}"></td>
+											<td th:text="${userFile.type}"></td>
+											<td><a
+												th:href="@{|/admin/user-file/download/${userFile.id}|}"
+												th:attr="download=${userFile.fileName}">Link</a></td>
+											<td
+												th:text="${#dates.format(userFile.expDate, 'MMM-dd-yyyy')}"></td>
+											<!-- 			                                            <td th:text="${#dates.dayOfWeekName(userFile.expDate)}"></td> -->
+											<td th:text="${userFile.remark}"></td>
+											<td><a
+												th:href="@{${'/admin/user-file/delete?id=' + {userFile.id} } }"><i
+													class="fas fa-trash" style="font-size: 20px;"
+													data-toggle="tooltip" data-placement="right" title="Delete"></i></a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<div id="custom-width-modal" class="modal fade bs-example-modal-lg"
+							tabindex="-1" role="dialog"
+							aria-labelledby="custom-width-modalLabel" aria-hidden="true"
+							style="display: none;">
+					<div class="modal-dialog modal-xl">
+						<div class="modal-content">
+							<div class="modal-body pb-0 mb-0">
+							<div>	<button type="button" class="close  details-close-button" data-dismiss="modal"
+											aria-hidden="true">×</button>
+								</div><div id="user-details-modal"></div>
+							</div>
+							
+						</div>
+					</div>
+				</div> 
+					<!-- /.modal -->
+					<div id="custom-width-modal-file"
+						class="modal fade bs-example-modal-center" tabindex="-1"
+						role="dialog" aria-labelledby="mySmallModalLabel"
+						aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h4 class="modal-title" id="custom-width-modalLabel">Add
+										new file</h4>
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true">×</button>
+								</div>
+								<div class="modal-body">
+									<form th:action="@{/admin/user-file}"
+										enctype="multipart/form-data" method="post"
+										class="needs-validation" data-parsley-validate novalidate>
+										<div class="modal-body">
+											<div class="">
+												<div class="form-group">
+													<label>Type<span class="text-danger">*</span></label> 
+													<input
+														type="text" name="type" parsley-trigger="change" required
+														placeholder="Enter type" class="form-control" data-parsley-maxlength="8"> 
+													<input
+														type="hidden" name="id" th:value="${userDetail.user.id}">
+												</div>
+												<div class="form-group">
+													<label for="vendorName">File<span
+														class="text-danger">*</span></label> <input class="form-control"
+														name="file" type="file" required />
+												</div>
+												<div class="form-group">
+													<label for="startDate">Expire Date<span
+														class="text-danger">*</span></label> <input type="text"
+														name="expDate" required class="form-control"
+														placeholder="mm/dd/yyyy" data-provide="datepicker"
+														data-date-format="mm/dd/yyyy" id="datepicker3" />
+												</div>
+												<div class="form-group">
+													<label for="vendorName">Remark<span
+														class="text-danger">*</span></label> 
+													<input data-parsley-maxlength="40" class="form-control"
+														type="text" name="remark" required />
+												</div>
+											</div>
+										</div>
+										<div class="modal-footer">
+											<button type="submit" class="btn btn-primary waves-effect">Save</button>
+											<button type="button" class="btn btn-danger waves-effect"
+												data-dismiss="modal">Close</button>
+										</div>
+									</form>
+								</div>
+							</div>
+							<!-- /.modal-content -->
+						</div>
+						<!-- /.modal-dialog -->
+					</div>
+					<!-- /.modal -->
+
+				</div>
+				<!-- container -->
+
+			</div>
+			<!-- content -->
+
+		</div>
+	</div>
+	<div id="client-add"></div>
+	<script>
+            var resizefunc = [];
+        </script>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			var w2OrC2cType = [[${userDetail.w2OrC2cType}]];
+			var clientIdSelected = [[${userDetail.clientId}]];
+			var employerIdSelected = [[${userDetail.employerId}]];
+			var vendorIdSelected = [[${userDetail.vendorId}]];
+			/*]]>*/
+	</script>
+
+	<!-- jQuery  -->
+	<!-- JAVASCRIPT -->
+	<script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+	<script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+	<script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+	<script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+
+	<!-- Required datatable js -->
+	<script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+
+	<!-- Responsive examples -->
+	<script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+	<script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+
+	<!-- Datatable init js -->
+	<script th:src="@{/assets_new/js/pages/datatables.init.js}"></script>
+
+	<script th:src="@{/assets_new/js/app.js}"></script>
+	<script th:src="@{/assets_new/libs/parsleyjs/parsley.min.js}"></script>
+	<script th:src="@{/assets_new/js/pages/form-validation.init.js}"></script>
+
+	<script th:src="@{/assets_new/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+	<script th:src="@{/assets/js/fstdropdown.js}"></script>
+	<script th:src="@{/assets/js/javascript/user-detail.js}"></script>
+
+	<script th:src="@{/assets_new/libs/plugin/intlTelInput.min.js}"></script>
+	<script th:src="@{/assets_new/libs/plugin/intlTelInput-jquery.min.js}"></script>
+     
+    <script th:src="@{/assets/js/javascript/country-phone-code.js}"></script>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+        	$('.hourNum').keypress(function (event) { 
+					
+					if(/*For dot*/event.which != 46 && event.which != 8 && event.which != 0 && (event.which < 48 || event.which > 57))
+						return false;
+					return true;
+			});
+// 				$('#datatable').DataTable({
+// 					"scrollX": true
+// 				});
+			$('#datatable1').DataTable({
+				"scrollX": true
+			});
+			$('#datepicker').datepicker();
+			$('#datepicker2').datepicker();
+			$('#datepicker3').datepicker();
+			setFstDropdown();
+				
+		});
+	</script>
+<th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+</body>
+</html>

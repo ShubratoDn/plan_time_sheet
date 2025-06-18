@@ -1,0 +1,76 @@
+<div id="userSaveAlert" th:fragment="user-save-alert"
+	class="modal fade bs-example-modal-center" tabindex="-1"
+	role="dialog" aria-labelledby="mySmallModalLabel"
+	aria-hidden="true" th:if="${newUserAdd}">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+<!-- 			<div class="modal-header"> -->
+<!-- 				<h4 class="modal-title"> -->
+<!-- 					Add new client</h4> -->
+<!-- 				<button type="button" class="close" data-dismiss="modal" -->
+<!-- 					aria-hidden="true">×</button> -->
+<!-- 			</div> -->
+			<div class="modal-body">
+				<div class="card overflow-hidden m-0">
+				     <div class="bg-soft-primary">
+				         <div class="row">
+				             <div class="col-7">
+				                 <div class="text-primary p-4">
+				                     <h5 class="text-primary">New User Save!</h5>
+				                     <p>User has been registered successfully</p>
+				                 </div>
+				             </div>
+				             <div class="col-5 align-self-end">
+				                 <img src="../assets_new/images/profile-img.png" alt="" class="img-fluid">
+				             </div>
+				         </div>
+				     </div>
+				     <div class="card-body pt-0"> 
+				         <div>
+				             <a href="javascript:void(0);">
+				                 <div class="avatar-md profile-user-wid mb-4">
+				                     <span class="avatar-title rounded-circle bg-light">
+				                         <img src="../assets/images/logo.png" alt="" class="rounded-circle" height="34">
+				                     </span>
+				                 </div>
+				             </a>
+				         </div>
+				         <div class="">
+				         	<div class="row">
+                         		<div class="text-center mb-2 col-12 col-sm-12 col-md-12 col-lg-12">
+                         		<h5>If you want to save client details? </h5>
+                         		</div>
+                         		<div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                              		 <div class="">
+                                   	 	<label for="emailAddress">Name : </label>
+                                   	 	<span th:text="${newUserAdd.firstName + ' ' + newUserAdd.lastName}"></span>
+                                      </div>
+                                 </div>
+                         		<div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                              		 <div class="form-group">
+                                   	 	<label for="emailAddress">Email : </label>
+                                   	 	<span th:text="${newUserAdd.email}"></span>
+                                      </div>
+                                 </div>
+                            </div>
+                            <div class="row">
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                            	<div class="form-group text-center ">
+                            		<button type="reset" class="btn btn-danger waves-effect m-l-5" data-dismiss="modal" aria-hidden="true">
+                                        Cancel <i class="fas fa-times"></i>
+                                    </button>
+                                        
+                                    <a th:href="@{${'/admin/user-detail/' + {newUserAdd.id}+'?show=true' } }" class="btn btn-primary waves-effect waves-light">
+                                        Add more Details <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            </div>
+				         </div>
+				     </div>
+				 </div>
+ 
+			</div>
+		</div>
+	</div>
+</div>

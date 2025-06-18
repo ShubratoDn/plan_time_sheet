@@ -1,0 +1,115 @@
+<div class="modal-content" th:fragment="clientAddInnerFragment">
+			<div class="modal-header">
+				<h4 class="modal-title">
+					Add new <span th:text="${clientAddDetail.type.displayLabel}"> </span></h4>
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			</div>
+			<div class="modal-body">
+			<div id="clientAddFormError"></div>
+				<form th:action="@{/admin/new-client-add}" id="client-add-form"
+					enctype="multipart/form-data" method="post" th:object="${clientAddDetail}" 
+					th:if="${clientAddDetail != null}"
+					class="needs-validation" data-parsley-validate novalidate>
+					<div class="modal-body">
+						<div class="row">
+							<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+								<label><span th:text="${clientAddDetail.type.displayLabel}"></span> Name<span class="text-danger">*</span></label> 
+								<input type="text" th:field="*{clientName}" parsley-trigger="change" required
+									placeholder="Client Name" class="form-control" maxlength="25"> 
+									<input type="hidden" th:field="*{type}"> 
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+								<div class="form-group">
+                                	<label for="demo">Phone<span class="text-danger">*</span></label>
+                                    <input type="tel" th:field="*{phone}" parsley-trigger="change" required placeholder="" maxlength="14" id="telephone" class="form-control">
+                              	</div>
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+								<label for="startDate">Zip Code<span
+									class="text-danger">*</span>
+								</label> 
+								<input type="text" th:field="*{zipCode}" placeholder="Zip Code" required maxlength="6" class="form-control" />
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+								<label for="vendorName">Address<span
+									class="text-danger"></span></label> 
+								<textarea class="form-control" max-hight="50px"
+									type="text" th:field="*{address}" /></textarea>
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+								<label for="vendorName">Remark<span
+									class="text-danger"></span></label> 
+								<textarea class="form-control" max-hight="50px"
+									type="text" th:field="*{remark}" /></textarea>
+							</div>
+						</div>
+						<div class="row mb-4">
+			            	<div class="col-md-12">
+								<a class="btn btn-secondary" href="javascript:;" th:onclick="'javascript:addOrRemoveRow(\'add\', \'addRowManager\');'">ADD MANAGER</a>
+			                </div>
+			            </div>
+						<div class="row" th:each="managerDetail, rowStat : *{managerDetails}">
+							<div class="form-group col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+								<label for="startDate">Manager Name : <span th:text="${rowStat.index + 1}"></span><span
+									class="text-danger">*</span>
+								</label> 
+								<input type="text" th:field="*{managerDetails[__${rowStat.index}__].managerName}" placeholder="Manager Name" required maxlength="25" class="form-control" />
+							</div>
+							
+							<div class="form-group col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+								<label for="startDate">Email<span
+									class="text-danger">*</span>
+								</label> 
+								<input type="email" th:field="*{managerDetails[__${rowStat.index}__].email}" maxlength="40" placeholder="Email" required class="form-control" />
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+								<div class="form-group">
+                                	<label for="demo">Department<span class="text-danger"></span></label>
+                                    <input type="text" th:field="*{managerDetails[__${rowStat.index}__].department}" placeholder="department" class="form-control">
+                              	</div>
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+								<div class="form-group">
+                                	<label for="demo">Phone<span class="text-danger">*</span></label>
+                                    <input type="tel" th:field="*{managerDetails[__${rowStat.index}__].phone}" parsley-trigger="change" required placeholder="" maxlength="14" id="telephone1" class="form-control">
+                              	</div>
+							</div>
+							<div class="col-sm-1 d-flex align-items-center justify-content-between">
+			                	<a href="javascript:;" th:onclick="'javascript:addOrRemoveRow(\'' + ${rowStat.index} + '\', \'removeRowManager\');'">
+			                		<i class="fa fa-trash fa-lg" aria-hidden="true"></i>
+			                	</a>
+			                </div>
+			                <div class="col-12 col-sm-12 text-center" th:if="${clientAddDetail.managerDetails[__${rowStat.index}__].errorMsg}">
+			                	<p class="text-danger m-0 p-0" th:text="${clientAddDetail.managerDetails[__${rowStat.index}__].errorMsg}"></p>
+			                </div>
+							<hr>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary waves-effect">Save</button>
+						<button type="button" class="btn btn-danger waves-effect"
+							data-dismiss="modal">Close</button>
+					</div>
+				</form>
+				<div id="add-client-form-is-submit" style="position: absolute;
+      		display:none;
+      		z-index: 5;
+		    top: 0;
+		    left: 0;
+		    background: rgba(255,255,255,0.5);
+		    width: 100%;
+		    height: 100%;
+		    justify-content: center;
+		    align-items: center;
+		    transition: all .5s;
+		    opacity:1;
+		    cursor: pointer;">
+		    
+		    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="48" height="48" viewBox="0 0 172 172" style=" fill:#000000;"><defs><linearGradient x1="157.28683" y1="157.28683" x2="42.48758" y2="42.48758" gradientUnits="userSpaceOnUse" id="color-1_Z4lBdSu2GAl2_gr1"><stop offset="0" stop-color="#ffffff"></stop><stop offset="0.242" stop-color="#f2f2f2"></stop><stop offset="1" stop-color="#cccccc"></stop></linearGradient><linearGradient x1="13.66683" y1="13.66683" x2="117.01017" y2="117.01017" gradientUnits="userSpaceOnUse" id="color-2_Z4lBdSu2GAl2_gr2"><stop offset="0" stop-color="#5aa9ef"></stop><stop offset="1" stop-color="#218ded"></stop></linearGradient></defs><g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal" transform="rotate(307.237 86 86)">
+    			<animateTransform xmlns="http://www.w3.org/2000/svg" attributeType="xml" attributeName="transform" type="rotate" from="0 86 86" to="360 86 86" dur="0.6s" repeatCount="indefinite"></animateTransform>
+    			<path d="M0,172v-172h172v172z" fill="none"></path><g><path d="M86,14.33333c-39.5815,0 -71.66667,32.08517 -71.66667,71.66667c0,39.5815 32.08517,71.66667 71.66667,71.66667c39.5815,0 71.66667,-32.08517 71.66667,-71.66667c0,-39.5815 -32.08517,-71.66667 -71.66667,-71.66667zM86,139.75c-29.68433,0 -53.75,-24.06567 -53.75,-53.75c0,-29.68433 24.06567,-53.75 53.75,-53.75c29.68433,0 53.75,24.06567 53.75,53.75c0,29.68433 -24.06567,53.75 -53.75,53.75z" fill="url(#color-1_Z4lBdSu2GAl2_gr1)"></path><path d="M86,18.02058v10.75717c0,1.935 1.53725,3.45792 3.46867,3.57975c28.896,1.84183 51.58567,26.51667 50.224,56.17592c-1.25775,27.3695 -23.779,49.89433 -51.15208,51.15567c-29.66283,1.36525 -54.33767,-21.32442 -56.1795,-50.224c-0.12542,-1.92783 -1.64833,-3.46508 -3.58333,-3.46508h-10.75717c-2.021,0 -3.698,1.67342 -3.59408,3.69083c1.98517,39.13 35.35317,69.97892 75.43275,67.8755c36.17375,-1.89558 65.80792,-31.53333 67.7035,-67.70708c2.10342,-40.08317 -28.7455,-73.44758 -67.87192,-75.43275c-2.01742,-0.10033 -3.69083,1.57667 -3.69083,3.59408z" fill="url(#color-2_Z4lBdSu2GAl2_gr2)"></path></g></g>
+    		</svg>
+      
+      </div>
+			</div>
+		</div>

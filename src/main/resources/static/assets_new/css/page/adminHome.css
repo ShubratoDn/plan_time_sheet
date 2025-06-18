@@ -1,0 +1,270 @@
+.p-3-3{
+	padding-top: 1rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+.min-h-col {
+	min-height: 7rem
+}
+.m-t-2{
+	margin-top: 13px !important;
+}
+.p-t-c-t {
+  	position: absolute;
+ 	top: 20px;
+}
+.p-t-c-b {
+  	position: absolute;
+ 	top: 60px;
+}
+
+/* The container */
+.container1 {
+    display: inline-block;
+  	position: relative;
+	padding-left: 35px;
+	margin-bottom: 12px;
+	margin-right: 12px;
+	cursor: pointer;
+	font-size: .8125rem;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.box {
+	display: flex !important;
+   	display: -ms-flexbox;
+    display: table-cell;
+}
+.box {
+    
+    flex-wrap: wrap; /* Optional. only if you want the items to wrap */
+    justify-content: center; /* For horizontal alignment */
+    align-items: center; /* For vertical alignment */
+}
+		
+		/* Hide the browser's default radio button */
+.container1 input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+		
+		/* Create a custom radio button */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 15px;
+  width: 15px;
+  background-color: #bdbbbb;
+  border-radius: 50%;
+}
+		
+		/* On mouse-over, add a grey background color */
+.container1:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+		
+		/* When the radio button is checked, add a blue background */
+.container1.daily input:checked ~ .checkmark {
+  background-color: #50a5f1;
+}
+.container1.daily input ~ .line {
+  border-bottom: 5px solid #50a5f1;
+}
+.container1.all input:checked ~ .checkmark {
+  background-color: #8808d8;
+}
+.container1.all input ~ .line {
+  border-bottom: 5px solid #8808d8;
+}
+.container1.extra input:checked ~ .checkmark {
+  background-color: #f1b44c;
+}
+.container1.extra input ~ .line {
+  border-bottom: 5px solid #f1b44c;
+}
+.container1.vacation input:checked ~ .checkmark {
+  background-color: #556ee6;
+}
+.container1.vacation input ~ .line {
+  border-bottom: 5px solid #556ee6;
+}
+.container1.expense input:checked ~ .checkmark {
+  background-color: #556ee6;
+}
+.container1.expense input ~ .line {
+  border-bottom: 5px solid #556ee6;
+}
+.container1.net input:checked ~ .checkmark {
+  background-color: #34c38f;
+}
+.container1.net input ~ .line {
+  border-bottom: 5px solid #34c38f;
+}
+.container1.commission input:checked ~ .checkmark {
+  background-color: #f46a6a;
+}
+.container1.commission input ~ .line {
+  border-bottom: 5px solid #f46a6a;
+}
+.container1.consultantC2C input:checked ~ .checkmark {
+  background-color: #f1b44c;
+}
+.container1.consultantC2C input ~ .line {
+  border-bottom: 5px solid #f1b44c;
+}
+.container1.consultantAll input:checked ~ .checkmark {
+  background-color: #34c38f;
+}
+.container1.consultantAll input ~ .line {
+  border-bottom: 5px solid #34c38f;
+}
+.container1.consultantPtax input:checked ~ .checkmark {
+  background-color: #0f78ea;
+}
+.container1.consultantPtax input ~ .line {
+  border-bottom: 5px solid #0f78ea;
+}
+		
+.container1.pending input:checked ~ .checkmark {
+  background-color: #12ddea;
+}
+.container1.pending input ~ .line {
+  border-bottom: 5px solid #12ddea;
+}
+		
+		/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+		/* Show the indicator (dot/circle) when checked */
+.container1 input:checked ~ .checkmark:after {
+  display: block;
+}
+		/* Style the indicator (dot/circle) */
+.container1 .checkmark:after {
+ 	top: 9px;
+	left: 9px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+}
+.sort-text{
+	color: #495057 !important;
+	font-weight: 500 !important;
+}
+
+.filter-stick{
+	position: -webkit-sticky;
+	position: sticky; 
+	top: 0;
+	z-index: 100;
+	overflow: visible;
+}
+.filter-stick-add{
+	position: -webkit-sticky !important;
+	position: sticky !important; 
+	top: 0 !important;
+	z-index: 100 !important;
+	overflow: visible !important;
+}
+.filter-stick-button{
+	position: -webkit-sticky;
+	position: sticky; 
+	top: 0;
+	z-index: 100;
+	overflow: visible;
+	padding-left: 12px;
+}
+.filter-padding-bottom{
+	background-color: #f8f8fb;
+  	padding-bottom:0;
+}
+.filter-padding-top{
+	padding-top:0;
+}
+.hide{
+	display: none !important;
+}
+/* col-xl- */
+@media only screen and (min-width: 1200px){
+	.filter-stick{
+		position: -webkit-sticky;
+		position: sticky; 
+		top: 0;
+		z-index: 100;
+		overflow: visible;
+	}
+	#myHeader{
+		display: none !important;
+	}
+}
+
+/* col-lg- */
+@media only screen and (min-width: 992px) and (max-width: 1199px){
+	.filter-stick{
+		position: -webkit-sticky;
+		position: sticky; 
+		top: 0;
+		z-index: 100;
+		overflow: visible;
+	}
+	#myHeader{
+		display: none !important;
+	}
+}
+
+/* col-md- */
+@media only screen and (min-width: 577px) and (max-width: 991px) {
+	.filter-stick{
+		position: -webkit-sticky;
+		position: sticky; 
+		top: 0;
+		z-index: 100;
+		overflow: visible;
+	}
+	#myHeader{
+		display: none !important;
+	}
+}
+
+/* col-sm- */
+@media only screen and (max-width: 576px){
+	.filter-stick{
+		position: -webkit-sticky;
+		position: inherit; 
+		z-index: 100;
+		overflow: visible;
+	}
+	
+}
+
+.filter-remove{
+	float:right;
+	margin-top: 10px;
+	border-radius: 50%;
+	opacity: 0.7;
+}
+
+.details-close-button{
+    position: absolute;
+    top: 13px;
+    left: calc(100% - 26px);
+    z-index: 100;
+    font-size: 27px;
+	
+}
+
+.user-detail{
+	position: relative;
+    z-index: 100;
+    float: right;
+}
+
+
+		

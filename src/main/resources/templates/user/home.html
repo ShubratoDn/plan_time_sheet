@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
+        <meta name="author" content="Coderthemes">
+
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Home</title>
+
+        <!-- App css -->
+        <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/core.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/components.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/icons.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/pages.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/menu.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/responsive.css}" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" th:href="@{/assets/plugins/switchery/switchery.min.css}">
+		
+		<link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        
+        <script th:src="@{/assets/js/modernizr.min.js}"></script>
+
+    </head>
+
+
+    <body class="fixed-left">
+
+        <!-- Begin page -->
+        <div id="wrapper">
+			
+			<th:block th:replace="user/header :: header"></th:block>
+        
+        	<th:block th:replace="user/menu :: menu"></th:block>
+			
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="content-page">
+                <!-- Start content -->
+                <div class="content">
+                    <div class="container">
+
+                        	<div class="row text-center" style="margin-top: 20px;">
+
+	                            <div class="col-md-4 col-sm-4">
+	                                <div class="card-box widget-box-one">
+	                                    <div class="wigdet-one-content">
+	                                        <p class="m-0 text-uppercase font-600 font-secondary text-overflow">Total Hours</p>
+	                                        <h2 class="text-danger"><span data-plugin="counterup" th:text="${#numbers.formatDecimal(totalHour,1,2)}"></span></h2>
+	                                    </div>
+	                                </div>
+	                            </div><!-- end col -->
+	
+	                            <div class="col-md-4 col-sm-4">
+	                                <div class="card-box widget-box-one">
+	                                    <div class="wigdet-one-content">
+	                                        <p class="m-0 text-uppercase font-600 font-secondary text-overflow">Current Month Hours</p>
+	                                        <h2 class="text-dark"><span data-plugin="counterup" th:text="${#numbers.formatDecimal(currentMonthHour,1,2)}"></span> </h2>
+	                                    </div>
+	                                </div>
+	                            </div><!-- end col -->
+	                            <div class="col-md-4 col-sm-4">
+	                                <div class="card-box widget-box-one">
+	                                    <div class="wigdet-one-content">
+	                                        <p class="m-0 text-uppercase font-600 font-secondary text-overflow">Current Year Hours</p>
+	                                        <h2 class="text-pink"><span data-plugin="counterup" th:text="${#numbers.formatDecimal(currentYearHour,1,2)}"></span> </h2>
+	                                    </div>
+	                                </div>
+	                            </div><!-- end col -->
+	
+	                            <div class="col-md-4 col-sm-4">
+	                                <div class="card-box widget-box-one">
+	                                    <div class="wigdet-one-content">
+	                                        <p class="m-0 text-uppercase font-600 font-secondary text-overflow">This Week Hours</p>
+	                                        <h2 class="text-success"><span data-plugin="counterup" th:text="${#numbers.formatDecimal(currentWekkHour,1,2)}"></span></h2>
+	                                    </div>
+	                                </div>
+	                            </div><!-- end col -->
+	
+	                            <div class="col-md-4 col-sm-4">
+	                                <div class="card-box widget-box-one">
+	                                    <div class="wigdet-one-content">
+	                                        <p class="m-0 text-uppercase font-600 font-secondary text-overflow">Avg Hours Per Day</p>
+	                                        <h2 class="text-warning"><span data-plugin="counterup" th:text="${#numbers.formatDecimal(avgPerDay,1,2)}"></span> </h2>
+	                                    </div>
+	                                </div>
+	                            </div><!-- end col -->
+	                            
+	                            <div class="col-md-4 col-sm-4">
+	                                <div class="card-box widget-box-one">
+	                                    <div class="wigdet-one-content">
+	                                        <p class="m-0 text-uppercase font-600 font-secondary text-overflow">Total Client</p>
+	                                        <h2 class="text-primary"><span data-plugin="counterup" th:text="${#lists.size(userDetails)}"></span> </h2>
+	                                    </div>
+	                                </div>
+	                            </div><!-- end col -->
+	                        </div>
+                        
+                        <div class="card-box table-responsive">
+							<h4 class="m-t-0 header-title"><b>Client Details</b></h4>   
+                        	<table id="datatable" class="table table-striped  table-colored table-info">
+                            	<thead>
+	                                <tr>
+	                                    <th>No</th>
+	                                    <th>Client</th>
+	                                    <th>Vendor</th>
+	                                    <th>Employer Name</th>
+	                                    <th>Employer Phone</th>
+	                                    <th>Employer Email</th>
+	                                    <th>Address</th>
+	                                    <th>Start Date</th>
+	                                    <th>End Date</th> 
+	                                    <th>Action</th> 
+	                                </tr>
+                               </thead>
+                               <tbody>
+	                                <tr class="odd gradeX" th:each="userDetail,index : ${userDetails}">
+	                                    <td th:text="${index.index + 1}"></td>
+	                                    <td th:text="${userDetail.clientName}"></td>
+	                                    <td th:text="${userDetail.vendorName}"></td>
+	                                    <td th:text="${userDetail.employerName}"></td>
+	                                    <td th:text="${userDetail.employerPhone}"></td>
+	                                    <td th:text="${userDetail.employerEmail}"></td>
+	                                    <td th:text="${userDetail.address}"></td>
+	                                    <td th:text="${#dates.format(userDetail.startDate, 'MMM-dd-yyyy')}"></td>
+	                                    <td th:text="${#dates.format(userDetail.endDate, 'MMM-dd-yyyy')}"></td> 
+	                                    <td>
+<!--                                            	<a class="btn btn-sm btn-primary" th:href="@{${'/user/add-hours?id=' + {userDetail.userDetailId} } }">Add Hour Log</a> -->
+                                           	<a class="btn btn-sm btn-success" th:href="@{${'/user/user-hour-log/' + {userDetail.userDetailId} } }">Hour Log</a>
+	                                    </td> 
+	                                </tr>
+                               </tbody>
+                           </table>
+                        </div>
+                                   	
+                    </div> <!-- container -->
+
+                </div> <!-- content -->
+
+            </div>
+
+        </div>
+        <!-- END wrapper -->
+		<footer class="footer text-right"> 2016 - 2018 © Zircos. </footer>
+        <script>
+            var resizefunc = [];
+        </script>
+
+        <!-- jQuery  -->
+        <script th:src="@{/assets/js/jquery.min.js}"></script>
+        <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+        <script th:src="@{/assets/js/detect.js}"></script>
+        <script th:src="@{/assets/js/fastclick.js}"></script>
+        <script th:src="@{/assets/js/jquery.blockUI.js}"></script>
+        <script th:src="@{/assets/js/waves.js}"></script>
+        <script th:src="@{/assets/js/jquery.slimscroll.js}"></script>
+        <script th:src="@{/assets/js/jquery.scrollTo.min.js}"></script>
+        <script th:src="@{/assets/plugins/switchery/switchery.min.js}"></script>
+
+        <script th:src="@{/assets/js/jquery.app.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+		
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#datatable').DataTable();
+			});
+		</script>
+    </body>
+</html>

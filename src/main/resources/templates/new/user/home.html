@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+		<meta charset="utf-8" />
+        <title>Home</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+ 		<!-- Responsive datatable examples -->
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+   		<style type="text/css">
+   			.p-3-3{
+        		padding-top: 1rem !important;
+        	}
+        	  .vertical-collpsed .vertical-menu { 
+    			position: fixed;
+    			z-index: 110;}
+    			.btn-secondary.buttons-pdf.buttons-html5{
+    		border-radius: 5px;
+    	}
+    	.buttons-html5{
+        	margin: 5px;
+    	}
+    	.btn.btn-secondary.buttons-excel.buttons-html5{
+       		border-radius: 5px; 		
+    	}
+   		</style>
+   		<link th:href="@{/assets_new/css/page/adminHome.css}" rel="stylesheet" type="text/css" />
+   		<link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css"/>
+   		<link th:href="@{/assets_new/css/page/adminHome.css}" rel="stylesheet" type="text/css" />
+   		
+    </head>
+    <body data-sidebar="dark">
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+            <div class="vertical-menu">
+
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+					
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+					
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_USER'}">
+					<th:block th:replace="new/user/menu :: menu"></th:block>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div id="myHeader" class="main-content hide" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).HOURS_DASHBOARD,T(com.aim.enums.Permission).READ, false)}">
+                <div id="filter-second-div" class="page-content filter-padding-bottom">
+                <button type="button" class="btn btn-sm btn-primary" onclick="showFilter()" ><i class="fa fa-filter"></i> Filter</button>
+                </div>
+           	</div>
+             <div id="filter-first-div" class="main-content filter-stick" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).HOURS_DASHBOARD,T(com.aim.enums.Permission).READ, false)}">
+                <div id="filter-second-div" class="page-content filter-padding-bottom">
+                    <div class="container-fluid">
+                    	<div class="card">
+							<div class="card-body p-0 ml-0 mr-0 row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            	<div class="col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2 bg-soft-primary">
+                            		<button id="filterRemove" type="button" class="hide filter-remove btn btn-sm btn-primary" onclick="removeFilter()" ><i class="fa fa-times"></i></button>
+									<div class="text-primary p-3">
+                                       <h6 class="text-primary">Welcome to <span th:text="${selectUser.firstName + ' ' + selectUser.lastName }"></span></h6>
+                                    </div>
+                                    <div class="d-flex align-items-center p-3">
+                              	    	<h6 class="text-primary">Active Client</h6>
+                              	    	<h6 class="text-success" th:if="${userDetailActive.clientName != null}">&nbsp; <th:block th:text="${userDetailActive.clientName}">  </th:block></h6>
+                                        <h6 class="text-danger" th:if="${userDetailActive.clientName == null}"> &nbsp; All client are inactive.</h6>
+                                   	</div>
+                               	</div>
+                                <div class="mr-0 ml-0 p-0 col-12 col-sm-12 col-md-10 col-lg-10 col-xl-10 row">
+									<div class="p-0 col-12 col-sm-12" th:class="${userList} ? 'col-md-3 col-lg-3 col-xl-3':'col-md-5 col-lg-5 col-xl-5'">
+                                    	<div class="text-primary pt-0 pl-2 pr-2 mb-2">
+                                        	<b class="text-primary">Select Year</b>
+					                   		<select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value">
+												<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2015)}"
+					                              	th:text="${year}" th:value="'?year=' + ${year}"
+													th:selected="${year == selectYear}">
+					                           	</option>
+					                     	</select>
+										</div>
+                                	</div>
+									<div class="p-0 col-12 col-sm-12" th:class="${userList} ? 'col-md-4 col-lg-4 col-xl-4':'col-md-6 col-lg-6 col-xl-6'" th:if="${session.user.role != 'ROLE_USER'}">
+                                    	<div class="text-primary pl-2 pr-2 mb-2">
+                                        	<b class="text-primary">Select User</b>
+					                   		<select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value">
+												<option th:each="user,index : ${userList}"
+					                              	th:text="${user.firstName + ' ' + user.lastName}" th:value="'?year=' + ${selectYear} + '&user=' + ${user.id}"
+													th:selected="${user.id == selectUser.id}">
+					                           	</option>
+					                     	</select>
+										</div>
+                                	</div>
+									<div class="p-0 col-12 col-sm-12" th:class="${userList} ? 'col-md-4 col-lg-4 col-xl-4':'col-md-6 col-lg-6 col-xl-6'" th:if="${#lists.size(userDetails) > 0}">
+                                    	<div class="text-primary pl-2 pr-2 mb-2">
+                                        	<b class="text-primary">Select Client</b>
+					                   		<select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value">
+												<option th:each="userD,index : ${userDetails}" th:if="${session.user.role == 'ROLE_USER'}"
+					                              	th:text="${userD.clientName}" th:value="'?year=' + ${selectYear} + '&client=' + ${userD.userDetailId}"
+													th:selected="${userD.userDetailId == userDetail.userDetailId}">
+					                           	</option>
+												<option th:each="userD,index : ${userDetails}" th:if="${session.user.role != 'ROLE_USER'}"
+					                              	th:text="${userD.clientName}" th:value="'?year=' + ${selectYear} +'&user='+ ${selectUser.id} +'&client=' + ${userD.userDetailId}"
+													th:selected="${userD.userDetailId == userDetail.userDetailId}">
+					                           	</option>
+					                     	</select>
+										</div>
+                                	</div>
+                                	<div class="col-12 col-sm-12 col-md-1 col-lg-1 col-xl-1">
+                                  		<a th:href="@{/user/home}" class="btn btn-info mt-3"><i class="fas fa-sync-alt"></i></a>
+                                  	</div>
+                                	<div class="row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                	<hr>
+	                                	<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+	                                		<div class="d-flex align-items-center mb-1">
+	                                            <b><span class="text-pink">Approved</span> /<span class="text-success">Submitted</span> / <span class="text-danger">Rejected</span> </b>
+	                                        </div>
+	                                        <div class="">
+	                                            <b class="">
+		                                            <span class="text-pink" th:text="${#numbers.formatDecimal(approvedFile,1,2)}">  </span> /
+		                                            <span class="text-success" th:text="${#numbers.formatDecimal(newFile,1,2)}">  </span> /
+		                                            <span class="text-danger" th:text="${#numbers.formatDecimal(rejectFile,1,2)}">  </span> 
+	                                            </b>
+	                                        </div>
+	                                	</div>
+<!-- 	                                	<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4"> -->
+<!-- 	                                		<div class="d-flex align-items-center mb-1"> -->
+<!-- 	                                            <b> -->
+<!-- 	                                            	<span class="text-primary">Regular</span> / -->
+<!-- 	                                            	<span class="text-info">Extra hr</span> /  -->
+<!-- 	                                            	<span class="text-warning">Vacation</span>&nbsp;&nbsp;&nbsp; -->
+<!-- 	                                            	<span class="">Total</span> -->
+<!-- 	                                            </b> -->
+<!-- 	                                        </div> -->
+<!--                                         	<div class=""> -->
+<!-- 	                                            <b> -->
+<!-- 	                                            	<span class="text-primary" th:text="${#numbers.formatDecimal(currentMonthDailyHour,1,2)}">  </span> / -->
+<!-- 		                                            <span class="text-info" th:text="${#numbers.formatDecimal(currentMonthExtraHour,1,2)}">  </span> / -->
+<!-- 		                                            <span class="text-warning" th:text="${#numbers.formatDecimal(currentMonthVacationHour,1,2)}">  </span> &nbsp;&nbsp;&nbsp; -->
+<!-- 		                                            <span class="" th:text="${#numbers.formatDecimal(currentMonthHour,1,2)}">  </span>  -->
+<!-- 	                                            </b> -->
+<!-- 	                                        </div> -->
+<!-- 	                                	</div> -->
+	                                	<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+<!-- 	                                	 	<div class="d-flex align-items-center mb-3"> -->
+<!-- 	                                            <h4 class="font-size-14 mb-0"><span th:text="${selectYear}"></span> Year Hours</h4> -->
+<!-- 	                                        </div> -->
+	                                        <div class="d-flex align-items-center mb-1">
+	                                            <b>
+	                                            	<span class="text-secondary">Regular</span> /
+	                                            	<span class="text-success">Extra hr</span> / 
+	                                            	<span class="text-danger">Vacation</span>&nbsp;&nbsp;&nbsp;
+	                                            	<span class="">Total</span>
+	                                            </b>
+	                                        </div>
+	                                        <div class="">
+	                                            <b>
+	                                            	<span class="text-secondary" th:text="${#numbers.formatDecimal(currentYearDailyHour,1,2)}">  </span> /
+		                                            <span class="text-success" th:text="${#numbers.formatDecimal(currentYearExtraHour,1,2)}">  </span> /
+		                                            <span class="text-danger" th:text="${#numbers.formatDecimal(currentYearVactionHour,1,2)}">  </span> &nbsp;&nbsp;&nbsp;
+		                                            <span class="" th:text="${#numbers.formatDecimal(currentYearHour,1,2)}">  </span> 
+	                                            </b>
+	                                        </div>
+	                                	</div>
+                                	</div>
+                            	</div>
+                          	</div>
+                      	</div>
+                  	</div>
+               	</div>
+          	</div>
+           	<div class="main-content" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).HOURS_DASHBOARD,T(com.aim.enums.Permission).READ, false)}">
+              	<div class="page-content filter-padding-top">
+                   	<div class="container-fluid">
+                        <div id="show-button" class="row ml-0 mr-0 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" th:if="${#lists.size(userDetails) > 0}">
+                        	<div class="p-0 col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 d-flex">
+				            	<div class="card flex-fill">
+                       				<div class="card-body">
+				                    	<h4 class="card-title mb-4" style="margin-bottom: 3.5rem!important;">Time sheet Analytics</h4>
+                                        <div>
+                                           	<br/><br/>
+                                            <div id="donut-chart-1" class="apex-charts"></div>
+                                        </div>
+                                        <div class="text-center text-muted">
+                                            <div class="row">
+                                                <div class="col-4">
+                                                    <div class="mt-4">
+                                                        <p class="mb-2 text-truncate"><i class="mdi mdi-circle text-primary mr-1"></i>Approved</p>
+                                                        <h5 th:text="${approvedFile}"></h5>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="mt-4">
+                                                        <p class="mb-2 text-truncate"><i class="mdi mdi-circle text-success mr-1"></i>New </p>
+                                                        <h5 th:text="${newFile}"></h5>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="mt-4">
+                                                        <p class="mb-2 text-truncate"><i class="mdi mdi-circle text-danger mr-1"></i> Rejected </p>
+                                                        <h5 th:text="${rejectFile}"></h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+			                        </div>
+			                     </div>
+				          	</div>
+                            <div class="p-0 col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 d-flex">
+                            	<div class="card flex-fill">
+	                          		<div class="card-body">
+                                   		<h4 class="card-title mb-4 float-sm-left userHoursChart">Hours</h4>
+                                   		<div class="clearfix"></div>
+                                   		<div id="stacked-column-chart-hours" class="apex-charts" dir="ltr"></div>
+                                   		<div class="legend row box">
+		                                	<label class="container1 daily">
+											  	<input class="" type="radio" name="revenue" checked onclick="toggleSeriesHours(this)" value="Daily hours">
+											  	<span class="checkmark"></span>
+											  	<span class="line">Daily hours</span>
+											</label>
+		                                    <label class="container1 extra">
+											  	<input type="radio" name="revenue" onclick="toggleSeriesHours(this)" value="Extra hours">
+										      	<span class="checkmark"></span>
+										      	<span class="line">Extra hours</span>
+											</label>
+											<label class="container1 vacation">
+									  			<input type="radio" name="revenue" onclick="toggleSeriesHours(this)" value="Vacation">
+								      			<span class="checkmark"></span>
+								      			<span class="line">Vacation</span>
+											</label>
+						      			</div>
+	                                </div>
+	                          	</div>
+                            </div>
+                        </div>
+                        <div class="row" th:if="${#lists.size(userDetails) > 0}">
+                        	<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        	<div class="card ">
+	                          	<div class="card-body">
+<!-- 								<h4 class="m-t-0 header-title"><b>Time Sheet</b></h4>    -->
+                      			<div class="" th:if="${userDetail.timeSheetPeriod == 'oneWeek'} or ${userDetail.timeSheetPeriod == 'twoWeek'}">
+									<table class="col-12 table table-responsive" id="datatable-buttons">
+									    <thead>
+											<tr>
+												<th>No</th>
+										     	<th>Period</th>
+										     	<th>Monday</th>
+										     	<th>Tuesday</th>
+										     	<th>Wednesday</th>
+										     	<th>Thursday</th>
+										     	<th>Friday</th>
+										     	<th>Saturday</th>
+										     	<th>Sunday</th> 
+										     	<th>Total</th> 
+									      	</tr>
+										</thead>
+								   		<tbody>
+											<tr th:each="userHourLog,i : ${userHourLogs}">
+									        	<td th:text="${i.index+1}"></td>
+									        	<td th:text="${userHourLog.get('End') + ' To ' + userHourLog.get('Start')}"></td>
+										     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Monday'),1,2)}">Monday</td>
+										     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Tuesday'),1,2)}">Tuesday</td>
+										     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Wednesday'),1,2)}">Wednesday</td>
+										     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Thursday'),1,2)}">Thursday</td>
+										     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Friday'),1,2)}">Friday</td>
+										     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Saturday'),1,2)}">Saturday</td>
+										     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Sunday'),1,2)}">Sunday</td> 
+										     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Total'),1,2)}">Total</td> 
+									      	</tr>
+								    	</tbody>
+								    	
+							  		</table>
+							  
+							  	<!-- pagination -->
+					              	<div class="col-12 dataTables_paginate paging_simple_numbers">
+					               		<ul id="pagination-ul" class="" style="float: right;"></ul>
+					               		<script th:inline="javascript">
+											/*<![CDATA[*/
+											var currentPageNo = [[${currentPage}]];
+											var totalPages = [[${totalPage + 1}]]
+											/*]]>*/
+								   		</script>
+					              	</div>
+							<!--    end pagination  -->
+							    </div>
+        					<!-- 	month hour log table -->
+								<div class="monthTable"  th:if="${userDetail.timeSheetPeriod == 'oneMonth'}">
+									<table id="monthTable" class="table table-responsive">
+									    <thead>
+											<tr>
+												<th>No</th>
+										     	<th>Period</th>
+										     	<th th:each="date : ${#numbers.sequence(01,31)}" th:text="${date}"></th>
+										     	<th>Total</th> 
+							<!-- 				<th>Action</th>  -->
+									      	</tr>
+										</thead>
+								    	<tbody>
+									    	<tr th:each="userHourLog,i : ${userHourLogsByMonth}">
+									        	<td th:text="${i.index+1}"></td>
+									        	<td th:text="${userHourLog.month.displayLabel}"></td>
+									        	
+									        	<td th:each="dateHourLog,j : ${userHourLog.defaultCalendarResponses}">
+									        		<th:block th:text="${dateHourLog.dailyHour} ? ${#numbers.formatDecimal(dateHourLog.dailyHour + dateHourLog.extraHour,1,2)} : 0.0"></th:block>
+									        	</td>
+									        	
+									        	<th:block th:if="${#lists.size(userHourLog.defaultCalendarResponses) == 28}">
+									        		<td> - </td>
+									        		<td> - </td>
+									        		<td> - </td>
+									        	</th:block>
+									        	
+									        	<th:block th:if="${#lists.size(userHourLog.defaultCalendarResponses) == 29}">
+									        		<td> - </td>
+									        		<td> - </td>
+									        	</th:block>
+									        	
+									        	<th:block th:if="${#lists.size(userHourLog.defaultCalendarResponses) == 30}">
+									        		<td> - </td>
+									        	</th:block>
+									        	
+									        	<td th:text="${#numbers.formatDecimal(userHourLog.total,1,2)}"></td>
+									        </tr>
+								    	</tbody>
+							  		</table>
+                        		</div>
+                   		 	</div> 
+                   		 	</div> 
+                   		 	</div> 
+                        </div>
+                        <div class="row" th:if="${session.user.role == 'ROLE_USER'}">
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                <div class="card">
+                                    <div class="card-body">
+			                        	<table id="datatable" class="table table-responsive">
+			                            	<thead>
+				                                <tr>
+				                                    <th>No</th>
+				                                    <th>Client</th>
+				                                    <th>Start Date</th>
+				                                    <th>End Date</th> 
+				                                    <th>Action</th> 
+				                                </tr>
+			                               </thead>
+			                               <tbody>
+				                                <tr class="odd gradeX" th:each="userDetail,index : ${userDetails}">
+				                                    <td th:text="${index.index + 1}"></td>
+				                                    <td th:text="${userDetail.clientName}"></td>
+				                                    <td th:text="${#dates.format(userDetail.startDate, 'MMM-dd-yyyy')}"></td>
+				                                    <td th:text="${#dates.format(userDetail.endDate, 'MMM-dd-yyyy')}"></td> 
+				                                    <td>
+			                                           	<a class="btn btn-sm btn-success" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).SUBMITTED_TIMESHEET,T(com.aim.enums.Permission).READ, false) || permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).REPORT_TIME_SHEET,T(com.aim.enums.Permission).READ, false)}" th:href="@{${'/user/user-hour-log/' + {userDetail.userDetailId} } }">Timesheet Status</a>
+				                                    </td> 
+				                                </tr>
+			                               </tbody>
+			                           </table>
+                        			</div>
+                        		</div>
+                        	</div>
+                        </div>
+                    </div> <!-- container -->
+                </div> <!-- content -->
+            </div>
+            <div class="main-content" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).HOURS_DASHBOARD,T(com.aim.enums.Permission).READ, false) == false}">
+		      	<div class="page-content">
+		           	<div class="container-fluid">
+		               	<div class="d-flex justify-content-center align-items-center">
+		               		<div class="col-12 col-sm-12 col-md-7 col-lg-5 col-xl-4">
+		                		<img th:src="@{'/assets_new/images/welcome_cuate.svg'}" alt="" class="">
+		               		</div>
+		        		</div>
+		            </div> <!-- container -->
+		        </div> <!-- content -->
+		    </div>
+            
+        </div>
+        <!-- END wrapper -->
+		<footer class="footer text-right"> 2016 - 2018 © Zircos. </footer>
+        <script>
+            var resizefunc = [];
+        </script>
+        
+        <script th:inline="javascript">
+		/*<![CDATA[*/
+			var approvedFile = [[${approvedFile}]];
+			var newFile = [[${newFile}]];
+			var rejectFile = [[${rejectFile}]];
+			
+			var xChart = [[${xChart}]];
+			var hours = [[${adminUserHoursChart.hours}]];
+			var extra = [[${adminUserHoursChart.extra}]];
+			var vacation = [[${adminUserHoursChart.vacation}]];
+			/*]]>*/
+		</script>
+
+        <!-- jQuery  -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+
+        <!-- apexcharts -->
+        <script th:src="@{/assets_new/libs/apexcharts/apexcharts.min.js}"></script>
+        
+        <!-- Saas dashboard init -->
+        <script th:src="@{/assets_new/js/app.js}"></script>	
+        
+        <!-- Required datatable js -->
+        <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+        
+        <!-- Responsive examples -->
+        <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+        <script th:src="@{/assets_new/js/pages/user-dashboard.init.js}"></script>
+        <script th:src="@{/assets/js/jquery.twbsPagination.js}"></script>
+		<script th:src="@{/assets/js/javascript/common.js}"></script>
+		<script th:src="@{/assets/js/fstdropdown.js}"></script>
+		<script th:src="@{/assets_new/js/home-page-filter.js}"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#datatable').DataTable();
+				if (typeof totalPages !== 'undefined')
+					pagination();
+			});
+		</script>
+		
+		           
+        <script th:src="@{/assets/js/excel-pdf/dataTables.buttons.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.bootstrap4.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/jszip.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/pdfmake.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/vfs_fonts.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.html5.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.print.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.colVis.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/datatables.init.js}"></script> 
+    </body>
+</html>

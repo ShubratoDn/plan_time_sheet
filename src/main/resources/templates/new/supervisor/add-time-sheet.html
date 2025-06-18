@@ -1,0 +1,415 @@
+
+<div id="view-table"
+	class='col-12 col-sm-12 col-md-12 height-file-popup1 pd-20 overflow-srcoll'>
+	<form id="form" th:object="${addUserTimeSheet}"
+		enctype="multipart/form-data"
+		th:action="@{/supervisor/add-time-sheet}" method="post"
+		data-parsley-validate>
+		<div class="row">
+			<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+				<div class="form-group row">
+					<label for="date" class="col-sm-4 col-form-label">Start
+						Date To End Date :</label> <input
+						class="form-control border-top-0 border-right-0 border-left-0 rounded-0 col-sm-8"
+						id="date" type="text"
+						th:value="${#dates.format(addUserTimeSheet.startDate, 'E MMM dd yyyy') +' To ' + #dates.format(addUserTimeSheet.endDate, 'E MMM dd yyyy')}"
+						readonly />
+				</div>
+				<input class="form-control" type="hidden" th:field="*{startDate}"
+					data-inputmask-alias="mm/dd/yyyy" required /> <input
+					class="form-control" type="hidden" th:field="*{endDate}"
+					data-inputmask-alias="mm/dd/yyyy" required /> <input type="hidden"
+					th:field="*{userDetailId}" required /> <input type="hidden"
+					name="timesheetId" th:value="${timesheetId}" required />
+			</div>
+			<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 row">
+				<div
+					class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+					<label class="col-sm-4 col-form-label">Client Name :</label> <input
+						class="form-control border-top-0 border-right-0 border-left-0 rounded-0 col-sm-8"
+						id="user-client" type="text"
+						th:value="${hourLogFile.userDetail.clientName}" readonly />
+				</div>
+				<div
+					class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+					<label class="col-sm-4 col-form-label">User Name :</label> <input
+						class="form-control border-top-0 border-right-0 border-left-0 rounded-0 col-sm-8"
+						id="user-name" type="text"
+						th:value="${hourLogFile.userDetail.user.firstName + ' ' + hourLogFile.userDetail.user.lastName}"
+						readonly />
+				</div>
+				<div
+					class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+					<label class="col-sm-4 col-form-label">Upload Date :</label> <input
+						class="form-control border-top-0 border-right-0 border-left-0 rounded-0 col-sm-8"
+						type="text"
+						th:value="${#dates.format(hourLogFile.modifiedDatetime, 'MMM-dd-yyyy HH:MM')}"
+						readonly />
+				</div>
+				<div
+					class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+					<label class="col-sm-4 col-form-label">Status :</label> <input
+						class="form-control border-top-0 border-right-0 border-left-0 rounded-0 col-sm-8"
+						type="text" readonly th:if="${hourLogFile.approve}"
+						value="Approved"> <input
+						class="form-control border-top-0 border-right-0 border-left-0 rounded-0 col-sm-8"
+						type="text" readonly
+						th:if="${!hourLogFile.approve && hourLogFile.reject}"
+						value="Rejected"> <input
+						class="form-control border-top-0 border-right-0 border-left-0 rounded-0 col-sm-8"
+						type="text" readonly
+						th:if="${!hourLogFile.approve && !hourLogFile.reject}"
+						value="Submitted">
+				</div>
+				<div
+					th:if="${hourLogFile.approve || !hourLogFile.approve && hourLogFile.reject}"
+					class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+					<label class="col-sm-4 col-form-label"> <span
+						th:if="${hourLogFile.approve}">Approved By : </span> <span
+						th:if="${!hourLogFile.approve && hourLogFile.reject}">
+							Rejected By : </span>
+					</label> <input
+						class="form-control border-top-0 border-right-0 border-left-0 rounded-0 col-sm-8"
+						type="text" readonly th:if="${hourLogFile.approve}"
+						th:value="${hourLogFile.approvedBy.firstName + ' ' + hourLogFile.approvedBy.lastName}">
+					<input
+						class="form-control border-top-0 border-right-0 border-left-0 rounded-0 col-sm-8"
+						type="text" readonly
+						th:if="${!hourLogFile.approve && hourLogFile.reject}"
+						th:value="${hourLogFile.rejectedBy.firstName + ' ' + hourLogFile.rejectedBy.lastName}">
+				</div>
+				<div
+					th:if="${hourLogFile.approve || !hourLogFile.approve && hourLogFile.reject}"
+					class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+					<label class="col-sm-4 col-form-label"> <span
+						th:if="${hourLogFile.approve}">Approved Date : </span> <span
+						th:if="${!hourLogFile.approve && hourLogFile.reject}">
+							Rejectd Date : </span>
+					</label> <input
+						class="form-control border-top-0 border-right-0 border-left-0 rounded-0 col-sm-8"
+						type="text" readonly th:if="${hourLogFile.approve}"
+						th:value="${#dates.format(hourLogFile.approvedDate, 'MMM-dd-yyyy HH:MM')}">
+					<input
+						class="form-control border-top-0 border-right-0 border-left-0 rounded-0 col-sm-8"
+						type="text" readonly
+						th:if="${!hourLogFile.approve && hourLogFile.reject}"
+						th:value="${#dates.format(hourLogFile.rejectedDate, 'MMM-dd-yyyy HH:MM')}">
+				</div>
+				<div
+					class="form-group ml-1 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+					<a class="btn btn-sm btn-warning"
+						th:href="@{|/supervisor/user-hour-log-file-print/print/${hourLogFile.id}|}"
+						target="_blank"> <i class="fa fa-print" aria-hidden="true"></i>
+						Print
+					</a> <a class="btn btn-sm btn-success ml-2" href="javascript:void(0);"
+						th:onclick="'addMoreFile('+${hourLogFile.id}+')'"> <i
+						class="fa fa-plus" aria-hidden="true"></i> Add more file
+					</a>
+					<button type="button" class="btn btn-sm btn-primary ml-2"
+						onclick="addRemark()">Add remark</button>
+					<br> <br>
+					<div id="remark" hidden>
+						<label for="remark">Remark</label>
+						<textarea style="min-height: 100px;"
+							th:text="${hourLogFile.remark}" th:value="${hourLogFile.remark}"
+							class="form-control" name="remark"></textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+		<table id="hours-table" class="table table-responsive">
+			<thead>
+				<tr>
+					<th>No</th>
+					<th style="min-width: 150px;">Date</th>
+					<th>Daily Hours</th>
+					<th>Extra Hours</th>
+					<th>Vacation</th>
+					<th>Note</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th>Total</th>
+					<th></th>
+					<th>
+						<p class="totalDailyHours mg-l-12 m-0"></p>
+					</th>
+					<th>
+						<p class="totalExtraHours mg-l-12 m-0"></p>
+					</th>
+					<th>
+						<p class="totalVacationHours mg-l-12 m-0"></p>
+					</th>
+					<th></th>
+				</tr>
+				<tr class="td-next-p-0"
+					th:each="hourLog,index : *{calendarResponse}">
+					<td>
+						<p class="m-0">
+							<label th:text="${index.index + 1}"></label>
+						</p>
+					</td>
+					<td><input type="hidden"
+						th:field="*{calendarResponse[__${index.index}__].date}" />
+						<p class="m-0 date-text" th:text="${hourLog.dateFormate}"></p></td>
+						
+					<td class="">
+						<th:block th:if="${hourLogFile.approve == true}">
+							<input type="hidden"
+								th:field="*{calendarResponse[__${index.index}__].dailyHours}">
+							<p th:text="${addUserTimeSheet.calendarResponse[__${index.index}__].dailyHours}"></p>
+						</th:block>
+						<th:block th:if="${hourLogFile.approve != true}">
+							<a class="col-lg-offset-1"
+								onclick="setDailyHoursNextLine(this)"
+								th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}">
+									<i class="fa fa-angle-down" style="font-size: 18px"
+									data-toggle="tooltip" title="copy to next line"></i>
+							</a> 
+							<input type="text"
+								th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}"
+								th:field="*{calendarResponse[__${index.index}__].dailyHours}"
+								onchange="sumOfDailyHours()" class="hourNum dailyHours">
+								
+							<input type="hidden"
+								th:field="*{calendarResponse[__${index.index}__].dailyHours}"
+								th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}">
+							<p
+							th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}"
+							th:text="${addUserTimeSheet.calendarResponse[__${index.index}__].dailyHours}"></p>
+						</th:block>
+					
+					</td>
+					
+					<td>
+					<th:block th:if="${hourLogFile.approve == true}">
+						<input type="hidden"
+							th:field="*{calendarResponse[__${index.index}__].dailyHours}">
+						<p th:text="${addUserTimeSheet.calendarResponse[__${index.index}__].extraHours}"></p>
+					</th:block>
+						<th:block th:if="${hourLogFile.approve != true}">
+							<a th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}"
+								class="col-lg-offset-1" onclick="setExtraHoursNextLine(this)">
+								<i class="fa fa-angle-down" style="font-size: 18px"
+								data-toggle="tooltip" title="copy to next line"></i>
+							</a> 
+							<input type="text"
+								th:field="*{calendarResponse[__${index.index}__].extraHours}"
+								th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}"
+								onchange="sumOfExtraHours()" class="hourNum extraHours"> 
+							<input type="hidden"
+								th:field="*{calendarResponse[__${index.index}__].extraHours}"
+								th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}">
+							<p
+							th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}"
+							th:text="${addUserTimeSheet.calendarResponse[__${index.index}__].extraHours}"></p>
+						</th:block>
+					</td>
+					
+					<td>
+					<th:block th:if="${hourLogFile.approve == true}">
+						<input type="hidden"
+								th:field="*{calendarResponse[__${index.index}__].dailyHours}">
+							<p 	th:text="${addUserTimeSheet.calendarResponse[__${index.index}__].vacationHours}"></p>
+					</th:block>
+					<th:block th:if="${hourLogFile.approve != true}">
+							<a class="col-lg-offset-1"
+								onclick="setVacationHoursNextLine(this)"
+								th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}">
+									<i class="fa fa-angle-down" style="font-size: 18px"
+									data-toggle="tooltip" title="copy to next line"></i>
+							</a> <input type="text"
+								th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == false}"
+								th:field="*{calendarResponse[__${index.index}__].vacationHours}"
+								onchange="sumOfVacationHours()" class="hourNum vacationHours">
+								<input type="hidden"
+								th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}"
+								th:field="*{calendarResponse[__${index.index}__].vacationHours}">
+								<p
+									th:if="${addUserTimeSheet.calendarResponse[__${index.index}__].offDay == true}"
+									th:text="${addUserTimeSheet.calendarResponse[__${index.index}__].vacationHours}"></p>
+					</th:block>
+						
+					
+					</td>
+
+					<td><a href="javascript:void(0);" onclick="addNotes(this)"
+						th:id="${'new_notes_'+index.index}"> <i
+							class="far fa-file-alt"
+							th:classappend="${#strings.isEmpty(addUserTimeSheet.calendarResponse[__${index.index}__].oldNotes) ? '' : 'text-danger'}"></i></a>
+						<input type="hidden"
+						th:attr="data-oldnotes=${addUserTimeSheet.calendarResponse[__${index.index}__].oldNotes}"
+						th:field="*{calendarResponse[__${index.index}__].newNotes}">
+					</td>
+
+				</tr>
+			</tbody>
+		</table>
+
+		<div
+			th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TIMESHEET,T(com.aim.enums.Permission).UPDATE, false)}">
+			<!-- Always hidden and used on change subject in send email popup -->
+			<div class="rejectDiv">
+				<input type="hidden" class="subject"
+					th:value="${'Timesheet reject, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+ userDetail.user.firstName + ' '+ userDetail.user.lastName + ' for client: ' +userDetail.clientName}" />
+				<input type="hidden" class="message"
+					th:value="${'Hello, <br /><br />Timesheet is reject of '+ userDetail.user.firstName + ' '+ userDetail.user.lastName +' for client : '+ userDetail.clientName +'<br /><br />for time period: '+ addUserTimeSheet.startDate +' To '+ addUserTimeSheet.endDate +'<br /><br />Please check and re-submit.  <br /><br />Thank you.'}" />
+			</div>
+
+			<div class="approveDiv">
+				<input type="hidden" class="subject"
+					th:value="${'Timesheet approve, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+ userDetail.user.firstName + ' '+ userDetail.user.lastName + 'for client: '+userDetail.clientName}" />
+				<input type="hidden" class="message"
+					th:value="${'Hello, <br /><br />Timesheet is approve of ' + userDetail.user.firstName + ' '+ userDetail.user.lastName + '  for client : '+ userDetail.clientName +'<br /><br />for time period: '+ addUserTimeSheet.startDate +' To '+ addUserTimeSheet.endDate +'<br /><br />Please check <br /><br />Thank you.'}" />
+			</div>
+			<!--END Always hidden and used on change subject in send email popup -->
+
+			<!-- 						Email send Model -->
+			<div class="table-detail mail-right">
+				<div class="row">
+					<div class="m-t-20" style="width: 100%;">
+						<div id="email-form" class="">
+							<div class="from-group mg-b-35 col-sm-12">
+								<label>Select status<span class="text-danger">*</span></label> <select
+									class="form-control client-box"
+									onclick="onClickSubject(this.value)">
+									<option value="approve" defaulte>Approve</option>
+									<option value="reject">Reject</option>
+								</select>
+							</div>
+							<div class="form-group hide" id="rejectReason">
+								Reason:
+								<textarea type="text" name="rejectReason" class="form-control"
+									placeholder="write reason here.." value=" "></textarea>
+								<input type="hidden" name="isApprove" id="isApprove" value="">
+							</div>
+							<div class="form-group">
+								Email template name: <select id="mailTemplate"
+									class="form-control" onchange="changeMailTemplate(this)">
+									<option id="approvalDefault" class="approvalTemplate" defaulte
+										th:attr="data-subjecttext=${'Timesheet approve, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+ userDetail.user.firstName + ' '+ userDetail.user.lastName + ' for client: '+userDetail.clientName}"
+										th:value="${'Hello, <br /><br />Timesheet is approve of ' + userDetail.user.firstName + ' '+ userDetail.user.lastName + '  for client : '+ userDetail.clientName +'<br /><br />for time period: '+ addUserTimeSheet.startDate +' To '+ addUserTimeSheet.endDate +'<br /><br />Please check <br /><br />Thank you.'}"
+										th:text="${'Timesheet approve, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+ userDetail.user.firstName + ' '+ userDetail.user.lastName + 'for client: '+userDetail.clientName}"></option>
+									<option class="approvalTemplate"
+										th:attr="data-subjecttext=${approved.subject}"
+										th:each="approved : ${templatesApproved}"
+										th:value="${approved.htmlDate}"
+										th:text="${approved.templateName}"></option>
+									<option id="rejectDefault"
+										th:attr="data-subjecttext=${'Timesheet reject, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+ userDetail.user.firstName + ' '+ userDetail.user.lastName + ' for client: ' +userDetail.clientName}"
+										class="hide rejectTemplate"
+										th:value="${'Hello, <br /><br />Timesheet is reject of '+ userDetail.user.firstName + ' '+ userDetail.user.lastName +' for client : '+ userDetail.clientName +'<br /><br />for time period: '+ addUserTimeSheet.startDate +' To '+ addUserTimeSheet.endDate +'<br /><br />Please check and re-submit.  <br /><br />Thank you.'}"
+										th:text="${'Timesheet reject, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+ userDetail.user.firstName + ' '+ userDetail.user.lastName + ' for client: ' +userDetail.clientName}"></option>
+									<option class="hide rejectTemplate"
+										th:attr="data-subjecttext=${rejected.subject}"
+										th:each="rejected : ${templatesRejected}"
+										th:value="${rejected.htmlDate}"
+										th:text="${rejected.templateName}"></option>
+								</select>
+							</div>
+							<div class="row">
+								<div
+									class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+									TO: <span class="form-control"
+										style="background-color: #d1d6f6;"
+										th:if="${session.user.role != 'ROLE_ADMIN'}"
+										th:text="${session.company.timesheetSubmitEmail}"></span> <input
+										th:type="${session.user.role == 'ROLE_ADMIN'?'text':'hidden'}"
+										id="email-to" name="email" class="form-control"
+										placeholder="To" th:value="${userDetail.user.email}">
+								</div>
+								<div
+									class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+									CC: <input type="text" id="email-to" name="ccEmail"
+										class="form-control" placeholder="CC"
+										th:value="${session.company.timesheetSubmitEmail}">
+								</div>
+							</div>
+							<div class="form-group">
+								Subject: <input type="text" id="email-subject" name="subject"
+									class="form-control subject" placeholder="Subject"> <input
+									type="hidden" id="description" th:field="*{description}">
+							</div>
+							<div class="form-group">
+								<div class="summernote"></div>
+							</div>
+							<div class="btn-toolbar form-group m-b-0">
+								<button type="submit" id="button"
+									class="btn btn-info waves-effect waves-light">Submit</button>
+							</div>
+						</div>
+					</div>
+					<!-- End row -->
+				</div>
+				<!-- table detail -->
+			</div>
+		</div>
+	</form>
+</div>
+
+
+
+
+
+<div id="add-notes" class="modal fade" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" style="display: none;"
+	aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" onClick="hideNote()" class="close">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+			<div class="modal-body chat-conversation chat-scroll">
+			<div><b>Date </b>: <span id="note-date"></span></div>
+             <div><b>User </b> : <span th:text="${hourLogFile.userDetail.user.firstName + ' ' + hourLogFile.userDetail.user.lastName}"></label></div>
+            	<div><b>Client </b> : <span th:text="${hourLogFile.userDetail.clientName}"></span></div>
+				<div class="conversation-list"></div>
+				<div id="oldNote"></div>
+			</div>
+			<div class="modal-footer">
+				<div class="row">
+					<div class="col">
+						<div class="position-relative">
+							<input type="text" id="new-note" class="form-control chat-input"
+								placeholder="Add notes"> <input type="hidden"
+								id="new-note-id">
+						</div>
+					</div>
+					<div class="col-auto">
+						<button onclick="saveNote()" class="btn btn-primary btn-rounded">
+							<i class="fa fa-plus"></i> <span
+								class="d-none d-sm-inline-block mr-2">Add</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+
+
+
+<style>
+.conversation-name {
+	font-weight: 600;
+	color: #556ee6;
+	margin-bottom: 4px;
+}
+
+.ctext-wrap {
+	background: #eef0fc;
+	padding: 15px;
+	margin-bottom: 20px;
+	border-radius: 15px 15px 0px 15px;
+	word-break: break-all;
+}
+
+.chat-input {
+	width: 350px
+}
+</style>

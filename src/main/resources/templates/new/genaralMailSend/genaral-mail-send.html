@@ -1,0 +1,666 @@
+<th:block th:fragment="mailSend" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).GENERAL_MAIL,T(com.aim.enums.Permission).CREATE, false)}">
+	<div data-toggle="tooltip" data-placement="left" title="" data-original-title="General mail send" class="btn-group dropup mt-2 mr-1" style="text-align:center;padding: 10px;position: fixed;bottom: 50px;right: 15px;">
+	    <button type="button" class="btn btn-primary dropdown-toggle" onclick="genaralMail('genaral')" data-target="#general-mail-send" data-toggle="modal" aria-haspopup="true" aria-expanded="false" style="width: 50px;height: 50px;box-shadow: 0px 0px 20px 1px #546de6;font-size:30px;padding: 5px;border-radius: 50%;">
+	        <i class="bx bxs-envelope bx-tada"></i>
+	    </button>
+	</div>
+	
+	<div id="general-mail-send" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Email-modal" aria-hidden="true" style="display: none;">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header mb-1">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				</div>
+				<div class="modal-body">
+					<div id="generalMail">
+		
+					</div>
+             	</div>
+    		</div>
+		</div>
+   	</div>
+   	<script>
+   	$(document).ready(function() {
+   		if (!$("link[href='"+context+"assets_new/libs/summernote/summernote-bs4.min.css']").length)
+   	   	    $('<link href="'+context+'assets_new/libs/summernote/summernote-bs4.min.css" rel="stylesheet">').appendTo("head");
+   		
+   		$('<link href="'+context+'assets_new/css/page/generalMailSend.css" rel="stylesheet">').appendTo("head");
+   		
+   		if (!$("script[src='"+context+"assets_new/libs/summernote/summernote-bs4.min.js']").length){
+   			var url =context + "assets_new/libs/summernote/summernote-bs4.min.js";
+   			
+   			$.getScript( url )
+   		  .done(function( script, textStatus ) {
+   		    console.log( textStatus );
+   		  })
+   		  .fail(function( jqxhr, settings, exception ) {
+   			console.log( 'textStatusRoor' );
+   		  });
+   		}
+   		
+   	});
+   	
+   	function genaralMail(type){
+   		
+   		$.ajax({
+   			type : "GET",
+   			url : context + "admin/mail/send-mail?type=" + type,
+   			success: function(data){
+//    				console.log(data);
+   				$("#generalMail").replaceWith(data);
+   				
+   				$("#generalMail .summernote").summernote({
+   					toolbar: [
+   					    // [groupName, [list of button]]
+   					    ['style', ['bold', 'italic', 'underline', 'clear']],
+   					    ['font', ['strikethrough', 'superscript', 'subscript']],
+   					    ['fontsize', ['fontsize']],
+   					    ['color', ['color']],
+   					    ['para', ['ul', 'ol', 'paragraph']],
+   					    ['table', ['table']],
+   					    ['insert', ['link']],
+   					    
+   					  ],
+   					minHeight:200,maxHeight:500});
+   				
+   				$("#generalMail .summernote").on("summernote.change", function (e) {   // callback as jquery custom event 
+   					$("#generalMail #description").val($('#generalMail .summernote').summernote('code'));
+   				});
+   				
+   				userchooseInGenaralMail();
+   				clickOutToMailGenaralMail();
+   				sendMailAdd();
+   				addOption();
+   				selectUserMailType();
+   			}
+   		});
+   	}
+
+   	function changeGenaralMailTemplate(thisValue){
+   		var d =$(thisValue).children("option").filter(":selected").data('subjecttext');
+   		$('#generalMail .subject').val(d);
+   		$("#generalMail .summernote").summernote("code", $(thisValue).val());
+   		
+   		$("generalMail #description").val($('generalMail .summernote').summernote('code'));
+   	}
+
+   	function userGenaralShow(thisValue){
+   		$("#generalMail .userInGenaralMail .dropdown-menu").toggleClass('show');
+   		$("#generalMail .userInGenaralMail .mdi").toggle();
+   	}
+
+   	function userchooseInGenaralMail(){
+   		
+   		$('#generalMail .dropdown-item input[name="toEmail"]').on('change', function() {
+   			if (this.checked) {
+   				var text='<span class="badge badge-info ml-1 mr-1" value="USER_' + this.value.replace(".", "_") + '">'+this.value+'</span>'  
+   				$(".userGenaralShow").append(text);
+   			} else {
+   				var id = "[value='USER_"+this.value.replace(".", "_")+"'";
+   				$('.userGenaralShow .badge' + id).remove();
+   			} 
+   			
+   			$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			if($(this).data('user-type') == 'ACTIVE_USER'){
+   				console.log($("#emailListOther .activeUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]'));
+   				$("#emailListOther .activeUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]').prop('checked',this.checked);
+   			}
+   			if($(this).data('user-type') == 'NOT_ACTIVE_USER'){
+   				console.log($("#emailListOther .notActiveUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]'));
+   				$("#emailListOther .notActiveUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]').prop('checked',this.checked);
+   			}
+   			if($(this).data('user-type') == 'CLIENT_USER'){
+   				console.log($("#emailListOther .clientUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]'));
+   				$("#emailListOther .clientUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]').prop('checked',this.checked);
+   			}
+   			if($(this).data('user-type') == 'VENDOR_USER'){
+   				console.log($("#emailListOther .vendorUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]'));
+   				$("#emailListOther .vendorUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]').prop('checked',this.checked);
+   			}
+   			if($(this).data('user-type') == 'EMPLOYER_USER'){
+   				console.log($("#emailListOther .employerUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]'));
+   				$("#emailListOther .employerUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]').prop('checked',this.checked);
+   			}
+   			if($(this).data('user-type') == 'BDM_USER'){
+   				console.log($("#emailListOther .bDMUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]'));
+   				$("#emailListOther .bDMUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]').prop('checked',this.checked);
+   			}
+   			if($(this).data('user-type') == 'AM_USER'){
+   				console.log($("#emailListOther .aMUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]'));
+   				$("#emailListOther .aMUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]').prop('checked',this.checked);
+   			}
+   			if($(this).data('user-type') == 'RECRUITERS_USER'){
+   				console.log($("#emailListOther .recruitersUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]'));
+   				$("#emailListOther .recruitersUser label .textEmail:contains("+this.value+")").closest('.dropdown-item').find('input[type=checkbox]').prop('checked',this.checked);
+   			}
+   			
+   		});
+   	}
+
+   	function clickOutToMailGenaralMail(){
+   		
+   		$('body').on('click', function(e) {
+   		    var container = $(".userInGenaralMail");
+   		    var container1 = $("#emailListOther .activeUser");
+   		    var container2 = $("#emailListOther .notActiveUser");
+   		    var container3 = $("#emailListOther .clientUser");
+   		    var container4 = $("#emailListOther .vendorUser");
+   		    var container5 = $("#emailListOther .employerUser");
+   		    var container6 = $("#emailListOther .bDMUser");
+   		    var container7 = $("#emailListOther .aMUser");
+   		    var container8 = $("#emailListOther .recruitersUser");
+   		 
+   		    // if the target of the click isn't the container nor a descendant of the container
+   		    if (!container.is(e.target) && container.has(e.target).length === 0) 
+   		    {
+   		    	$(".userInGenaralMail .dropdown-menu").removeClass('show');
+   		    	$(".userInGenaralMail .mdi-close").css("display", "none");
+   		    	$(".userInGenaralMail .mdi-menu-down").css("display", "contents");
+   		    	$("#filterIdInGenaralMail").val('')
+   		    	$("#theUserListInGenaralMailSend input[type=checkbox]").each(function() {
+   		    		$(this).closest('span').show();
+   		    	});
+   		    	$("#genalralMailNameNotfound").hide();
+   		    }
+   		    
+   		    if (!container1.is(e.target) && container1.has(e.target).length === 0) 
+   		    {
+   		    	$("#emailListOther .activeUser .dropdown-menu").removeClass('show');
+   		    	$("#emailListOther .activeUser .mdi-close").css("display", "none");
+   		    	$("#emailListOther .activeUser .mdi-menu-down").css("display", "contents");
+   		    }
+   		    if (!container2.is(e.target) && container2.has(e.target).length === 0) 
+   		    {
+   		    	$("#emailListOther .notActiveUser .dropdown-menu").removeClass('show');
+   		    	$("#emailListOther .notActiveUser .mdi-close").css("display", "none");
+   		    	$("#emailListOther .notActiveUser .mdi-menu-down").css("display", "contents");
+   		    }
+   		    if (!container3.is(e.target) && container3.has(e.target).length === 0) 
+   		    {
+   		    	$("#emailListOther .clientUser .dropdown-menu").removeClass('show');
+   		    	$("#emailListOther .clientUser .mdi-close").css("display", "none");
+   		    	$("#emailListOther .clientUser .mdi-menu-down").css("display", "contents");
+   		    }
+   		    if (!container4.is(e.target) && container4.has(e.target).length === 0) 
+   		    {
+   		    	$("#emailListOther .vendorUser .dropdown-menu").removeClass('show');
+   		    	$("#emailListOther .vendorUser .mdi-close").css("display", "none");
+   		    	$("#emailListOther .vendorUser .mdi-menu-down").css("display", "contents");
+   		    }
+   		    if (!container5.is(e.target) && container5.has(e.target).length === 0) 
+   		    {
+   		    	$("#emailListOther .employerUser .dropdown-menu").removeClass('show');
+   		    	$("#emailListOther .employerUser .mdi-close").css("display", "none");
+   		    	$("#emailListOther .employerUser .mdi-menu-down").css("display", "contents");
+   		    }
+   		    if (!container6.is(e.target) && container6.has(e.target).length === 0) 
+   		    {
+   		    	$("#emailListOther .bDMUser .dropdown-menu").removeClass('show');
+   		    	$("#emailListOther .bDMUser .mdi-close").css("display", "none");
+   		    	$("#emailListOther .bDMUser .mdi-menu-down").css("display", "contents");
+   		    }
+   		    if (!container7.is(e.target) && container7.has(e.target).length === 0) 
+   		    {
+   		    	$("#emailListOther .aMUser .dropdown-menu").removeClass('show');
+   		    	$("#emailListOther .aMUser .mdi-close").css("display", "none");
+   		    	$("#emailListOther .aMUser .mdi-menu-down").css("display", "contents");
+   		    }
+   		    if (!container8.is(e.target) && container8.has(e.target).length === 0) 
+   		    {
+   		    	$("#emailListOther .recruitersUser .dropdown-menu").removeClass('show');
+   		    	$("#emailListOther .recruitersUser .mdi-close").css("display", "none");
+   		    	$("#emailListOther .recruitersUser .mdi-menu-down").css("display", "contents");
+   		    }
+   		});
+   	}
+
+   	function filterInGenaralMail(element,what) {
+   	    var value = $(element).val();
+   	    value = value.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+   	        return letter;
+   	    });
+
+   	    if (value == '') {
+   	    	$("#theUserListInGenaralMailSend input[type=checkbox]").each(function() {
+   	    		$(this).closest('span').show();
+   	    	});
+   	    	$("#genalralMailNameNotfound").hide();
+   	    }else {
+   	        
+   	    	$("#theUserListInGenaralMailSend input[type=checkbox]").each(function() {
+   	    		if ($(this).val().search(value) > -1) {
+   	    			$(this).closest('span').show();
+   	    		}
+   	    		else {
+   	    			$(this).closest('span').hide();
+   	    		}
+   	    	});
+   	    	
+   	        $("#theUserListInGenaralMailSend label sup").each(function() {
+   	            if ($(this).text().search(value) > -1) {
+   	                $(this).closest('span').show();
+   	            }
+   	            else {
+   	            }
+   	        });
+   	       var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + value + "']").length;
+   	       var a = $("#theUserListInGenaralMailSend label sup:contains("+value+")").length;
+   	       if(s==0 && a==0){
+   	    	   $("#genalralMailNameNotfound").show();
+   	       }else {
+   	    	   $("#genalralMailNameNotfound").hide();
+   	       }
+   	    }
+   	};
+
+   	function sendMailAdd(){
+   		$("#send-mail-add-form").submit(function( e ) {
+   			e.preventDefault();
+   			
+   			var valueTo =$('#send-mail-add-form input[name="toEmail"]:checked').val();
+			if(valueTo == undefined || valueTo == '' || valueTo == null){
+				$(".toGenaralEmailError").show();
+				return ;
+			}
+			var valueSubject =$('#send-mail-add-form input[name="subject"]').val();
+			if(valueSubject == undefined || valueSubject == '' || valueSubject == null){
+				$(".subjectErrorInGenaral").show();
+				return ;
+			}
+			var valueDescription =$('#send-mail-add-form input[name="description"]').val();
+			if(valueDescription == undefined || valueDescription == '' || valueDescription == null){
+				$(".descriptionErrorInGenaral").show();
+				return ;
+			}
+   			
+   			var formData = new FormData(this);
+   			$("#send-mail-add-form-is-submit").css("display","flex");
+   			$.ajax({
+   				type : "POST",
+   				url : $(this).attr('action'),
+   				data: formData,
+   				cache: false,
+   				contentType: false,
+   				processData: false,
+   				success: function(data) {
+//    					$("#general-mail-send-alert").
+   					$("#send-mail-add-form-is-submit").css("display","none");
+   					
+   					var msg = '<div id="emailAlertInGenaralMail"><div class="alert alert-success alert-dismissible" role="alert">' + 
+			        		   	'<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+			        			'<span aria-hidden="true">×</span>' + 
+							  '</button>' + 
+							  '<strong>Success</strong> Email send successfully' + 
+							  '</div></div>';
+					$("#emailAlertInGenaralMail" ).replaceWith( msg );
+		
+   				},
+   				error: function(xhr, status, error) {
+   					$("#send-mail-add-form-is-submit").css("display","none");
+   					
+   					var msg = '<div id="emailAlertInGenaralMail"><div class="alert alert-danger alert-dismissible" role="alert">' + 
+   				   	'<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+   					'<span aria-hidden="true">×</span>' + 
+   				    '</button>' + 
+   				    '<strong>Error</strong> Please try again' + 
+   				    '</div></div>';
+   			    	$("#emailAlertInGenaralMail" ).replaceWith( msg );
+   			    	
+   				}
+   			});
+   			
+   		});
+   	}
+   	
+   	function selectUserMailType(){
+   		
+   		$('#selectUserMailType').on('change', function() {
+   			
+   			$("#selectUserMailType option").each(function(e) {
+   				var valueClass=this.value;
+   				
+   				if($(this).is(':selected')){
+   					$('.'+valueClass).show();
+   				}else{
+   					$('.'+valueClass).hide();
+   				}
+   			});
+   		});
+   	}
+   	function vendorUserShow(thisValue){
+   		console.log(thisValue);
+   		console.log('vendorUser');
+   		$("#emailListOther .vendorUser .dropdown-menu").toggleClass('show');
+   		$("#emailListOther .vendorUser .mdi").toggle();
+   	}
+   	function employerUserShow(thisValue){
+   		$("#emailListOther .employerUser .dropdown-menu").toggleClass('show');
+   		$("#emailListOther .employerUser .mdi").toggle();
+   	}
+   	function addOption(){
+   		$('#emailListOther .activeUser .dropdown-item input[type="checkbox"]').on('change', function() {
+   			console.log(this);
+   			var userId = $(this).data('user-id');
+   			var firstName = $(this).data('user-firstname');
+   			var userEmail = $(this).data('user-email');
+   			var lastName = $(this).data('user-lastname');
+   			
+   			if($(this).prop('checked')== true){
+   			
+		   		var text = '<span class="dropdown-item"> <div class="custom-control custom-checkbox">' + 
+			                	'<input type="checkbox" name="toEmail" class="custom-control-input" id="' + userId + '" value="' + userEmail + '" checked data-user-type="ACTIVE_USER">' + 
+			        			'<label class="custom-control-label" for="' + userId + '" >'+
+			         				'<p class="m-0 p-0">'+userEmail+'</p>'+
+			         				'<p class="m-0 p-0" style="color: #7186a9"><sup> Active user name: '+ firstName + ' ' + lastName +'</sup></p>'+
+			        			'</label>'+
+			    		   '</div></span>';
+			    		   
+			    var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+			    if(s == 0){
+			    	$('#theUserListInGenaralMailSend').append(text);
+			    } else {
+			    	$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").prop('checked',true);
+			    }
+			   
+   				var text='<span class="badge badge-info ml-1 mr-1" value="USER_' + userEmail.replace(".", "_") + '">'+userEmail+'</span>'  
+   				$(".userGenaralShow").append(text);
+   				$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			} else {
+   				
+   				var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+   				$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").closest('.dropdown-item').remove();
+   				
+   				var id = "[value='USER_"+userEmail.replace(".", "_")+"'";
+   				$('.userGenaralShow .badge' + id).remove();
+   				
+   			}
+   			$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			userchooseInGenaralMail();
+   		
+   	    });
+   		
+   		$('#emailListOther .notActiveUser .dropdown-item input[type="checkbox"]').on('change', function() {
+   			console.log(this);
+   			var userId = $(this).data('user-id');
+   			var firstName = $(this).data('user-firstname');
+   			var userEmail = $(this).data('user-email');
+   			var lastName = $(this).data('user-lastname');
+   			
+   			if($(this).prop('checked')== true){
+   			
+		   		var text = '<span class="dropdown-item"> <div class="custom-control custom-checkbox">' + 
+			                	'<input type="checkbox" name="toEmail" class="custom-control-input" id="' + userId + '" value="' + userEmail + '" checked data-user-type="NOT_ACTIVE_USER">' + 
+			        			'<label class="custom-control-label" for="' + userId + '" >'+
+			         				'<p class="m-0 p-0">'+userEmail+'</p>'+
+			         				'<p class="m-0 p-0" style="color: #7186a9"><sup> De-active user name: '+ firstName + ' ' + lastName +'</sup></p>'+
+			        			'</label>'+
+			    		   '</div></span>';
+			    		   
+			    var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+			    if(s == 0){
+			    	$('#theUserListInGenaralMailSend').append(text);
+			    } else {
+			    	$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").prop('checked',true);
+			    }
+			   
+   				var text='<span class="badge badge-info ml-1 mr-1" value="USER_' + userEmail.replace(".", "_") + '">'+userEmail+'</span>'  
+   				$(".userGenaralShow").append(text);
+   				$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			} else {
+   				
+   				var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+   				$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").closest('.dropdown-item').remove();
+   				
+   				var id = "[value='USER_"+userEmail.replace(".", "_")+"'";
+   				$('.userGenaralShow .badge' + id).remove();
+   				
+   			}
+   			$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			userchooseInGenaralMail();
+	   	});
+   		
+   		$('#emailListOther .clientUser .dropdown-item input[type="checkbox"]').on('change', function() {
+   			console.log(this);
+   			var userId = $(this).data('user-id');
+   			var firstName = $(this).data('user-clientname');
+   			var managerName = $(this).data('user-managername');
+   			var userEmail = $(this).data('user-email');
+   			
+   			if($(this).prop('checked')== true){
+   			
+		   		var text = '<span class="dropdown-item"> <div class="custom-control custom-checkbox">' + 
+			                	'<input type="checkbox" name="toEmail" class="custom-control-input" id="client_' + userId + '" value="' + userEmail + '" checked data-user-type="CLIENT_USER">' + 
+			        			'<label class="custom-control-label" for="client_' + userId + '" >'+
+			         				'<p class="m-0 p-0">'+userEmail+'</p>'+
+			         				'<p class="m-0 p-0" style="color: #7186a9"><sup> Client name: '+ firstName +'</sup><br/>'+
+			         				'<sup> Manager name: '+ managerName +'</sup></p>'+
+			        			'</label>'+
+			    		   '</div></span>';
+			    		   
+			    var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+			    if(s == 0){
+			    	$('#theUserListInGenaralMailSend').append(text);
+			    } else {
+			    	$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").prop('checked',true);
+			    }
+			   
+   				var text='<span class="badge badge-info ml-1 mr-1" value="USER_' + userEmail.replace(".", "_") + '">'+userEmail+'</span>'  
+   				$(".userGenaralShow").append(text);
+   				$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			} else {
+   				
+   				var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+   				$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").closest('.dropdown-item').remove();
+   				
+   				var id = "[value='USER_"+userEmail.replace(".", "_")+"'";
+   				$('.userGenaralShow .badge' + id).remove();
+   				
+   			}
+   			$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			userchooseInGenaralMail();
+	   	});
+   		$('#emailListOther .employerUser .dropdown-item input[type="checkbox"]').on('change', function() {
+   			console.log(this);
+   			var userId = $(this).data('user-id');
+   			var firstName = $(this).data('user-clientname');
+   			var managerName = $(this).data('user-managername');
+   			var userEmail = $(this).data('user-email');
+   			
+   			if($(this).prop('checked')== true){
+   			
+		   		var text = '<span class="dropdown-item"> <div class="custom-control custom-checkbox">' + 
+			                	'<input type="checkbox" name="toEmail" class="custom-control-input" id="employer_' + userId + '" value="' + userEmail + '" checked data-user-type="EMPLOYER_USER">' + 
+			        			'<label class="custom-control-label" for="employer_' + userId + '" >'+
+			         				'<p class="m-0 p-0">'+userEmail+'</p>'+
+			         				'<p class="m-0 p-0" style="color: #7186a9"><sup> Employer name: '+ firstName +'</sup><br/>'+
+			         				'<sup> Manager name: '+ managerName +'</sup></p>'+
+			        			'</label>'+
+			    		   '</div></span>';
+			    		   
+			    var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+			    if(s == 0){
+			    	$('#theUserListInGenaralMailSend').append(text);
+			    } else {
+			    	$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").prop('checked',true);
+			    }
+			   
+   				var text='<span class="badge badge-info ml-1 mr-1" value="USER_' + userEmail.replace(".", "_") + '">'+userEmail+'</span>'  
+   				$(".userGenaralShow").append(text);
+   				$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			} else {
+   				
+   				var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+   				$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").closest('.dropdown-item').remove();
+   				
+   				var id = "[value='USER_"+userEmail.replace(".", "_")+"'";
+   				$('.userGenaralShow .badge' + id).remove();
+   				
+   			}
+   			$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			userchooseInGenaralMail();
+	   	});
+   		$('#emailListOther .vendorUser .dropdown-item input[type="checkbox"]').on('change', function() {
+   			console.log(this);
+   			var userId = $(this).data('user-id');
+   			var firstName = $(this).data('user-clientname');
+   			var managerName = $(this).data('user-managername');
+   			var userEmail = $(this).data('user-email');
+   			
+   			if($(this).prop('checked')== true){
+   			
+		   		var text = '<span class="dropdown-item"> <div class="custom-control custom-checkbox">' + 
+			                	'<input type="checkbox" name="toEmail" class="custom-control-input" id="vendor_' + userId + '" value="' + userEmail + '" checked data-user-type="VENDOR_USER">' + 
+			        			'<label class="custom-control-label" for="vendor_' + userId + '" >'+
+			         				'<p class="m-0 p-0">'+userEmail+'</p>'+
+			         				'<p class="m-0 p-0" style="color: #7186a9"><sup> Vendor name: '+ firstName +'</sup><br/>'+
+			         				'<sup> Manager name: '+ managerName +'</sup></p>'+
+			        			'</label>'+
+			    		   '</div></span>';
+			    		   
+			    var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+			    if(s == 0){
+			    	$('#theUserListInGenaralMailSend').append(text);
+			    } else {
+			    	$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").prop('checked',true);
+			    }
+			   
+   				var text='<span class="badge badge-info ml-1 mr-1" value="USER_' + userEmail.replace(".", "_") + '">'+userEmail+'</span>'  
+   				$(".userGenaralShow").append(text);
+   				$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			} else {
+   				
+   				var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+   				$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").closest('.dropdown-item').remove();
+   				
+   				var id = "[value='USER_"+userEmail.replace(".", "_")+"'";
+   				$('.userGenaralShow .badge' + id).remove();
+   				
+   			}
+   			$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			userchooseInGenaralMail();
+	   	});
+   		$('#emailListOther .bDMUser .dropdown-item input[type="checkbox"]').on('change', function() {
+   			console.log(this);
+   			var userId = $(this).data('user-id');
+   			var firstName = $(this).data('user-firstname');
+   			var lastName = $(this).data('user-lastname');
+   			var userEmail = $(this).data('user-email');
+   			
+   			if($(this).prop('checked')== true){
+   			
+		   		var text = '<span class="dropdown-item"> <div class="custom-control custom-checkbox">' + 
+			                	'<input type="checkbox" name="toEmail" class="custom-control-input" id="bDM_' + userId + '" value="' + userEmail + '" checked data-user-type="BDM_USER">' + 
+			        			'<label class="custom-control-label" for="bDM_' + userId + '" >'+
+			         				'<p class="m-0 p-0">'+userEmail+'</p>'+
+			         				'<p class="m-0 p-0" style="color: #7186a9"><sup> BDM name: '+ firstName + ' '+lastName+'</sup></p>'+
+			        			'</label>'+
+			    		   '</div></span>';
+			    		   
+			    var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+			    if(s == 0){
+			    	$('#theUserListInGenaralMailSend').append(text);
+			    } else {
+			    	$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").prop('checked',true);
+			    }
+			   
+   				var text='<span class="badge badge-info ml-1 mr-1" value="USER_' + userEmail.replace(".", "_") + '">'+userEmail+'</span>'  
+   				$(".userGenaralShow").append(text);
+   				$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			} else {
+   				
+   				var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+   				$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").closest('.dropdown-item').remove();
+   				
+   				var id = "[value='USER_"+userEmail.replace(".", "_")+"'";
+   				$('.userGenaralShow .badge' + id).remove();
+   				
+   			}
+   			$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			userchooseInGenaralMail();
+	   	});
+   		$('#emailListOther .aMUser .dropdown-item input[type="checkbox"]').on('change', function() {
+   			console.log(this);
+   			var userId = $(this).data('user-id');
+   			var firstName = $(this).data('user-firstname');
+   			var lastName = $(this).data('user-lastname');
+   			var userEmail = $(this).data('user-email');
+   			
+   			if($(this).prop('checked')== true){
+   			
+		   		var text = '<span class="dropdown-item"> <div class="custom-control custom-checkbox">' + 
+			                	'<input type="checkbox" name="toEmail" class="custom-control-input" id="aM_' + userId + '" value="' + userEmail + '" checked data-user-type="AM_USER">' + 
+			        			'<label class="custom-control-label" for="aM_' + userId + '" >'+
+			         				'<p class="m-0 p-0">'+userEmail+'</p>'+
+			         				'<p class="m-0 p-0" style="color: #7186a9"><sup> AM name: '+ firstName + ' '+lastName+'</sup></p>'+
+			        			'</label>'+
+			    		   '</div></span>';
+			    		   
+			    var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+			    if(s == 0){
+			    	$('#theUserListInGenaralMailSend').append(text);
+			    } else {
+			    	$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").prop('checked',true);
+			    }
+			   
+   				var text='<span class="badge badge-info ml-1 mr-1" value="USER_' + userEmail.replace(".", "_") + '">'+userEmail+'</span>'  
+   				$(".userGenaralShow").append(text);
+   				$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			} else {
+   				
+   				var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+   				$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").closest('.dropdown-item').remove();
+   				
+   				var id = "[value='USER_"+userEmail.replace(".", "_")+"'";
+   				$('.userGenaralShow .badge' + id).remove();
+   				
+   			}
+   			$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			userchooseInGenaralMail();
+	   	});
+   		$('#emailListOther .recruitersUser .dropdown-item input[type="checkbox"]').on('change', function() {
+   			console.log(this);
+   			var userId = $(this).data('user-id');
+   			var firstName = $(this).data('user-firstname');
+   			var lastName = $(this).data('user-lastname');
+   			var userEmail = $(this).data('user-email');
+   			
+   			if($(this).prop('checked')== true){
+   			
+		   		var text = '<span class="dropdown-item"> <div class="custom-control custom-checkbox">' + 
+			                	'<input type="checkbox" name="toEmail" class="custom-control-input" id="recruiters_' + userId + '" value="' + userEmail + '" checked data-user-type="RECRUITERS_USER">' + 
+			        			'<label class="custom-control-label" for="recruiters_' + userId + '" >'+
+			         				'<p class="m-0 p-0">'+userEmail+'</p>'+
+			         				'<p class="m-0 p-0" style="color: #7186a9"><sup> Recruiters name: '+ firstName + ' '+lastName+'</sup></p>'+
+			        			'</label>'+
+			    		   '</div></span>';
+			    		   
+			    var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+			    if(s == 0){
+			    	$('#theUserListInGenaralMailSend').append(text);
+			    } else {
+			    	$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").prop('checked',true);
+			    }
+			   
+   				var text='<span class="badge badge-info ml-1 mr-1" value="USER_' + userEmail.replace(".", "_") + '">'+userEmail+'</span>'  
+   				$(".userGenaralShow").append(text);
+   				$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			} else {
+   				
+   				var s =  $("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").length;
+   				$("#theUserListInGenaralMailSend input[type=checkbox][value*='" + userEmail + "']").closest('.dropdown-item').remove();
+   				
+   				var id = "[value='USER_"+userEmail.replace(".", "_")+"'";
+   				$('.userGenaralShow .badge' + id).remove();
+   				
+   			}
+   			$("#selectedUserSizeInGenaral").text($('#generalMail .dropdown-item input[name="toEmail"]:checked').length);
+   			userchooseInGenaralMail();
+	   	});
+   	}
+   	
+   	function setFilter(){
+   		
+   		$("#emailListOther").toggle();
+   	}
+   	</script>
+</th:block>

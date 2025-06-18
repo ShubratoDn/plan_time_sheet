@@ -1,0 +1,84 @@
+<div id="vendor-add" th:fragment="vendor-add-fragment"
+	class="modal fade bs-example-modal-center" tabindex="-1"
+	role="dialog" aria-labelledby="mySmallModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">
+					Add new vendor</h4>
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">×</button>
+			</div>
+			<div class="modal-body">
+			<div id="vendorAddFormError">
+			</div>
+				<form th:action="@{/admin/new-client-add}" id="vendor-add-form"
+					enctype="multipart/form-data" method="post"
+					class="needs-validation" data-parsley-validate novalidate>
+					<div class="modal-body">
+						<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 row">
+							<div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+								<label>Vendor Name<span class="text-danger">*</span></label> 
+								<input type="text" name="clientName" parsley-trigger="change" required
+									placeholder="Vendor Name" class="form-control" maxlength="25"> 
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+								<label for="vendorName">Type<span class="text-danger">*</span></label> 
+				              	<select name="type" id="selectType" class="form-control" data-searchdisable="true" required>
+									<option th:each="type : ${T(com.aim.enums.ClientType).values()}" th:if="${type.urlParam=='Vendor'}" 
+  										th:value="${type}" 
+  										th:selected="${type} == ${selectClientType}" th:text="${type.displayLabel}">
+			  						</option>
+				              	</select>
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+								<label for="startDate">Manager Name<span
+									class="text-danger">*</span>
+								</label> 
+								<input type="text" name="managerName" placeholder="Manager Name" required maxlength="25" class="form-control" />
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+								<label for="startDate">Zip Code<span
+									class="text-danger">*</span>
+								</label> 
+								<input type="text" name="zipCode" placeholder="Zip Code" required maxlength="20" class="form-control" />
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+								<label for="startDate">Email<span
+									class="text-danger">*</span>
+								</label> 
+								<input type="email" name="email" placeholder="Email" maxlength="40" required class="form-control" />
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+								<div class="form-group">
+                                	<label for="demo">Phone<span class="text-danger">*</span></label>
+                                    <input type="tel" name="phone" parsley-trigger="change" required placeholder="" maxlength="14" id="telephone2" class="form-control">
+                              	</div>
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+								<label for="vendorName">Address<span
+									class="text-danger"></span></label> 
+									<textarea class="form-control" max-hight="50px"
+									type="text" name="address" /></textarea>
+							</div>
+							<div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+								<label for="vendorName">Remark<span
+									class="text-danger"></span></label> 
+									<textarea class="form-control" max-hight="50px"
+									type="text" name="remark" /></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary waves-effect">Save</button>
+						<button type="button" class="btn btn-danger waves-effect"
+							data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
+        <meta name="author" content="Coderthemes">
+
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Add User</title>
+        <!-- App css -->
+        <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/core.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/components.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/icons.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/pages.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/menu.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/responsive.css}" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" th:href="@{/assets/plugins/switchery/switchery.min.css}">
+        <link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+        <script th:src="@{/assets/js/modernizr.min.js}"></script>
+
+    </head>
+
+
+    <body class="fixed-left">
+
+        <!-- Begin page -->
+        <div id="wrapper">
+
+         <th:block th:replace="user/header :: header"></th:block>
+        
+       	 <th:block th:replace="admin/menu :: menu"></th:block>
+         
+		 <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="content-page">
+                <!-- Start content -->
+                <div class="content">
+                    <div class="container">
+						<div class="row">
+							<div class="col-xs-12">
+								<div class="page-title-box">
+									<h4 class="page-title">Add User</h4>
+									<ol class="breadcrumb p-0 m-0">
+										<li><a th:href="@{/admin/home}">Dashboard</a></li>
+										<li class="active">Add user</li>
+									</ol>
+									<div class="clearfix"></div>
+								</div>
+							</div>
+						</div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                            	<div class="alert alert-danger alert-dismissible fade in" role="alert" th:if="${error}">
+		                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		                                <span aria-hidden="true">×</span>
+		                            </button>
+		                            <strong>Oh snap!</strong> <th:block th:text="${error}"></th:block>
+		                        </div>
+		                        <div class="alert alert-success alert-dismissible fade in" role="alert" th:if="${success}">
+		                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		                                <span aria-hidden="true">×</span>
+		                            </button>
+		                            <strong>Success</strong> <th:block th:text="${success}"></th:block>
+		                        </div>
+                                <div class="card-box">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-xs-12">
+
+                                            <h4 class="header-title m-t-0" th:text="#{add.new.user}">Add New User</h4>
+                                            <div class="p-20">
+                                                <form th:action="@{/admin/add-user}" th:object="${user}" method="post" data-parsley-validate novalidate>
+                                                    <div class="form-group col-sm-6">
+                                                        <label for="userName">First Name<span class="text-danger">*</span></label>
+                                                        <input type="text" th:field="*{firstName}" parsley-trigger="change" required
+                                                               placeholder="Enter first name" class="form-control">
+                                                        <input type="hidden" th:field="*{id}">
+                                                        <label th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="validation-message"></label>
+                                                    </div>
+                                                    <div class="form-group col-sm-6">
+                                                        <label for="emailAddress">Last Name<span class="text-danger">*</span></label>
+                                                        <input type="text" th:field="*{lastName}" parsley-trigger="change" required
+                                                               placeholder="Enter last name" class="form-control">
+                                                        <label	th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="validation-message"></label>
+                                                    </div>
+                                                    <div class="form-group col-sm-6">
+                                                        <label for="emailAddress">Email<span class="text-danger">*</span></label>
+                                                        <input type="email" th:field="*{email}"  parsley-trigger="change" required
+                                                               placeholder="Enter email" class="form-control">
+                                                        <label th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="validation-message"></label>
+                                                    </div>
+                                                    <div class="form-group col-sm-6">
+                                                        <label for="emailAddress">Work Email<span class="text-danger">*</span></label>
+                                                        <input type="email" th:field="*{workEmail}"  parsley-trigger="change" required
+                                                               placeholder="Enter email" class="form-control">
+                                                        <label th:if="${#fields.hasErrors('workEmail')}" th:errors="*{workEmail}" class="validation-message"></label>
+                                                    </div>
+                                                    <div class="form-group col-sm-6">
+                                                        <label for="role">Role <span class="text-danger">*</span></label>
+                                                        <select required="required" th:field="*{role}" class="form-control fstdropdown-select">
+                                                        	<option value="ROLE_USER">User</option>
+                                                        	<option value="ROLE_SUPERVISOR">Supervisor</option>
+                                                        	<option value="ROLE_ADMIN">Admin</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group col-sm-6">
+                                                        <label for="emailAddress">Phone<span class="text-danger">*</span></label>
+                                                        <input type="text" th:field="*{phone}" parsley-trigger="change" required
+                                                               placeholder="Enter phone" class="form-control" >
+                                                        <label th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="validation-message"></label>
+                                                    </div>
+                                                    
+                                                    <div class="form-group col-sm-6" th:if="${user.id == 0}">
+                                                        <label for="pass1">Password<span class="text-danger">*</span></label>
+                                                        <input id="pass1" type="password" th:field="*{password}"  placeholder="Password" required
+                                                               class="form-control">
+                                                    </div>
+                                                    <div class="form-group col-sm-6" th:if="${user.id == 0}">
+                                                        <label for="passWord2">Confirm Password <span class="text-danger">*</span></label>
+                                                        <input data-parsley-equalto="#pass1" type="password" required
+                                                               placeholder="Password" class="form-control" id="passWord2">
+                                                    </div>
+													
+                                                    <div class="form-group text-center col-sm-12">
+                                                        <button class="btn btn-primary waves-effect waves-light" type="submit">
+                                                            Submit
+                                                        </button>
+                                                        <button type="reset" class="btn btn-danger waves-effect m-l-5" onclick="window.history.go(-1); return false;">
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+
+                                                </form>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                        		</div> <!-- end ard-box -->
+                            </div><!-- end col-->
+                        </div>
+                    </div> <!-- container -->
+
+                </div> <!-- content -->
+
+            </div>
+		
+
+        </div>
+        <!-- END wrapper -->
+		<footer class="footer text-right"> 2016 - 2018 © Zircos. </footer>
+        <script>
+            var resizefunc = [];
+        </script>
+
+        <!-- jQuery  -->
+        <script th:src="@{/assets/js/jquery.min.js}"></script>
+        <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+        <script th:src="@{/assets/js/detect.js}"></script>
+        <script th:src="@{/assets/js/fastclick.js}"></script>
+        <script th:src="@{/assets/js/jquery.blockUI.js}"></script>
+        <script th:src="@{/assets/js/waves.js}"></script>
+        <script th:src="@{/assets/js/jquery.slimscroll.js}"></script>
+        <script th:src="@{/assets/js/jquery.scrollTo.min.js}"></script>
+        <script th:src="@{/assets/plugins/switchery/switchery.min.js}"></script>
+
+        <script type="text/javascript" th:src="@{/assets/plugins/parsleyjs/parsley.min.js}"></script>
+		<script th:src="@{/assets/js/fstdropdown.js}"></script>
+        <!-- App js -->
+        <script th:src="@{/assets/js/jquery.core.js}"></script>
+        <script th:src="@{/assets/js/jquery.app.js}"></script>
+		<style>
+			.validation-message{color: red;}
+		</style>
+		<script>
+            jQuery(document).ready(function(){
+            	 setFstDropdown();
+            });
+           
+        </script>
+    </body>
+</html>

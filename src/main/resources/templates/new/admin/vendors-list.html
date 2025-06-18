@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Vendors</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+		<!-- DataTables -->
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+
+ 		<!-- Responsive datatable examples -->
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+		
+		<link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+		
+        <style>
+        	.hide{
+        	display: none !important;
+        }
+        .iti__selected-flag {
+		    height: calc(1.5em + .94rem + 2px) !important;
+		}
+		.iti {
+    		display: block !important;
+    	}
+        .iti__country-list {
+	    
+	    	overflow-y: overlay !important;
+	    }
+	    .iti__country-list li{
+			width: 250px !important;	    
+	    }
+	    .fade:not(.show) {
+		    opacity: 1;
+		}
+		.readOnlyClass{background: #d1d6f6 !important;}
+		#canNotChangeCover{
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+		}
+        </style>
+    </head>
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+        <div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="vertical-menu">
+				<div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+						<div class="col-xs-12">
+	                      	<div class="alert alert-danger alert-dismissible fade in" role="alert" th:if="${error}">
+		                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		                            <span aria-hidden="true">×</span>
+		                        </button>
+	                        	<strong>Oh snap!</strong> <th:block th:text="${error}"></th:block>
+	                   		</div>
+		                    <div class="alert alert-success alert-dismissible fade in" role="alert" th:if="${success}">
+		                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		                            <span aria-hidden="true">×</span>
+		                        </button>
+		                        <strong>Success</strong> <th:block th:text="${success}"></th:block>
+		                    </div>
+	                     </div>
+						<div class="row">
+							<div class="col-12">
+								<div class="card">
+									<div class="card-body">
+										<div class="col-sm-12 mb-2">
+	                                       <ul class="nav nav-tabs" role="tablist1">
+	                                           <li class="nav-item">
+	                                                <a class="nav-link " th:href="@{/admin/user-list}" aria-selected="false">
+	                                                    <span class="d-none d-sm-block ">User List</span>    
+	                                                </a>
+	                                            </li>
+	                                            <li class="nav-item">
+	                                                 <a class="nav-link" th:href="@{/admin/internal-user/list}" aria-selected="false">
+	                                                    <span class="d-none d-sm-block ">Internal User List</span>    
+	                                                </a>
+	                                            </li>
+	                                            <li class="nav-item">
+                                                <a class="nav-link " th:href="@{/admin/client-list}" aria-selected="false">
+                                                    <span class="d-none d-sm-block ">Client</span>    
+                                                </a>
+                                            </li> <li class="nav-item">
+                                                <a class="nav-link active text-primary" th:href="@{/admin/vendors-list}" aria-selected="true">
+                                                    <span class="d-none d-sm-block ">Vendor</span>    
+                                                </a>
+                                            </li> <li class="nav-item">
+                                                <a class="nav-link " th:href="@{/admin/employee-list}" aria-selected="false">
+                                                    <span class="d-none d-sm-block ">Employee</span>    
+                                                </a>
+                                            </li>
+	                                  
+	                                        </ul> 
+				                  		</div>
+				                  		
+				                        <div class="col-sm-12">
+											<table id="datatable"
+												class="table table-bordered table-responsive nowrap"
+												style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+												<thead>
+													<tr>
+														<th>No</th>
+			                                            <th>Client Name</th>
+			                                            <th>address</th>
+			                                            <th>zipCode</th>
+			                                             <th>phone</th> 
+			                                             <th>Remark</th>
+			                                            
+													</tr>
+												</thead>
+												<tbody>
+													<tr class="odd gradeX" th:each="client,index : ${clients}">
+			                                            <td th:text="${index.index + 1}"></td>
+			                                            <td th:text="${client.clientName}"></td>
+			                                            <td th:text="${client.address}"></td>  
+			                                              <td th:text="${client.zipCode}"></td> 
+			                                              <td th:text="${client.phone}"></td>  
+			                                              <td></td>
+			                                        </tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> <!-- container-fluid -->
+                </div>
+            </div>
+        </div>
+
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			/*]]>*/
+		</script>
+		
+        <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+			
+		<script th:src="@{/assets_new/libs/parsleyjs/parsley.min.js}"></script>
+		<script th:src="@{/assets_new/js/pages/form-validation.init.js}"></script>
+	
+        <!-- Required datatable js -->
+        <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+        
+        <!-- Responsive examples -->
+        <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+       
+        <!-- Datatable init js -->
+        <script th:src="@{/assets_new/js/pages/datatables.init.js}"></script>    
+
+        <script th:src="@{/assets_new/js/app.js}"></script>
+		
+     <th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

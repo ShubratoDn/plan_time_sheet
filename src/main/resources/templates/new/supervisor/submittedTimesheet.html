@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+		<meta charset="utf-8" />
+        <title>Submit time sheet</title>
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- Bootstrap Css -->
+         <!-- DataTables -->
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+
+ 		<!-- Responsive datatable examples -->
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+		
+		<link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+<!--    <link th:href="@{/assets/css/style.css}" rel="stylesheet" type="text/css" /> -->
+
+    </head>
+
+
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			
+			<th:block th:replace="new/user/header :: header"></th:block>
+			
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="vertical-menu">
+
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+					
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+					
+                </div>
+            </div>
+			
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+			<div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+						<div class="row">
+							<div class="col-12">
+								<div class="page-title-box d-flex align-items-center justify-content-between">
+									<h4 class="mb-0 font-size-18">Submittedss TimeSheet </h4>
+									<div class="page-title-right">
+                                       <ol class="breadcrumb m-0">
+                                           <li class="breadcrumb-item"><a th:href="@{/admin/home}">Dashboards</a></li>
+                                           <li class="breadcrumb-item active">Submitted TimeSheet</li>
+                                       </ol>
+                                   </div>
+							</div>
+						</div>
+					</div>
+					<div class="card">
+					   <div class="card-body">
+<!-- 						 <h4 class="m-t-0 header-title"><b>Time sheet</b></h4>  -->
+
+						<div class="row mb-20">
+								<div class="col-sm-3">
+                             		<label class="control-label" for="example-input1-group3">Year</label>
+                                 	<select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value" >
+										<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2017)}"
+	                                        	class="year-box-option" th:text="${year}" th:value="${'?year=' + year}" th:selected="${year == selectedYear}">
+	                                   	</option>
+	                         		</select>
+                               	</div>
+                                	
+                        		<div class="col-sm-3">
+                             		<label class="control-label" for="example-input1-group3">Month</label>
+                                 	<select name="sort" class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value" id="sortByAction">
+		  								<option th:each="month : ${T(com.aim.enums.Month).values()}" 
+		  										th:value="'?year='+${selectedYear} +'&month=' + ${month.urlParam}"
+		  										th:selected="${month} == ${selectedMonth}" th:text="${month.displayLabel}">
+		  							    </option>
+									</select>
+                                </div>
+                      		</div>
+                      		<br/>
+                      		<br/>
+                         <table id="datatable" class="table col-12">
+                             <thead>
+	                             <tr>
+	                                 <th>No</th>
+	                                 <th>User</th>
+	                                 <th>Email</th>
+	                                 <th>Time sheet count</th>
+	                                 <th>Details</th>
+	                             </tr>
+                             </thead>
+
+                             <tbody>
+                              <tr class="odd gradeX" th:each="userTimeSheet,index : ${userTimeSheets}">
+                                  <td th:text="${index.index + 1}"></td>
+                                  <td th:text="${userTimeSheet.user.firstName + ' ' + userTimeSheet.user.lastName}"></td>
+                                  <td th:text="${userTimeSheet.user.email}"></td>
+                                  <td th:text="${userTimeSheet.timeSheetCount}"></td>
+                                  <td>
+                                  		<a  th:if="${userTimeSheet.timeSheetCount > 0}" th:onclick="'timeSheetDetails(\''+ ${userTimeSheet.hourLogFileJSON} +'\')'" data-toggle='modal' data-target='#panel-modal'>
+                                  			<i class="fas fa-info-circle fa-2x" style="color:orange;" data-toggle="tooltip"  data-placement="left" title="Client Details"></i>
+                                  		</a>
+                                  		
+                                  </td>
+                              </tr>
+                             </tbody>
+                         </table>
+                     </div>
+                  </div>
+                </div> <!-- content -->
+					<div id='panel-modal' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="custom-width-modalLabel" aria-hidden="true" style="display: none;">
+                         <div class='modal-dialog'>
+                             <div class='modal-content'>
+                                     <div class='modal-header'>
+                                        
+                                       	<h4 class="modal-title" id="custom-width-modalLabel">Time sheet</h4>
+                                       	 <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button>
+                                     </div>
+                                     <div class="modal-body">
+                                        <div id="listId">
+                       						<table id="popUpTable" class="table table-striped  table-colored table-info">
+					                             <thead>
+						                             <tr>
+						                                 <th>No</th>
+						                                 <th>Client</th>
+						                                 <th>Date period</th>
+						                             </tr>
+                            					 </thead>
+                             					<tbody> </tbody>
+                         					</table>
+                                        </div>
+                                     </div>
+                                 
+                             </div>
+                         </div>
+                     </div>
+                     
+                
+            	</div>
+        	</div>
+        </div>
+        <!-- END wrapper -->
+		<footer class="footer">
+           <div class="container-fluid">
+               <div class="row">
+                   <div class="col-sm-6">
+                       <script>document.write(new Date().getFullYear())</script> © Aimtechnolabs.
+                   </div>
+                   <div class="col-sm-6">
+                       <div class="text-sm-right d-none d-sm-block">
+                           Design & Develop by Aimtechnolabs.com
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </footer>
+
+        <script>
+            var resizefunc = [];
+        </script>
+
+        <!-- jQuery  -->
+        <!-- App js -->
+         <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+        
+         <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+        
+        <!-- Responsive examples -->
+        <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+       
+        <script th:src="@{/assets_new/js/app.js}"></script>
+        <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+        <script th:src="@{/assets/js/fstdropdown.js}"></script>
+        <script th:src="@{/assets/js/javascript/user-time-sheet.js}"></script>
+		<th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

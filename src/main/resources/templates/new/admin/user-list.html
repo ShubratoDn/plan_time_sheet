@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Users</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+		 <!-- DataTables -->
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+
+ 		<!-- Responsive datatable examples -->
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+        <style>
+         .vertical-collpsed .vertical-menu { 
+    position: fixed;
+    z-index: 110;}
+        </style>
+
+    </head>
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="vertical-menu">
+				<div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+                </div>
+            </div>
+            <!-- Left Sidebar End -->
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+						<div class="row">
+						  <div class="col-12">
+							<div class="card">
+							     <div class="card-body">
+							     	<div class="col-sm-12 mb-1">
+                                       <ul class="nav nav-tabs" role="tablist1">
+                                           <li class="nav-item" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER,T(com.aim.enums.Permission).READ, false)}">
+                                                <a class="nav-link active" th:href="@{/admin/user-list}" aria-selected="true">
+                                                    <span class="d-none d-sm-block text-primary">User List</span>    
+                                                </a>
+                                            </li>
+                                            <li class="nav-item" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).INTERNAL_USER,T(com.aim.enums.Permission).READ, false)}">
+                                                 <a class="nav-link " th:if="${permissionService.getPermissionPlan().commission == true}" th:href="@{/admin/internal-user/list}" aria-selected="false">
+                                                    <span class="d-none d-sm-block ">Internal User List</span>    
+                                                </a>
+                                                 <a class="nav-link " data-toggle="modal" data-target="#not-permit" th:if="${permissionService.getPermissionPlan().commission == false}" href="javascript:void(0);" aria-selected="false">
+                                                   <i class="fa fa-lock"></i> <span class="d-none d-sm-block ">Internal User List</span>    
+                                                </a>
+                                            </li>
+                                             <li class="nav-item">
+                                                <a class="nav-link " th:href="@{/admin/client-list}" aria-selected="false">
+                                                    <span class="d-none d-sm-block">Client</span>    
+                                                </a>
+                                            </li> 
+                                            <li class="nav-item">
+                                                <a class="nav-link " th:href="@{/admin/vendors-list}" aria-selected="false">
+                                                    <span class="d-none d-sm-block ">Vendor</span>    
+                                                </a>
+                                            </li> 
+                                            <li class="nav-item">
+                                                <a class="nav-link " th:href="@{/admin/employee-list}" aria-selected="false">
+                                                    <span class="d-none d-sm-block ">Employee</span>    
+                                                </a>
+                                            </li>
+                                  
+                                        </ul> 
+			                  		</div>
+							     
+							     
+									<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}">
+			                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			                                <span aria-hidden="true">×</span>
+			                            </button>
+			                            <strong>Oh snap!</strong> <th:block th:text="${error}"></th:block>
+			                        </div>
+			                        <div class="alert alert-success alert-dismissible" role="alert" th:if="${success}">
+			                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			                                <span aria-hidden="true">×</span>
+			                            </button>
+			                            <strong>Success</strong> <th:block th:text="${success}"></th:block>
+			                        </div>
+			                        
+			                        <div class="row mb-1" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER,T(com.aim.enums.Permission).CREATE, false)}">  
+			                        	<div class="col-12 col-sm-12 col-md-10"></div>	
+			                        	<a class="btn btn-primary waves-effect waves-light col-12 col-sm-12 col-md-2" th:href="@{'/admin/add-user'}">
+                                            Add new user
+                                        </a>
+			                        </div>
+			                        <div class="col-sm-12 mb-5">
+			                        	<ul class="nav nav-tabs" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" href="javascript:void(0);" aria-selected="true">
+                                                    <span class="d-none d-sm-block text-primary">List</span>    
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" th:href="@{/admin/user-grid}" aria-selected="false">
+                                                    <span class="d-none d-sm-block">Grid</span>    
+                                                </a>
+                                            </li>
+                                        </ul>
+			                        </div>
+			                        
+			                        <div class="col-12 col-sm-12">
+										<table id="datatable"
+											class="table table-bordered table-responsive nowrap"
+											style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+											<thead>
+												<tr>
+													<th>No</th>
+		                                            <th>Name</th>
+		                                            <th>Email</th>
+		                                            <th>Phone</th>
+		                                            <th>Role</th>
+		                                            <th>Status</th>
+		                                            <th>Actions</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr class="odd gradeX" th:each="user,index : ${users}">
+		                                            <td th:text="${index.index + 1}"></td>
+		                                            <td th:text="${user.firstName + ' ' + user.lastName}"></td>
+		                                            <td th:text="${user.email}"></td>
+		                                            <td th:text="${user.phone}"></td>
+		                                            <td>
+		                                            	<span class="badge badge-primary" th:if="${user.role == 'ROLE_ADMIN'}">Admin</span>
+														<span class="badge badge-info" th:if="${user.role == 'ROLE_USER'}">User</span>
+														<span class="badge badge-success" th:if="${user.role == 'ROLE_SUPERVISOR'}">Supervisor</span>
+						                                
+		                                            </td>
+		                                            <td th:text="${user.active == 1 ? 'Active' : 'Not Active'}"> </td>
+		                                            <td>
+		                                            	<th:block th:if="${user.active == 1 && session.user.id != user.id}" >
+			                                            	<a th:href="@{${'/admin/deactive/' + {user.id} } }" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER,T(com.aim.enums.Permission).UPDATE, false)}"><i style="color:red" class="fas fa-user-times" data-toggle="tooltip" data-placement="right" title="Deactive"></i></a>
+			                                           	</th:block>
+			                                           	<th:block th:if="${user.active == 0 && session.user.id != user.id}" >
+			                                            	<a th:href="@{${'/admin/active/' + {user.id} } }" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER,T(com.aim.enums.Permission).UPDATE, false)}"><i style="color:green" class="fas fa-user-plus" data-toggle="tooltip" data-placement="right" title="Activate"></i></a>
+			                                           	</th:block>
+			                                           	&nbsp;
+			                                           	<th:block>
+			                                            	<a th:href="@{${'/admin/edit/' + {user.id} } }" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).USER,T(com.aim.enums.Permission).UPDATE, false) && user.role == 'ROLE_USER' || session.user.role == 'ROLE_ADMIN'}"><i class="fas fa-user-edit" data-toggle="tooltip" data-placement="right" title="Edit"></i></a>
+			                                           		&nbsp;
+			                                            	<a th:href="@{${'/admin/user-list/forgot-password/' + {user.id} } }" th:if="${session.user.id != user.id && permissionService.getPermissionPlan().userCanLogin == true}"><i class="fas fa-key " style="color:pink;" data-toggle="tooltip" data-placement="right" title="Send Reset password email to user"></i></a>
+			                                           		&nbsp;
+			                                            	<a th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).CLIENT_ASSIGN_USER,T(com.aim.enums.Permission).READ, false)}" th:href="@{${'/admin/user-detail/' + {user.id} } }"><i class="fas fa-info-circle" style="color:orange;"  data-toggle="tooltip" data-placement="left" title="Client Details"></i></a>
+			                                            	&nbsp;
+			                                           		<a th:if="${user.clientActiveId != null && session.user.role == 'ROLE_ADMIN'}" th:href="@{${'/admin/user-hour-log/' + {user.clientActiveId}}}">
+			                                           			<i class="far fa-calendar-alt " data-toggle="tooltip" data-placement="left" title="Hour Log">
+			                                           			</i>
+			                                           		</a>
+			                                           	</th:block>
+		                                           	</td>
+		                                        </tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					</div> <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+            </div>
+            <!-- end main content-->
+        </div>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			/*]]>*/
+		</script>
+        <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+			
+        <!-- Required datatable js -->
+        <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+        
+        <!-- Responsive examples -->
+        <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+       
+        <!-- Datatable init js -->
+        <script th:src="@{/assets_new/js/pages/datatables.init.js}"></script>    
+
+        <script th:src="@{/assets_new/js/app.js}"></script>
+		<th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Admin Dashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        
+        <!-- DataTables -->
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+ 		<!-- Responsive datatable examples -->
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets_new/css/page/adminHome.css}" rel="stylesheet" type="text/css" />
+    </head>
+
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			
+			<th:block th:replace="new/user/header :: header"></th:block>
+			
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="vertical-menu">
+
+                <div data-simplebar class="h-100">
+					
+					<th:block th:replace="new/superAdmin/menu :: menu"></th:block>
+					
+                </div>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            
+        </div>
+		
+        <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+
+<!-- 		<!-- Required datatable js --> -->
+<!--         <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script> -->
+<!--         <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script> -->
+        
+<!--         Responsive examples -->
+<!--         <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script> -->
+<!--         <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script> -->
+       
+<!--         Datatable init js -->
+<!--         <script th:src="@{/assets_new/js/pages/datatables.init.js}"></script>   -->
+        
+<!--         apexcharts -->
+<!--         <script th:src="@{/assets_new/libs/apexcharts/apexcharts.min.js}"></script> -->
+        
+<!--         Saas dashboard init -->
+<!--         <script th:src="@{/assets_new/js/pages/saas-dashboard.init.js}"></script> -->
+<!--         <script th:src="@{/assets_new/js/app.js}"></script> -->
+<!--         <script th:src="@{/assets/js/fstdropdown.js}"></script> -->
+<!--         <script th:src="@{/assets_new/js/home-page-filter.js}"></script> -->
+        
+        
+    </body>
+</html>

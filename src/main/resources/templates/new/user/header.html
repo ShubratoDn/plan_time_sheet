@@ -1,0 +1,82 @@
+<th:block th:fragment="header">
+<header id="page-topbar">
+     <div class="navbar-header">
+         <div class="d-flex">
+             <!-- LOGO -->
+             <div class="navbar-brand-box">
+                  <a th:href="@{/}" class="logo logo-dark">
+                       <span class="logo-sm">
+                           <img alt="" th:if="${session.user != null && session.user.company != null && session.user.company.imagePath != null}" class="rounded-circle" style="background-color: #f4f5f8;" height="50" width="50" th:src="@{'/file/getFile?path='+${session.user.company.imagePath}}">
+                       </span>
+                       <span class="logo-lg">
+                           <img alt="" th:if="${session.user != null && session.user.company != null && session.user.company.imagePath != null}" class="rounded-circle" style="background-color: #f4f5f8;" height="50" width="50" th:src="@{'/file/getFile?path='+${session.user.company.imagePath}}">
+                       </span>
+                   </a>
+
+                   <a th:href="@{/}" class="logo logo-light">
+                       <span class="logo-sm">
+                          <img alt="" th:if="${session.user != null && session.user.company != null && session.user.company.imagePath != null}" class="rounded-circle" style="background-color: #f4f5f8;" height="50" width="50" th:src="@{'/file/getFile?path='+${session.user.company.imagePath}}">
+                       </span>
+                       <span class="logo-lg">
+                           <img alt="" th:if="${session.user != null && session.user.company != null && session.user.company.imagePath != null}" class="rounded-circle" style="background-color: #f4f5f8;" height="50" width="50" th:src="@{'/file/getFile?path='+${session.user.company.imagePath}}">
+                       </span>
+                   </a>
+             </div>
+
+             <button type="button" class="btn btn-sm px-3 font-size-16 header-item waves-effect" id="vertical-menu-btn">
+                 <i class="fa fa-fw fa-bars"></i>
+             </button>
+         </div>
+
+         <div class="d-flex">
+
+             <div class="dropdown d-none d-lg-inline-block ml-1">
+                 <button type="button" class="btn header-item noti-icon waves-effect" data-toggle="fullscreen">
+                     <i class="bx bx-fullscreen"></i>
+                 </button>
+             </div>
+
+             <div class="dropdown d-inline-block">
+                 <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
+                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                     <span class="d-none d-xl-inline-block ml-1" th:text="${ 'Hi , ' + session.user.firstName  + ' ' + session.user.lastName}"></span>
+                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
+                 </button>
+                 <div class="dropdown-menu dropdown-menu-right">
+                     <a th:if="${session.companyNumber > 1}" class="dropdown-item text-danger" th:href="@{/change-company}">
+                     <i class="bx bxs-business font-size-16 align-middle mr-1 text-danger"></i> Change Company</a>
+                     <a class="dropdown-item text-danger" th:href="@{/user/userProfile}">
+                     <i class="fas fa-user font-size-16 align-middle mr-1 text-danger"></i>  User Profile</a>
+                     <a class="dropdown-item text-danger" th:href="@{/logout}">
+                     <i class="bx bx-power-off font-size-16 align-middle mr-1 text-danger"></i> Logout</a>
+                 </div>
+             </div>
+
+         </div>
+     </div>
+ </header>
+     <div id="not-permit" class="modal fade bs-example-modal-lg"
+			tabindex="-1" role="dialog"
+			aria-labelledby="custom-width-modalLabel" aria-hidden="true"
+			style="display: none;">
+			<div class="modal-dialog modal-dialog-centered  modal-sm">
+				<div class="modal-content">
+					<div class="modal-body text-center"> 
+						<div class="alert alert-danger" role="alert">
+	                       You have not permission to access this functionality, To access contact us.
+	                    </div>
+						<div>
+							<div class="col-sm-12 align-items-center justify-content-between">
+								<div class="">
+                                    <a href="javascript:void(0);" data-dismiss="modal" th:if="${session.user.role != 'ROLE_ADMIN'}"
+									aria-hidden="true" class="btn btn-outline-primary waves-effect waves-light">Ok</a>
+                                    <a th:href="@{/admin/plan/permission?accessReq=true}" th:if="${session.user.role == 'ROLE_ADMIN'}"
+									aria-hidden="true" class="btn btn-outline-primary waves-effect waves-light">Request access</a>
+                                </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+<th:block>

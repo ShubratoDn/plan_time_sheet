@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Template Add</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+		 <!-- DataTables -->
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" th:href="@{/assets_new/libs/twitter-bootstrap-wizard/prettify.css}">
+		
+		<link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+		<style>
+			div.dataTables_wrapper div.dataTables_filter input {
+			     margin-left: 0em; 
+			     display: block; 
+			     width: auto; 
+			}
+			.nav-link1 {
+			    display: block;
+			    padding: .5rem 1rem;
+			}
+			.nav-link .step-number{
+				background-color: #556ee6;
+    			color: #fff !important;
+			}
+		</style>
+    </head>
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+            <div class="vertical-menu">
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+						<div class="row">
+							<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+								<div class="page-title-box d-flex align-items-center justify-content-between">
+									<h4 class="mb-0 font-size-18">Template Add</h4>
+									<div class="page-title-right">
+                                       <ol class="breadcrumb m-0">
+                                           <li class="breadcrumb-item"><a th:href="@{/admin/home}">Dashboards</a></li>
+                                           <li class="breadcrumb-item "><a th:href="@{/admin/template}">Template</a></li>
+                                           <li class="breadcrumb-item active">Add</li>
+                                       </ol>
+                                    </div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+								<div class="card">
+									<div class="card-body" th:if="${template != null}">
+										<div id="basic-pills-wizard" class="twitter-bs-wizard" th:if="${isFromStep2 == true}">
+											<ul class="twitter-bs-wizard-nav">
+                                                <li class="nav-item">
+                                                    <a href="javascript:void(0);" class="nav-link1" data-toggle="tab">
+                                                        <span class="step-number mr-2">01</span>
+                                                        Select template type
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item" >
+                                                    <a href="javascript:void(0);" class="nav-link1" data-toggle="tab">
+                                                        <span class="step-number mr-2">02</span>
+                                                        <span>Set template</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item active" >
+                                                    <a href="javascript:void(0);" class="nav-link active" data-toggle="tab">
+                                                        <span class="step-number mr-2">03</span>
+                                                        <span>View</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+										</div>
+										
+										<div class="row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-3">
+											<span class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-1">
+												<a th:href="@{/admin/template}" class="btn btn-outline-primary waves-effect waves-light">
+		                                            <i class="bx bx-left-arrow-alt"></i> Back
+		                                        </a>
+											</span>
+											<span class="col-12 col-sm-12 col-md-12 col-lg-10 col-xl-10">
+												<p><b> Name : </b><span th:text="${template.templateName}"></span></p>
+												<p><b> Subject : </b><span th:text="${template.subject}"></span></p>
+												<p><b> Type : </b><span th:text="${template.mailTemplateType.displayLabel}"></span></p>
+												<p><b> Template is use by : </b>
+													<span class="badge badge-primary" th:if="${template.roleAdminPermission == true}">Admin</span>
+													<span class="badge badge-info" th:if="${template.roleSupervisorPermission == true}">Supervisor</span>
+													<span class="badge badge-success" th:if="${template.roleUserPermission == true}">User</span>
+												</p>
+											</span>
+											<span class="col-12 col-sm-12 col-md-12 col-lg-2 col-xl-2" th:if="${template.mailTemplateType.editAble == true}">
+												<a th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TEMPLATE,T(com.aim.enums.Permission).UPDATE, false)}" th:href="@{'/admin/template/edit?id='+${template.id}}" class="btn btn-primary waves-effect waves-light">
+		                                            Edit
+		                                        </a>
+												<button th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TEMPLATE,T(com.aim.enums.Permission).DELETE, false)}" th:onclick="'deleteTemplate(\''+${template.id}+'\')'" class="btn btn-danger waves-effect waves-light">
+		                                            Delete
+		                                        </button>
+											</span>
+										</div>
+										<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-5">
+											<div th:utext="${htmlContent}"></div>
+										</div>
+									</div>
+									<div class="card-body" th:if="${template == null}">
+										<span class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+											<a th:href="@{/admin/template}" class="btn btn-outline-primary waves-effect waves-light">
+	                                            <i class="bx bx-left-arrow-alt"></i> Back
+	                                        </a>
+										</span>
+										<div style="background-color: #e9ecef;"> 
+											<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 d-flex justify-content-center align-items-center">
+												<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+													width="150" height="150"
+													viewBox="0 0 172 172"
+													style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,172v-172h172v172z" fill="none" fill-rule="nonzero"></path><g><path d="M104.44659,114.55238l10.13249,-10.13284l43.08294,43.08144l-10.13249,10.13284z" fill="#666666" fill-rule="nonzero"></path><path d="M71.55558,14.26167c-31.66433,0 -57.33333,25.66901 -57.33333,57.33333c0,31.66433 25.66901,57.33333 57.33333,57.33333c31.66433,0 57.33333,-25.66901 57.33333,-57.33333c0,-31.66433 -25.66901,-57.33333 -57.33333,-57.33333z" fill="#666666" fill-rule="nonzero"></path><path d="M116.1861,126.56761l10.13249,-10.13284l31.16374,31.16265l-10.13249,10.13284z" fill="#2a3042" fill-rule="nonzero"></path><path d="M71.55558,25.01167c-25.72726,0 -46.58333,20.85607 -46.58333,46.58333c0,25.72726 20.85607,46.58333 46.58333,46.58333c25.72726,0 46.58333,-20.85607 46.58333,-46.58333c0,-25.72726 -20.85607,-46.58333 -46.58333,-46.58333z" fill="#c5cdec" fill-rule="nonzero"></path><path d="M95.90433,90.60817c-5.96267,-7.36017 -14.73825,-11.77483 -24.21258,-11.77483c-9.47433,0 -18.24633,4.41467 -24.21258,11.77483c-1.41183,1.47992 -1.05708,4.05633 0.344,5.16c1.41183,1.46917 3.86283,1.09292 4.91992,-0.37267c4.90558,-5.89817 11.49533,-9.3525 18.87342,-9.3525c7.37808,0 14.11117,3.45433 19.02033,9.3525c0.71308,0.731 2.86308,2.18583 4.9235,0.731c1.6555,-1.161 1.40108,-4.03483 0.344,-5.51833z" fill="#f5f5f5" fill-rule="nonzero"></path><path d="M51.95833,53.75c-2.96853,0 -5.375,2.40647 -5.375,5.375c0,2.96853 2.40647,5.375 5.375,5.375c2.96853,0 5.375,-2.40647 5.375,-5.375c0,-2.96853 -2.40647,-5.375 -5.375,-5.375zM91.375,53.75c-2.96853,0 -5.375,2.40647 -5.375,5.375c0,2.96853 2.40647,5.375 5.375,5.375c2.96853,0 5.375,-2.40647 5.375,-5.375c0,-2.96853 -2.40647,-5.375 -5.375,-5.375z" fill="#f5f5f5" fill-rule="evenodd"></path></g></g>
+												</svg>
+											</div>
+											<div class="text-center">
+												<h1> Template not found</h1>
+											</div>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+            </div>
+            <!-- end main content-->
+        </div>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			/*]]>*/
+		</script>
+        <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+        
+        <script th:src="@{/assets_new/libs/parsleyjs/parsley.min.js}"></script>
+        <script th:src="@{/assets_new/js/pages/form-validation.init.js}"></script>
+       
+        <script th:src="@{/assets_new/libs/twitter-bootstrap-wizard/jquery.bootstrap.wizard.min.js}"></script>
+
+        <script th:src="@{/assets_new/libs/twitter-bootstrap-wizard/prettify.js}"></script>
+        
+        <!-- Datatable init js -->
+
+        <script th:src="@{/assets_new/js/app.js}"></script>
+		
+		<script th:src="@{/assets/js/fstdropdown.js}"></script>
+		<script th:src="@{/assets_new/js/template.js}"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){$("#basic-pills-wizard").bootstrapWizard({tabClass:"nav nav-pills nav-justified"})});
+		</script>
+		<th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

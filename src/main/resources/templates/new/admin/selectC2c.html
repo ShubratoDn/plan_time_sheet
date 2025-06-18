@@ -1,0 +1,45 @@
+<div id="select-c2c" th:fragment="select-c2c">
+	<div class="row">
+		<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+			<label for="employerName">Employer Name<span
+				class="text-danger">*</span></label> 
+				<div class="form-control select-client set-row p-0 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+					<button type="button" class="btn border-0 client-button" onclick="employerAddModal()">
+					</button>
+					<select th:field="*{employerId}" id="employerNameSelect" data-parsley-error-message=""
+						class="client-name form-control border-0 set-require setValueSelect fstdropdown-select" required>
+					</select>
+					<input type="text" th:field="*{employerName}"
+						placeholder="Enter Employer Name"  
+						class="hide">
+						<input type="hidden"
+				th:field="*{employerEmail}" parsley-trigger="change"
+				placeholder="Enter employer email" class="form-control setValueSelect">
+				</div>
+			<div th:if="${#fields.hasErrors('employerName')}"
+				th:errors="*{employerName}" class="validation-message"></div>
+		</div>
+		<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+			<label for="employerPhone">Employer Phone<span
+				class="text-danger"></span></label> <input type="text"
+				th:field="*{employerPhone}" parsley-trigger="change"
+				placeholder="Enter employer phone" class="form-control setValueSelect">
+		</div>
+		
+		<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+			<label for="address">zip Code<span
+				class="text-danger"></span></label> <input type="text"
+				th:field="*{address}" parsley-trigger="change"
+				placeholder="Enter address" class="form-control setValueSelect">
+		</div>
+		<div class="form-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+			<label for="consultantRate">Consultant Rate<span
+				class="text-danger">*</span></label> <input type="text"
+				th:field="*{consultantRate}" parsley-trigger="change"
+				required placeholder="Enter consultant rate"
+				class="form-control hourNum set-require setValueSelect">
+			<div th:if="${#fields.hasErrors('consultantRate')}"
+				th:errors="*{consultantRate}" class="validation-message"></div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,108 @@
+<div id="view-table" class='col-12 col-sm-12 col-md-12 height-file-popup pd-20 overflow-srcoll'>
+	<div class="row">
+		<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 row">
+	    	<label for="date" class="col-sm-4 col-form-label">Start Date To End Date :</label>
+			<u>
+				<span th:text="${#dates.format(addUserTimeSheet.startDate, 'E MMM dd yyyy') +' To ' + #dates.format(addUserTimeSheet.endDate, 'E MMM dd yyyy')}" ></span>
+			</u>
+       	</div>
+       	<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 row">
+	    	<div class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+	        	<label class="col-sm-4 col-form-label">Client Name :</label>
+	        	<u>
+					<span th:text="${hourLogFile.userDetail.clientName}" ></span>
+				</u>
+			</div>
+         	<div class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+          		<label class="col-sm-4 col-form-label">User Name :</label>
+          		<u>
+					<span th:text="${hourLogFile.userDetail.user.firstName + ' ' + hourLogFile.userDetail.user.lastName}"></span>
+				</u>
+			</div>
+         	<div class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+              	<label class="col-sm-4 col-form-label">Upload Date :</label>
+				<u> <span th:text="${#dates.format(hourLogFile.modifiedDatetime, 'MMM-dd-yyyy HH:MM')}"></span></u>
+			</div>
+         	<div class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="col-sm-4 col-form-label">Status :</label>
+				<u> 
+					<span th:if="${hourLogFile.approve}">Approved</span>
+					<span th:if="${!hourLogFile.approve && hourLogFile.reject}">Approved</span>
+	     			<span th:if="${!hourLogFile.approve && !hourLogFile.reject}"> Submitted</span> 
+	     		</u> 
+			</div>
+         	<div th:if="${hourLogFile.approve || !hourLogFile.approve && hourLogFile.reject}" class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="col-sm-4 col-form-label">
+					<span th:if="${hourLogFile.approve}">Approved By : </span>
+					<span th:if="${!hourLogFile.approve && hourLogFile.reject}"> Rejected By : </span>
+				 </label>
+				 <u>
+				 	<span th:if="${hourLogFile.approve}" th:text="${hourLogFile.approvedBy.firstName + ' ' + hourLogFile.approvedBy.lastName}"></span>
+	     		 	<span th:if="${!hourLogFile.approve && hourLogFile.reject}" th:text="${hourLogFile.rejectedBy.firstName + ' ' + hourLogFile.rejectedBy.lastName}"></span>
+				 </u>
+			</div>
+	        <div th:if="${hourLogFile.approve || !hourLogFile.approve && hourLogFile.reject}" class="form-group row col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+	        	<label class="col-sm-4 col-form-label">
+					<span th:if="${hourLogFile.approve}">Approved Date : </span>
+					<span th:if="${!hourLogFile.approve && hourLogFile.reject}"> Rejectd Date : </span>
+				 </label>
+				 <u>
+				 	<span th:if="${hourLogFile.approve}" th:text="${#dates.format(hourLogFile.approvedDate, 'MMM-dd-yyyy HH:MM')}"></span>
+	     		 	<span th:if="${!hourLogFile.approve && hourLogFile.reject}" th:text="${#dates.format(hourLogFile.rejectedDate, 'MMM-dd-yyyy HH:MM')}"></span>
+				 </u>
+			</div>
+		</div>
+    </div>
+	<table id="hours-table" class="table table-striped  table-colored table-info">
+   		<thead>
+ 			<tr>
+	            <th class="p-20">No</th>
+	            <th class="p-20">Date</th>
+	            <th class="p-20">Daily Hours</th>
+	            <th class="p-20">Extra Hours</th>
+	            <th class="p-20">Vacation</th>
+	    	</tr>
+		</thead>
+		<tbody>
+			<tr class="p-20" th:each="hourLog,index : ${addUserTimeSheet.calendarResponse}">
+		        <td class="p-20" th:text="${index.index + 1}">
+		        </td>
+		        <td class="p-20" th:text="${hourLog.dateFormate}">
+		        </td>
+		        <td class="p-20" th:text="${hourLog.dailyHours}">
+		        </td>
+		        <td class="p-20" th:text="${hourLog.extraHours}">
+		        </td>
+		        <td class="p-20" th:text="${hourLog.vacationHours}" >
+		        </td>
+ 			</tr>
+		</tbody>
+	</table>			
+</div>
+<style>
+	.p-20{
+		padding: 20px;
+	}
+	.form-group{
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+	
+	td, th {
+  		border: 1px solid #ddd;
+  		padding: 8px;
+	}
+
+	tr:nth-child(even){background-color: #f2f2f2;}
+
+	tr:hover {background-color: #ddd;}
+
+	th {
+  		padding-top: 12px;
+  		padding-bottom: 12px;
+  		text-align: left;
+  		background-color: #d6dbf9;
+  		color: #556ee6;
+	}
+	
+</style>

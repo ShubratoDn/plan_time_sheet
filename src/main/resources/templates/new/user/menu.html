@@ -1,0 +1,35 @@
+<!-- ========== Left Sidebar Start ========== -->
+<div id="sidebar-menu" th:fragment="menu">
+    <!-- Left Menu Start -->
+    <ul class="metismenu list-unstyled" id="side-menu">
+            <li th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).HOURS_DASHBOARD,T(com.aim.enums.Permission).READ, false)}">
+                 <a th:href="@{/user/home}" class="waves-effect">
+                	<i class="mdi mdi-view-dashboard"></i>
+                	<span th:text="#{dashboard}"> Dashboard </span> 
+                </a>
+            </li>
+
+			<li th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).ADD_TIME_SHEET,T(com.aim.enums.Permission).CREATE, false) || permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).SUBMITTED_TIMESHEET,T(com.aim.enums.Permission).READ, false) || permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).REPORT_TIME_SHEET,T(com.aim.enums.Permission).READ, false)}">
+                <a href="javascript:void(0);" class="has-arrow waves-effect">
+                	<i class="mdi mdi-timetable"></i>
+                	<span> Time sheet </span> 
+                </a>
+                <ul class="sub-menu" aria-expanded="false">
+	                <li><a th:href="@{/user/add-time-sheet}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).ADD_TIME_SHEET,T(com.aim.enums.Permission).CREATE, false)}">Add time sheet</a></li>
+	                <li><a th:href="@{/user/submitted-timesheet}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).SUBMITTED_TIMESHEET,T(com.aim.enums.Permission).READ, false)}">Submitted time sheet</a></li>
+	                <li><a th:href="@{/user/report}" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).REPORT_TIME_SHEET,T(com.aim.enums.Permission).READ, false)}">Report time sheet</a></li>
+	            </ul>
+            </li>
+            <li>
+		            <a href="javascript: void(0);" class="has-arrow waves-effect">
+		                <i class="bx bxs-factory"></i>
+		                <span>Configuration</span>
+		            </a>
+		            <ul class="sub-menu" aria-expanded="false">
+		                <li><a th:href="@{/user/configuration}">Configuration</a></li>
+		            </ul>
+		        </li>
+        </ul>
+</div>
+<!-- Sidebar -->
+

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Template</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+		 
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+
+ 		<!-- Responsive datatable examples -->
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+		
+		<link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+		
+    </head>
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+            <div class="vertical-menu">
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+					<th:block th:replace="new/supervisor/menu :: menu"></th:block>
+                </div>
+                <div data-simplebar class="h-100" th:if="${session.user.role == 'ROLE_ADMIN'}">
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+						<div class="row">
+							<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+								<div class="mb-1 d-flex align-items-center justify-content-between">
+									<h4 class="mb-0 font-size-18">Template</h4>
+									<div class="page-title-right"> 
+										<th:block th:if="${permissionService.getPermissionPlan().templateCanSet == true}">
+											<a class="btn btn-primary waves-effect waves-light" 
+												th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TEMPLATE,T(com.aim.enums.Permission).CREATE, false)}" 
+												th:href="@{/admin/template/add}">
+	                                            Add new template 
+	                                        </a>
+										</th:block>
+										<th:block th:if="${permissionService.getPermissionPlan().templateCanSet == false}">
+											<a href="javascript:void(0);" class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#not-permit"> 
+												<i class="fa fa-lock"></i>
+	                                            Add new template 
+	                                        </a>
+										</th:block>
+	                                   </div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+								<div class="card">
+									<div class="card-body">
+										<table id="datatable"
+											class="table table-bordered table-responsive nowrap"
+											style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+											<thead>
+												<tr>
+													<th>No</th>
+						                            <th>Template type</th>
+						                            <th>Template name</th>
+						                            <th>Subject</th>
+						                            <th>Permission</th>
+						                            <th>Action</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr class="odd gradeX" th:each="templateDefault,index : ${T(com.aim.enums.DefaultMailTemplate).values()}">
+													<td th:text="${index.index + 1}"></td>
+					                                <td>Default template</td>
+					                                <td th:text="${templateDefault.displayLabel}"></td>
+					                                <td th:text="${templateDefault.subject}"></td>
+					                                <td>
+					                                	<span class="badge badge-primary">Admin</span>
+														<span class="badge badge-info">Supervisor</span>
+														<span class="badge badge-success">User</span>
+					                                </td>
+					                           		<td th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TEMPLATE,T(com.aim.enums.Permission).READ, false)}"> 
+					                           			<a th:href="@{'/admin/template/view/default/' + ${templateDefault.urlParam}}" data-toggle="tooltip" data-placement="left" title="View template"><i class="bx bxs-notepad font-size-16"></i></a>
+					                           		</td>
+												</tr>
+												<tr class="odd gradeX" th:each="template,index : ${templateList}">
+					                               	<td th:text="${index.index + 6}"></td>
+					                                <td th:text="${template.mailTemplateType.displayLabel}"></td>
+					                                <td th:text="${template.templateName}"></td>
+					                                <td th:text="${template.subject}"></td>
+					                                <td>
+					                                	<span class="badge badge-primary" th:if="${template.roleAdminPermission == true}">Admin</span>
+														<span class="badge badge-info" th:if="${template.roleSupervisorPermission == true}">Supervisor</span>
+														<span class="badge badge-success" th:if="${template.roleUserPermission == true}">User</span>
+					                                </td>
+					                           		<td> 
+					                           			<a th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TEMPLATE,T(com.aim.enums.Permission).READ, false)}" th:href="@{'/admin/template/view/'+${template.id}}" data-toggle="tooltip" data-placement="left" title="View template"><i class="bx bxs-notepad font-size-16"></i></a>
+					                           			<a th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TEMPLATE,T(com.aim.enums.Permission).UPDATE, false)}" th:href="@{'/admin/template/edit?id=' + ${template.id}}" data-toggle="tooltip" data-placement="left" title="Edit template"><i class="fas fa-pen-square font-size-16"></i></a>
+					                           			<a th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TEMPLATE,T(com.aim.enums.Permission).DELETE, false)}" href="javascript:void(0);" th:onclick="'deleteTemplate(\''+${template.id}+'\')'">
+				                                            <i class="fa fa-trash font-size-16"></i>
+				                                        </a>
+					                           		</td>
+					                           	</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+            </div>
+            <!-- end main content-->
+        </div>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			/*]]>*/
+		</script>
+        <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+			
+        <!-- Required datatable js -->
+        <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+        
+        <!-- Responsive examples -->
+        <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+       
+        <!-- Datatable init js -->
+        <script th:src="@{/assets_new/js/pages/datatables.init.js}"></script>    
+
+        <script th:src="@{/assets_new/js/app.js}"></script>
+		
+		<script th:src="@{/assets/js/fstdropdown.js}"></script>
+		<script th:src="@{/assets_new/js/template.js}"></script>
+		<th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

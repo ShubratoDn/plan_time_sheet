@@ -1,0 +1,6 @@
+Date: 13-9-2021
+
+---User master
+
+ALTER TABLE user_company
+ ADD`login_count` integer;

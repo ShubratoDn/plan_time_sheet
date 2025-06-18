@@ -1,0 +1,50 @@
+<!-- ========== Left Sidebar Start ========== -->
+<div class="left side-menu" th:fragment="menu">
+    <div class="sidebar-inner slimscrollleft">
+
+        <!--- Sidemenu -->
+        <div id="sidebar-menu">
+            <ul>
+                <li class="has_sub">
+                    <a th:href="@{/admin/home}" class="waves-effect">
+                    	<i class="mdi mdi-view-dashboard"></i>
+                    	<span th:text="#{dashboard}"> Dashboard </span> 
+                    </a>
+                </li>
+				
+				<li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+	                    <i class="mdi mdi-account"></i><span> Users </span> 
+	                    <span class="menu-arrow"></span>
+                   	</a>
+                    <ul class="list-unstyled">
+                        <li><a th:href="@{/admin/add-user}">Add User</a></li>
+                        <li><a th:href="@{/admin/user-list}">Users List</a></li>
+                        <li><a th:href="@{/admin/internal-user}">Internal User</a></li>
+                    </ul>
+                </li>
+				<li class="has_sub">
+                    <a th:href="@{/supervisor/time-sheet}" class="waves-effect">
+	                    <i class="mdi mdi-timetable"></i><span> Time Sheet </span> 
+                   	</a>
+                </li>
+                <li class="has_sub">
+                    <a th:href="@{/admin/activity}" class="waves-effect">
+	                    <i class="ion-ios7-football-outline"></i><span> Activity </span> 
+                   	</a>
+                </li>
+            </ul>
+        </div>
+        <!-- Sidebar -->
+        <div class="clearfix"></div>
+
+        <div class="help-box">
+            <h5 class="text-muted m-t-0">For Help ?</h5>
+            <p class=""><span class="text-dark"><b>Email:</b></span> <br/> <th:block th:text="#{help.email}"> Parth Solanki</th:block></p>
+        </div>
+
+    </div>
+    <!-- Sidebar -left -->
+
+</div>
+<!-- Left Sidebar End -->

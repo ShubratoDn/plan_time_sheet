@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Monthly hours summary</title>
+		
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+        <style>
+        #datatable thead th {
+    		vertical-align: middle !important;
+    	}
+    	.monthset{cursor: pointer;}
+    	.monthset.active{
+    	    background: #c9cff7 !important;
+    	}
+     	.btn-secondary.buttons-pdf.buttons-html5{
+    		border-radius: 5px;
+    	}
+    	.buttons-html5{
+        	margin: 5px;
+        	
+    	}
+    	.btn.btn-secondary.buttons-excel.buttons-html5{
+       		border-radius: 5px; 		
+    	}
+    	
+    
+        </style>
+    </head>
+
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+        <div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+            <div class="vertical-menu">
+                <div data-simplebar class="h-100">
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-12" style="float: right;">
+                                <div class="page-title-box d-flex align-items-center justify-content-between">
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            <li class="breadcrumb-item">
+	                                            <a th:href="@{/admin/user-list}">Users</a>
+	                                        </li>
+	                                        <li class="breadcrumb-item">
+	                                            <a href="#" th:text="${userDetail.user.firstName + ' ' + userDetail.user.lastName}"> </a>
+	                                        </li>
+	                                        <li class="breadcrumb-item">
+	                                        	<a th:href="@{'/admin/user-detail/' + ${userDetail.user.id} }">Client Details</a>
+	                                        </li>
+	                                        <li class="breadcrumb-item active">
+	                                            Hour Log
+	                                        </li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" id="user-details-modal" th:fragment="user-detail">
+                        	<a th:if="${session.user.role == 'ROLE_ADMIN'}" class="col-sm-1 btn btn-primary" th:href="@{'/admin/user-detail/'+${userDetail.user.id}+'?userDetailId='+${userDetail.userDetailId}}">edit</a>
+                        	<div class="row card-body pb-0 mb-0">
+	                             <div class="" th:class="${session.user.role == 'ROLE_ADMIN'}?'col-12 col-sm-12 col-md-12 col-lg-12 col-xl-4':'col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6'">
+	                                 <div class="">
+	                                 	<h4 class="card-title mb-4">Consultant Information</h4>
+	                                     <div class="table-responsive">
+	                                         <table class="table table-nowrap mb-0">
+	                                             <tbody>
+	                                                 <tr>
+	                                                     <th scope="row">Consultant Name</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${userDetail.user.firstName + ' ' + userDetail.user.lastName}"></td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Consultant Email</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${userDetail.user.email}"></td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Client Name</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${userDetail.clientName}"></td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Vendor Name</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${userDetail.vendorName}"></td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Employer Name</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${userDetail.employerName}"></td>
+	                                                 </tr>
+	                                             </tbody>
+	                                         </table>
+	                                     </div>
+	                                 </div>
+	                             </div>
+	                             <!-- end card -->
+	                             <div class="" th:class="${session.user.role == 'ROLE_ADMIN'}?'col-12 col-sm-12 col-md-12 col-lg-12 col-xl-4':'col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6'">
+	                                 <div class="">
+	                                     <h4 class="card-title mb-4">Date Information</h4>
+	                                     <div class="table-responsive">
+	                                         <table class="table table-nowrap mb-0">
+	                                             <tbody>
+	                                                 <tr>
+	                                                     <th scope="row">Start Date</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${#dates.format(userDetail.startDate, 'MMM-dd-yyyy')}"></td>
+	                                                 </tr>
+	                                                 
+	                                                 <tr>
+	                                                     <th scope="row">End Date</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${#dates.format(userDetail.endDate, 'MMM-dd-yyyy')}"></td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Employer Phone</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${userDetail.employerPhone}"></td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Address</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${userDetail.address}"></td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Account Manager Name</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${userDetail.accountManagerName}"></td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">BD Manager Name</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${userDetail.businessDevelopmentManagerName}"></td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Recruiter Name</th>
+	                                                     <td style="white-space: pre-line; word-break: break-all" th:text="${userDetail.recruiterName}"></td>
+	                                                 </tr>
+	                                             </tbody>
+	                                         </table>
+	                                     </div>
+	                                 </div>
+	                             </div>
+	                             <div th:if="${session.user.role == 'ROLE_ADMIN'}" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-4">
+	                                 <div class="">
+	                                     <h4 class="card-title mb-4">Revenue Information</h4>
+	
+	                                     <div class="table-responsive">
+	                                         <table class="table table-nowrap mb-0">
+	                                             <tbody>
+	                                             	<tr>
+	                                                     <th scope="row">Client Rate</th>
+	                                                     <td>
+	                                                     	<span th:text="${userDetail.clientRate}"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Consultant Rate</th>
+	                                                     <td>
+	                                                     	<span th:text="${userDetail.consultantRate}"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">W2</th>
+	                                                     <td>
+	                                                     	<span th:text="${userDetail.w2}"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Ptax</th>
+	                                                     <td> 
+	                                                     	<span th:text="${userDetail.ptax}"></span> <span class="badge badge-info">%</span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Account Manager <br> Commission 
+	                                                     	<span class="badge badge-primary" th:if="${userDetail.aCMRecurssive}">Recurssive</span>
+	                                                     	<span class="badge badge-primary" th:if="${!userDetail.aCMRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.aCMRecurssiveMonth).displayLabel}"></span></span>
+	                                                     </th>
+	                                                     <td > 
+	                                                     	<span th:text="${userDetail.aCMCommission}"></span> 
+	                                                     	<span class="badge badge-info" th:if="${userDetail.aCMRateType == T(com.aim.enums.RateType).FIX}">Fix</span> 
+	                                                     	<span class="badge badge-info" th:if="${userDetail.aCMRateType == T(com.aim.enums.RateType).PERCENTAGE}">%</span> 
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">BD Commission  <br> 
+	                                                     	<span class="badge badge-primary" th:if="${userDetail.bDMRecurssive}">Recurssive</span>
+	                                                     	<span class="badge badge-primary" th:if="${!userDetail.bDMRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.bDMRecurssiveMonth).displayLabel}"></span></span>
+	                                                     </th>
+	                                                     <td> 
+	                                                     	<span th:text="${userDetail.bDMCommission}"></span> 
+	                                                     	<span class="badge badge-info" th:if="${userDetail.bDMRateType == T(com.aim.enums.RateType).FIX}">Fix</span> 
+	                                                     	<span class="badge badge-info" th:if="${userDetail.bDMRateType == T(com.aim.enums.RateType).PERCENTAGE}">%</span> 
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Recruiter Commission <br> 
+	                                                     	<span class="badge badge-primary" th:if="${userDetail.recRecurssive}">Recurssive</span>
+	                                                     	<span class="badge badge-primary" th:if="${!userDetail.recRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.recRecurssiveMonth).displayLabel}"></span></span>
+	                                                     </th>
+	                                                     <td> 
+	                                                     	<span th:text="${userDetail.recCommission}"></span> 
+	                                                     	<span class="badge badge-info" th:if="${userDetail.recRateType == T(com.aim.enums.RateType).FIX}">Fix</span> 
+	                                                     	<span class="badge badge-info" th:if="${userDetail.recRateType == T(com.aim.enums.RateType).PERCENTAGE}">%</span> 
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">C2C/other  
+	                                                     	<span class="badge badge-primary" th:if="${userDetail.c2cOrotherRecurssive}">Recurssive</span>
+	                                                     	<span class="badge badge-primary" th:if="${!userDetail.c2cOrotherRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.c2cOrotherRecurssiveMonth).displayLabel}"></span></span>
+	                                                     </th>
+	                                                     <td>
+	                                                     	<span th:text="${userDetail.c2cOrother}"></span>
+	                                                     	<span class="badge badge-info" th:if="${userDetail.c2cOrotherRateType == T(com.aim.enums.RateType).FIX}">Fix</span> 
+	                                                     	<span class="badge badge-info" th:if="${userDetail.c2cOrotherRateType == T(com.aim.enums.RateType).PERCENTAGE}">%</span> 
+	                                                     
+	                                                     </td>
+	                                                 </tr>
+	                                             </tbody>
+	                                         </table>
+	                                     </div>
+	                                 </div>
+	                             </div>
+	                             
+	                        </div>
+                        </div>
+                        <div class="col-xl-3 mt-4" style="margin-bottom: 20px">
+                         	<label class="control-label" for="example-input1-group3">Year</label>
+                             <select class="form-control" onchange="if (this.value) window.location.href=this.value">
+                             	<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2015)}"
+                             	 th:text="${year}" th:value="'?year=' + ${year}"
+                             	 th:selected="${year == selectYear}">
+                             	</option>
+                             </select>
+                         </div>
+                         <div class="col-xl-12">
+                             <div class="card">
+                                 <div class="card-body">
+                                 	 <div class="alert alert-danger alert-dismissible" role="alert" th:if="${#lists.size(notApprovedFile) > 0}">
+				                  		<strong>Please check; </strong> <th:block>Some Timesheet are rejected or pending for approval which hours count here <a th:href="@{'/supervisor/time-sheet?yearFile=' + ${selectYear} + '&userId=' + ${userDetail.user.id}}"> ( Go to <i class="far fa-arrow-alt-circle-right"></i> )</a></th:block>
+				                 	 </div>
+                                     <h4 class="card-title mb-4">Net Margin</h4>
+                                     <div id="revenue-chart" class="apex-charts"></div>
+                                 </div>
+                             </div>
+                        </div>
+                        <div class="card col-xl-12 mb-0">
+                      		<div class="card-body p-0 mb-0" id="user-hours-modal" th:fragment="user-hours-detail">
+              					<ul class="nav nav-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#home" role="tab">
+                                            <span class="d-none d-sm-block">Home</span>    
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#monthly" role="tab">
+                                            <span class="d-none d-sm-block">Monthly</span>    
+                                        </a>
+                                    </li>
+                                </ul>
+	                      		<div class="tab-content">
+	                      			<div id="home" role="tabpanel" class="tab-pane active col-sm-12 col-md-12 col-lg-12 mb-0 pb-0">
+			                          	<table id="datatable-buttons" class="table table-responsive table-scroll">
+			                              <thead style="position: sticky;top: 0;background: white;">
+			                               <tr>
+			                                   <th>No</th>
+			                                   <th>Month (<span th:text="${selectYear}"></span>)</th>
+			                                   <th>Daily Hours</th>
+			                                   <th>Extra Hours</th>
+			                                   <th>Vacation Hours</th>
+			                                   <th>Total Hours</th>
+			                                   <th>Revenue</th>
+			                                   <th>Consultant Rate <br/>
+			                                   		<span class="badge badge-info" th:if="${userDetail.w2C2cType == T(com.aim.enums.W2OrC2cType).C2C}"><th:block th:text="${'Consultant rate : ' + userDetail.consultantRate}"> </th:block></span>
+			                                   		<span class="badge badge-info" th:if="${userDetail.w2C2cType == T(com.aim.enums.W2OrC2cType).W2}"><th:block th:text="${'W2 : ' + userDetail.w2}"> </th:block></span>
+			                                   </th>
+			                                   <th>paytax <br/> <span class="badge badge-info" th:text="${ userDetail.ptax + '%'}"> </span>
+			                                   		</th>
+			                                   <th>C2C/Other <br/>
+			                                   		<span class="badge badge-info" th:if="${userDetail.c2cOrotherRateType == T(com.aim.enums.RateType).FIX}"> <span th:text="${userDetail.c2cOrother}"> </span> Fix</span> 
+			                                       	<span class="badge badge-info" th:if="${userDetail.c2cOrotherRateType == T(com.aim.enums.RateType).PERCENTAGE}"><span th:text="${userDetail.c2cOrother}"> </span> %</span> 
+			                                   		<br>
+			                                   		<span class="badge badge-primary" th:if="${userDetail.c2cOrotherRecurssive}">Recurssive </span>
+			                                   		<span class="badge badge-primary" th:if="${!userDetail.c2cOrotherRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.c2cOrotherRecurssiveMonth).displayLabel}"></span></span>
+			                                   
+			                                    </th>
+			                                   <th>G.Margin</th>
+			                                   <th>Recruiter Commission <br/> 
+			                                   		<span class="badge badge-info"><i th:text="${userDetail.recCommission}"></i> 
+		                          						<span th:if="${userDetail.recRateType == T(com.aim.enums.RateType).FIX}"> Fix</span> 
+		                                            	<span th:if="${userDetail.recRateType == T(com.aim.enums.RateType).PERCENTAGE}"> %</span> 
+		                                            </span>
+		                                            <br>
+			                                   		<span class="badge badge-primary" th:if="${userDetail.recRecurssive}">Recurssive </span>
+			                                   		<span class="badge badge-primary" th:if="${!userDetail.recRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.recRecurssiveMonth).displayLabel}"></span></span>
+			                                                    
+			                                   </th>
+			                                   <th>BDM Commission <br/>
+			                                   		<span class="badge badge-info"><i th:text="${userDetail.bDMCommission}"></i> 
+		                          						<span th:if="${userDetail.bDMRateType == T(com.aim.enums.RateType).FIX}"> Fix</span> 
+		                                            	<span th:if="${userDetail.bDMRateType == T(com.aim.enums.RateType).PERCENTAGE}"> %</span> 
+		                                            </span>
+		                                            <br>
+			                                   		<span class="badge badge-primary" th:if="${userDetail.bDMRecurssive}">Recurssive </span>
+			                                   		<span class="badge badge-primary" th:if="${!userDetail.bDMRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.bDMRecurssiveMonth).displayLabel}"></span></span>
+			                                   </th>
+			                                   <th>ACM Commission <br/>
+			                                   		<span class="badge badge-info"><i th:text="${userDetail.aCMCommission}"></i> 
+		                          						<span th:if="${userDetail.aCMRateType == T(com.aim.enums.RateType).FIX}"> Fix</span> 
+		                                            	<span th:if="${userDetail.aCMRateType == T(com.aim.enums.RateType).PERCENTAGE}"> %</span> 
+		                                            </span>
+		                                            <br>
+			                                   		<span class="badge badge-primary" th:if="${userDetail.aCMRecurssive}">Recurssive </span>
+			                                   		<span class="badge badge-primary" th:if="${!userDetail.aCMRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.aCMRecurssiveMonth).displayLabel}"></span></span>
+			                                   </th>
+			                                   <th>N.Margin</th>
+			                               </tr>
+			                              </thead>
+			                              <tbody>
+				                          	<tr class="odd gradeX">
+			                               	   <th></th>
+			                               	   <th>Total</th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('Daily'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('Extra'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('Vacation'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('Total'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('revenue'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('ConsultantRate'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('W2Ptax'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('C2C'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('G.Margin'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('RecComm'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('BDMComm'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('ACMComm'),1,2)}"></th>
+			                                   <th th:text="${#numbers.formatDecimal(hourLogs.get('Total').get('N.Margin'),1,2)}"></th>
+				                           	</tr>
+			                           	 </tbody>
+			                             <tbody>
+			                               <tr class="odd gradeX" th:each="hourLog,index : ${hourLogs}" th:if="${index.index}<12">
+			                                   <td th:text="${index.index + 1}"></td>
+			                                   <td th:text="${hourLog.key}"></td>
+			                                   <td th:text="${hourLog.value.get('Daily')} ? ${#numbers.formatDecimal(hourLog.value.get('Daily'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('Extra')} ? ${#numbers.formatDecimal(hourLog.value.get('Extra'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('Vacation')} ? ${#numbers.formatDecimal(hourLog.value.get('Vacation'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('Total')} ? ${#numbers.formatDecimal(hourLog.value.get('Total'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('revenue')} ? ${#numbers.formatDecimal(hourLog.value.get('revenue'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('ConsultantRate')} ? ${#numbers.formatDecimal(hourLog.value.get('ConsultantRate'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('W2Ptax')} ? ${#numbers.formatDecimal(hourLog.value.get('W2Ptax'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('C2C')} ? ${#numbers.formatDecimal(hourLog.value.get('C2C'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('G.Margin')} ? ${#numbers.formatDecimal(hourLog.value.get('G.Margin'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('RecComm')} ? ${#numbers.formatDecimal(hourLog.value.get('RecComm'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('BDMComm')} ? ${#numbers.formatDecimal(hourLog.value.get('BDMComm'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('ACMComm')} ? ${#numbers.formatDecimal(hourLog.value.get('ACMComm'),1,2)} : '0.0'"></td>
+			                                   <td th:text="${hourLog.value.get('N.Margin')} ? ${#numbers.formatDecimal(hourLog.value.get('N.Margin'),1,2)} : '0.0'"></td>
+			                               </tr>
+			                             </tbody> 
+			                         </table>
+	                      			</div>
+			                         <div id="monthly" role="tabpanel" class="tab-pane">
+                      				 	<div class="row" id="user-month-hours-detail" th:fragment="user-month-hours-detail">
+	                      				 	<div class="col-sm-2 col-md-2 border-1">
+	                      						<table id="datatable1" class="table">
+						                             <tbody>
+						                               <tr class="odd gradeX monthset"  th:each="hourLog,index : ${hourLogs}" th:onclick="|getMonthHours('${index.index}','${userDetail.userDetailId}', '${selectYear}')|" th:classAppend="${monthNum.urlParam==index.index}?'active':''" th:if="${index.index}<12">
+						                                   <td><sapn th:text="${hourLog.key}"></sapn></td>
+						                               </tr>
+						                             </tbody>
+						                         </table>
+	                      					</div>
+	                      					<div class="col-sm-5 col-md-5">
+<!-- 	                      						<p>  : <span "></span></p> -->
+<!-- 	                      						<p> : <span "></span></p> -->
+<!-- 	                      						<p> : <span "></span></p> -->
+<!-- 	                      						<p>Recruiter Commission : <span "></span></p> -->
+<!-- 	                      						<p>N.Margin : <span th:text="${mHours.get('N.Margin')} ? ${#numbers.formatDecimal(mHours.get('N.Margin'),1,2)}:0.0"></span></p> -->
+	                      							<table class="table table-nowrap mb-0">
+	                                             <tbody>
+	                                             	<tr>
+	                                                     <th scope="row">Total Hours</th>
+	                                                     <td>
+	                                                     	<span th:text="${mHours.get('Total')} ? ${#numbers.formatDecimal(mHours.get('Total'),1,2)}:0.0"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Revenue</th>
+	                                                     <td>
+	                                                     	<span th:text="${mHours.get('revenue')} ? ${#numbers.formatDecimal(mHours.get('revenue'),1,2)}:0.0"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Consultant Rate</th>
+	                                                     <td>
+	                                                     	<span th:text="${mHours.get('ConsultantRate')} ? ${#numbers.formatDecimal(mHours.get('ConsultantRate'),1,2)}:0.0"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Paytax</th>
+	                                                     <td>
+	                                                     	<span th:text="${mHours.get('W2Ptax')} ? ${#numbers.formatDecimal(mHours.get('W2Ptax'),1,2)}:0.0"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">C2C/Other
+	                                                     
+	                                                     	<span class="badge badge-primary" th:if="${userDetail.c2cOrotherRecurssive}">Recurssive</span>
+	                                                     	<span class="badge badge-primary" th:if="${!userDetail.c2cOrotherRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.c2cOrotherRecurssiveMonth).displayLabel}"></span></span>
+	                                                     	<span class="badge badge-info" th:if="${userDetail.c2cOrotherRateType == T(com.aim.enums.RateType).FIX}" th:text="${userDetail.c2cOrother + ' Fix'}">Fix</span> 
+	                                                     	<span class="badge badge-info" th:if="${userDetail.c2cOrotherRateType == T(com.aim.enums.RateType).PERCENTAGE}" th:text="${userDetail.c2cOrother + ' %'}">%</span> 
+	                                                     
+	                                                     </th>
+	                                                     <td>
+	                                                     	<span th:text="${mHours.get('C2C')} ? ${#numbers.formatDecimal(mHours.get('C2C'),1,2)}:0.0"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">G.Margin</th>
+	                                                     <td>
+	                                                     	<span th:text="${mHours.get('G.Margin')} ? ${#numbers.formatDecimal(mHours.get('G.Margin'),1,2)}:0.0"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Account Manager <br> Commission 
+	                                                     	<span class="badge badge-primary" th:if="${userDetail.aCMRecurssive}">Recurssive</span>
+	                                                     	<span class="badge badge-primary" th:if="${!userDetail.aCMRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.aCMRecurssiveMonth).displayLabel}"></span></span>
+	                                                     	<span class="badge badge-info" th:if="${userDetail.aCMRateType == T(com.aim.enums.RateType).FIX}" th:text="${userDetail.aCMCommission + ' Fix'}"></span> 
+	                                                     	<span class="badge badge-info" th:if="${userDetail.aCMRateType == T(com.aim.enums.RateType).PERCENTAGE + ' %'}">%</span> 
+	                                                     </th>
+	                                                     <td>
+	                                                     	<span th:text="${mHours.get('ACMComm')} ? ${#numbers.formatDecimal(mHours.get('ACMComm'),1,2)}:0.0"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">BD Commission  <br> 
+	                                                     	<span class="badge badge-primary" th:if="${userDetail.bDMRecurssive}">Recurssive</span>
+	                                                     	<span class="badge badge-primary" th:if="${!userDetail.bDMRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.bDMRecurssiveMonth).displayLabel}"></span></span>
+	                                                     	<span class="badge badge-info" th:if="${userDetail.bDMRateType == T(com.aim.enums.RateType).FIX}" th:text="${userDetail.bDMCommission + ' Fix'}"></span> 
+	                                                     	<span class="badge badge-info" th:if="${userDetail.bDMRateType == T(com.aim.enums.RateType).PERCENTAGE}" th:text="${userDetail.bDMCommission + ' %'}"></span> 
+	                                                     </th>
+	                                                     <td>
+	                                                     	<span th:text="${mHours.get('BDMComm')} ? ${#numbers.formatDecimal(mHours.get('BDMComm'),1,2)}:0.0"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 <tr>
+	                                                     <th scope="row">Recruiter Commission <br> 
+	                                                     	<span class="badge badge-primary" th:if="${userDetail.recRecurssive}">Recurssive</span>
+	                                                     	<span class="badge badge-primary" th:if="${!userDetail.recRecurssive}">Pay on : <span th:text="${T(com.aim.enums.Month).getMonth(userDetail.recRecurssiveMonth).displayLabel}"></span></span>
+	                                                     	<span class="badge badge-info" th:if="${userDetail.recRateType == T(com.aim.enums.RateType).FIX}" th:text="${userDetail.recCommission + ' Fix' }"></span> 
+	                                                     	<span class="badge badge-info" th:if="${userDetail.recRateType == T(com.aim.enums.RateType).PERCENTAGE}" th:text="${userDetail.recCommission + ' %' }"></span> 
+	                                                     </th>
+	                                                     <td>
+	                                                     	<span th:text="${mHours.get('RecComm')} ? ${#numbers.formatDecimal(mHours.get('RecComm'),1,2)}:0.0"></span>
+	                                                     </td>
+	                                                 </tr>
+	                                                 
+	                                             </tbody>
+	                                         </table>
+	                      					</div>
+	                      					<div class="col-sm-5 col-md-5" style="overflow-y: scroll;height: 546px;border: 1px solid blue;border-radius: 5px; background: #c9cff7;">
+	                      						<table id="datatable1" class="table">
+					                              	<thead>
+					                               		<tr>
+					                                   		<th>Day</th>
+					                                   		<th>Daily</th>
+					                                   		<th>Extra</th>
+					                                   		<th>Vacation</th>
+					                               		</tr>
+					                              	</thead>
+						                            <tbody>
+						                                <tr class="odd gradeX" th:each="hourLog,index : ${defaultCalendarResponses}">
+						                                    <td th:text="${#dates.format(hourLog.dateValue, 'dd MMM')}"></td>
+						                                    <td>
+						                                    	<span class="badge badge-success" th:text="${hourLog.dailyHour}?${#numbers.formatDecimal(hourLog.dailyHour,1,2)}:0.0"></span>
+						                                    </td>
+						                                    <td>
+						                                    	<span class="badge badge-info" th:text="${hourLog.extraHour}?${#numbers.formatDecimal(hourLog.extraHour,1,2)}:0.0"></span>
+						                                    </td>
+						                                    <td>
+						                                    	<span class="badge badge-warning" th:text="${hourLog.vacation}?${#numbers.formatDecimal(hourLog.vacation,1,2)}:0.0"></span>
+						                                    </td>
+						                                </tr>
+						                            </tbody>
+				                         		</table>
+	                      					</div>
+	                      				</div>
+	                      			</div>
+		                        </div>
+	                    	</div>
+						</div>
+	              	</div>
+	          	</div>
+			</div>
+	    </div>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			var chartData = [[${chartData}]];
+			/*]]>*/
+		</script>
+		
+        <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+        <!-- apexcharts -->
+        <script th:src="@{/assets_new/libs/apexcharts/apexcharts.min.js}"></script>
+        
+        <script th:src="@{/assets_new/js/pages/profile.init.js}"></script>
+<!-- Required datatable js -->
+        <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+        
+        <!-- Responsive examples -->
+        <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+  
+            
+        <script th:src="@{/assets/js/excel-pdf/dataTables.buttons.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.bootstrap4.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/jszip.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/pdfmake.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/vfs_fonts.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.html5.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.print.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/buttons.colVis.min.js}"></script>
+        <script th:src="@{/assets/js/excel-pdf/datatables.init.js}"></script> 
+        
+        <script th:src="@{/assets_new/js/app.js}"></script>
+        <script th:src="@{/assets_new/js/monthHours.js}"></script>
+		<th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

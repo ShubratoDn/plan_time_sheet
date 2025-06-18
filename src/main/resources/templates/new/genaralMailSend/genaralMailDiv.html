@@ -1,0 +1,300 @@
+<div class="table-detail mail-right" id="generalMail">
+	
+	<div id="emailAlertInGenaralMail" class=""></div>
+	<div class="row">
+		<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4" style="z-index: 2;">
+			
+        	<div class="m-t-20">
+	        	<form id="send-mail-add-form" enctype="multipart/form-data" th:action="@{/admin/mail/send-mail}" method="post">
+	           		Email template name :
+	            	<select class="form-control" onchange="changeGenaralMailTemplate(this)">
+	            		<option value="" data-subjecttext="" >Select template</option>
+						<option th:each="template : ${templates}" th:attr="data-subjecttext=${template.subject}"
+							th:value="${template.htmlDate}" th:text="${template.templateName}">
+	                    </option>
+	               	</select>
+				 	<div class="userInGenaralMail mt-1">
+						<label>To<span class="text-danger">*</span> ( <span id="selectedUserSizeInGenaral" th:text="${#lists.size(usersToMail)}"></span> mail selected  ) 
+							<a href="javascript:void(0);" onclick="setFilter()" class="text-success h4"><i class="fa fas fa-plus-circle"></i> </a>
+						</label>
+				        <p class="text-danger toGenaralEmailError m-0" style="display: none;"> Please select minimum one email</p>
+				        <div class="btn-group col-12 pr-0 pl-0" style="border: 1px solid #ced4da;border-radius: .25rem;">
+			                <button type="button" onclick="userGenaralShow(this)" class="btn text-left userGenaralShow" style="width: 80%;white-space: nowrap;overflow: hidden;">
+			                	<span class="badge badge-info" th:each="user,index:${usersToMail}" th:value="${'USER_' + #strings.replace(user.email,'.','_')}" th:text="${user.email}"></span>
+			                </button>
+		                    <button type="button" onclick="userGenaralShow(this)" class="btn dropdown-toggle dropdown-toggle-split m-0 p-0 text-right" aria-haspopup="true" aria-expanded="false">
+		                        <i class="mdi mdi-menu-down" style="font-size: 18px"></i>
+		                        <i class="mdi mdi-close" style="font-size: 18px;display: none;"></i>
+		                    </button>
+							<div class="dropdown-menu pt-0 col-12" id="theUserListInGenaralMailSend">
+			                    <span class="dropdown-item p-1 search">
+			                     	<div class="form-group">
+		                               <input type="text" id="filterIdInGenaralMail" onkeyup="filterInGenaralMail(this,'theUserList')" class="form-control" placeholder="Search" value="">
+		                            </div>
+			                    </span>
+								<span class="dropdown-item" th:each="user:${usersToMail}" > 
+									<div class="custom-control custom-checkbox">
+		                                <input type="checkbox" name="toEmail" class="custom-control-input" th:id="${user.id}" th:value="${user.email}" checked data-user-type="ACTIVE_USER">
+		                                <label class="custom-control-label" th:for="${user.id}" >
+		                                 	<p class="m-0 p-0" th:text="${user.email}"></p>
+		                                 	<p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'Active user name: ' + user.firstName + ' ' + user.lastName}"></sup></p>
+		                                </label>
+		                            </div>
+								</span>			                                                
+		                        <span class="dropdown-item" id="genalralMailNameNotfound" style="display: none;"> 
+									<p class="m-0 text-danger">No mail or user found</p>
+								</span>
+							</div>
+						</div>
+				     </div>
+		             <div class="form-group mt-1">
+		              	<label>CC<span class="text-danger"></span></label>
+		              	<input type="text" id="email-to" name="ccEmail" class="form-control" placeholder="CC" value="">
+		             </div>
+		             <div class="form-group">
+		            	 <label>Subject<span class="text-danger">*</span></label>
+		                 <input type="text" id="email-subject" name="subject" class="form-control subject" placeholder="Subject">
+		                 <p class="text-danger subjectErrorInGenaral m-0" style="display: none;"> Please enter subject</p>
+		                 <input type="hidden" id="description" name="description">
+		             </div>
+		             <div class="btn-toolbar form-group m-b-0">
+		             	 <button type="submit" class="btn btn-info waves-effect waves-light">Submit</button>
+		             </div>
+		           </form>
+	         	</div>
+	         	
+		</div>
+		<div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+			<div class="form-group">
+		    	<p class="text-danger m-0 descriptionErrorInGenaral" style="display: none;">Please enter description</p>
+                <div class="summernote">
+                </div>
+            </div>
+		</div>
+      </div>
+      <div id="send-mail-add-form-is-submit" style="position: absolute;
+      		display:none;
+      		z-index: 5;
+		    top: 0;
+		    left: 0;
+		    background: rgba(255,255,255,0.5);
+		    width: 100%;
+		    height: 100%;
+		    justify-content: center;
+		    align-items: center;
+		    transition: all .5s;
+		    opacity:1;
+		    cursor: pointer;">
+		    
+		    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="48" height="48" viewBox="0 0 172 172" style=" fill:#000000;"><defs><linearGradient x1="157.28683" y1="157.28683" x2="42.48758" y2="42.48758" gradientUnits="userSpaceOnUse" id="color-1_Z4lBdSu2GAl2_gr1"><stop offset="0" stop-color="#ffffff"></stop><stop offset="0.242" stop-color="#f2f2f2"></stop><stop offset="1" stop-color="#cccccc"></stop></linearGradient><linearGradient x1="13.66683" y1="13.66683" x2="117.01017" y2="117.01017" gradientUnits="userSpaceOnUse" id="color-2_Z4lBdSu2GAl2_gr2"><stop offset="0" stop-color="#5aa9ef"></stop><stop offset="1" stop-color="#218ded"></stop></linearGradient></defs><g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal" transform="rotate(307.237 86 86)">
+    			<animateTransform xmlns="http://www.w3.org/2000/svg" attributeType="xml" attributeName="transform" type="rotate" from="0 86 86" to="360 86 86" dur="0.6s" repeatCount="indefinite"></animateTransform>
+    			<path d="M0,172v-172h172v172z" fill="none"></path><g><path d="M86,14.33333c-39.5815,0 -71.66667,32.08517 -71.66667,71.66667c0,39.5815 32.08517,71.66667 71.66667,71.66667c39.5815,0 71.66667,-32.08517 71.66667,-71.66667c0,-39.5815 -32.08517,-71.66667 -71.66667,-71.66667zM86,139.75c-29.68433,0 -53.75,-24.06567 -53.75,-53.75c0,-29.68433 24.06567,-53.75 53.75,-53.75c29.68433,0 53.75,24.06567 53.75,53.75c0,29.68433 -24.06567,53.75 -53.75,53.75z" fill="url(#color-1_Z4lBdSu2GAl2_gr1)"></path><path d="M86,18.02058v10.75717c0,1.935 1.53725,3.45792 3.46867,3.57975c28.896,1.84183 51.58567,26.51667 50.224,56.17592c-1.25775,27.3695 -23.779,49.89433 -51.15208,51.15567c-29.66283,1.36525 -54.33767,-21.32442 -56.1795,-50.224c-0.12542,-1.92783 -1.64833,-3.46508 -3.58333,-3.46508h-10.75717c-2.021,0 -3.698,1.67342 -3.59408,3.69083c1.98517,39.13 35.35317,69.97892 75.43275,67.8755c36.17375,-1.89558 65.80792,-31.53333 67.7035,-67.70708c2.10342,-40.08317 -28.7455,-73.44758 -67.87192,-75.43275c-2.01742,-0.10033 -3.69083,1.57667 -3.69083,3.59408z" fill="url(#color-2_Z4lBdSu2GAl2_gr2)"></path></g></g>
+    		</svg>
+      
+      </div>
+        <div id="emailListOther" class="" style="position: absolute;
+      		display:none;
+      		float:right;
+		    top: 0;
+		    left: 0;
+		    width: 100%;
+		    height: 100%;
+		    border-radius: 0.4rem;
+		    justify-content: center;
+		    align-items: center;
+		    transition: all .5s;
+		    opacity:1;">
+		    
+		    <div class="row col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 m-0" style="z-index: 3;background: rgb(200, 226, 249);
+			    height: 100%;
+			    float: right;
+			    border: 1px solid;
+			    border-radius: 4px;
+			    border-color: #50a4f1;">
+			    	<div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 from-group mb-0 mt-1 pl-0 pr-0">
+					    <select class="form-control" id="selectUserMailType">
+					    	<option value="activeUser">Active user</option>
+					    	<option value="notActiveUser">De-active user</option>
+					    	<option value="clientUser">Client</option>
+					    	<option value="vendorUser">Vendor</option>
+					    	<option value="employerUser">Employer</option>
+					    	<option value="bDMUser">Business Development Manager </option>
+					    	<option value="aMUser">Account Manager</option>
+					    	<option value="recruitersUser">Recruiter</option>
+					    </select>
+				    </div>
+				    <div class="col-12 col-sm-12 mailListSrcoll pt-2" style="height: 70%;overflow-y: scroll;border: 1px solid #ced4da;border-radius: .25rem;background-color: #ffffff;width: 100%;"> 
+	         			<div class="btn-group activeUser pr-0 pl-0">
+		                    <div class="pt-0 col-12">
+		                        <a class="dropdown-item p-0" href="javascript:void(0);" th:each="user,index:${usersToMail}">
+		                        	<div class="custom-control custom-checkbox custom-checkbox-primary">
+		                                <input type="checkbox" class="custom-control-input" th:id="${'ACTIVE_USER_'+user.id}" checked 
+		                                th:attr="data-user-id=${user.id},data-user-email=${user.email},data-user-firstName=${user.firstName},data-user-lastName=${user.lastName}">
+		                                <label class="custom-control-label" th:for="${'ACTIVE_USER_'+user.id}">
+		                                	<p class="m-0 p-0 textEmail" th:text="${user.email}"></p>
+				                            <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'Active user name: ' + user.firstName + ' ' + user.lastName}"></sup></p>
+		                                </label>
+		                            </div>
+		                        </a>
+		                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center align-items-center" th:if="${#lists.size(usersToMail) < 1}">
+									<div class="text-center">
+										<img th:src="@{/assets_new/images/sad.svg}" alt="sad" style="width: 50%">
+										<h1> Active user not available</h1>
+									</div>
+								</div>
+		                    </div>
+	                	</div>
+	                	<div class="btn-group notActiveUser pr-0 pl-0" style="display: none;">
+		                    <div class="pt-0 col-12">
+		                        <a class="dropdown-item p-0" href="javascript:void(0);" th:each="user,index:${usersNotActive}">
+		                        	<div class="custom-control custom-checkbox custom-checkbox-primary">
+		                                <input type="checkbox" class="custom-control-input" th:id="${'NOT_ACTIVE_USER_'+user.id}" 
+		                                th:attr="data-user-id=${user.id},data-user-email=${user.email},data-user-firstName=${user.firstName},data-user-lastName=${user.lastName}">
+		                                <label class="custom-control-label" th:for="${'NOT_ACTIVE_USER_'+user.id}">
+		                                	<p class="m-0 p-0 textEmail" th:text="${user.email}"></p>
+				                            <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'De-active user name: ' + user.firstName + ' ' + user.lastName}"></sup></p>
+		                                </label>
+		                            </div>
+		                        </a>
+		                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center align-items-center" th:if="${#lists.size(usersNotActive) < 1}">
+									<div class="text-center">
+										<img th:src="@{/assets_new/images/sad.svg}" alt="sad" style="width: 50%">
+										<h1> De-active user not available</h1>
+									</div>
+								</div>
+		                    </div>
+	                	</div>
+	                	<div class="btn-group clientUser pr-0 pl-0 mt-3" style="display: none;">
+		                    <div class="pt-0 col-12">
+		                        <a class="dropdown-item p-0" href="javascript:void(0);" th:each="user,index:${clientToMail}">
+		                        	<div class="custom-control custom-checkbox custom-checkbox-primary">
+		                                <input type="checkbox" class="custom-control-input" th:id="${'CLIENT_USER_'+user.id}" 
+		                                th:attr="data-user-id=${user.id},data-user-email=${user.email},data-user-clientname=${user.client.clientName},data-user-managername=${user.managerName}">
+		                                <label class="custom-control-label" th:for="${'CLIENT_USER_'+user.id}">
+		                                	<p class="m-0 p-0 textEmail" th:text="${user.email}"></p>
+				                            <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'Client name: ' + user.client.clientName}"></sup></p>
+				                            <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'Manager name: ' + user.managerName}"></sup></p>
+		                                </label>
+		                            </div>
+		                        </a>
+		                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center align-items-center" th:if="${#lists.size(clientToMail) < 1}">
+									<div class="text-center">
+										<img th:src="@{/assets_new/images/sad.svg}" alt="sad" style="width: 50%">
+										<h1> Client not available</h1>
+									</div>
+								</div>
+		                    </div>
+	                	</div>
+
+	                	<div  class="btn-group vendorUser pr-0 pl-0 mt-3" style="display: none;">
+		                    <div class="pt-0 col-12">
+		                        <a class="dropdown-item p-0" href="javascript:void(0);" th:each="user,index:${vendorToMail}">
+		                        	<div class="custom-control custom-checkbox custom-checkbox-primary">
+		                                <input type="checkbox" class="custom-control-input" th:id="${'VENDOR_USER_'+user.id}" 
+		                                th:attr="data-user-id=${user.id},data-user-email=${user.email},data-user-clientname=${user.client.clientName},data-user-managername=${user.managerName}">
+		                                <label class="custom-control-label" th:for="${'VENDOR_USER_'+user.id}">
+		                                	<p class="m-0 p-0 textEmail" th:text="${user.email}"></p>
+				                            <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'Vendor name: ' + user.client.clientName}"></sup></p>
+				                            <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'Manager name: ' + user.managerName}"></sup></p>
+		                                </label>
+		                            </div>
+		                        </a>
+		                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center align-items-center" th:if="${#lists.size(vendorToMail) < 1}">
+									<div class="text-center">
+										<img th:src="@{/assets_new/images/sad.svg}" alt="sad" style="width: 50%">
+										<h1> Vendor not available</h1>
+									</div>
+								</div>
+		                    </div>
+	                	</div>
+	                	<div class="btn-group employerUser pr-0 pl-0 mt-3" style="display:none;">
+		                    <div class="pt-0 col-12">
+		                        <a class="dropdown-item p-0" href="javascript:void(0);" th:each="user,index:${employerToMail}">
+		                        	<div class="custom-control custom-checkbox custom-checkbox-primary">
+		                                <input type="checkbox" class="custom-control-input" th:id="${'EMPLOYER_USER_'+user.id}" 
+		                                th:attr="data-user-id=${user.id},data-user-email=${user.email},data-user-clientname=${user.client.clientName},data-user-managername=${user.managerName}">
+		                                <label class="custom-control-label" th:for="${'EMPLOYER_USER_'+user.id}">
+		                                	<p class="m-0 p-0 textEmail" th:text="${user.email}"></p>
+				                            <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'Employer name: ' + user.client.clientName}"></sup></p>
+				                            <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'Manager name: ' + user.managerName}"></sup></p>
+		                                </label>
+		                            </div>
+		                        </a>
+		                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center align-items-center" th:if="${#lists.size(employerToMail) < 1}">
+									<div class="text-center">
+										<img th:src="@{/assets_new/images/sad.svg}" alt="sad" style="width: 50%">
+										<h1> Employer not available</h1>
+									</div>
+								</div>
+		                    </div>
+	                	</div>
+	                	<div class="btn-group bDMUser pr-0 pl-0 mt-3" style="display:none;">
+		                    <div class="pt-0 col-12">
+		                        <a class="dropdown-item p-0" href="javascript:void(0);" th:each="user,index:${bDMListToMail}">
+		                        	<div class="custom-control custom-checkbox custom-checkbox-primary">
+		                                <input type="checkbox" class="custom-control-input" th:id="${'BDM_USER_'+user.id}" 
+		                                th:attr="data-user-id=${user.id},data-user-email=${user.email},data-user-firstname=${user.firstname},data-lastname=${user.lastname}">
+		                                <label class="custom-control-label" th:for="${'BDM_USER_'+user.id}">
+		                                	<p class="m-0 p-0 textEmail" th:text="${user.email}"></p>
+				                            <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'BDM name: ' + user.firstname+ ' ' + user.lastname}"></sup></p>
+		                                </label>
+		                            </div>
+		                        </a>
+		                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center align-items-center" th:if="${#lists.size(bDMListToMail) < 1}">
+									<div class="text-center">
+										<img th:src="@{/assets_new/images/sad.svg}" alt="sad" style="width: 50%">
+										<h1> BDM not available</h1>
+									</div>
+								</div>
+		                    </div>
+	                	</div>
+	                	<div class="btn-group aMUser pr-0 pl-0 mt-3" style="display:none;">
+		                    <div class="pt-0 col-12">
+		                        <a class="dropdown-item p-0" href="javascript:void(0);" th:each="user,index:${accountManagersToMail}">
+		                        	<div class="custom-control custom-checkbox custom-checkbox-primary">
+		                                <input type="checkbox" class="custom-control-input" th:id="${'AM_USER_'+user.id}" 
+		                                th:attr="data-user-id=${user.id},data-user-email=${user.email},data-user-firstname=${user.firstname},data-lastname=${user.lastname}">
+		                                <label class="custom-control-label" th:for="${'AM_USER_'+user.id}">
+		                                	<p class="m-0 p-0 textEmail" th:text="${user.email}"></p>
+				                            <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'AM name: ' + user.firstname+ ' ' + user.lastname}"></sup></p>
+		                                </label>
+		                            </div>
+		                        </a>
+		                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center align-items-center" th:if="${#lists.size(accountManagersToMail) < 1}">
+									<div class="text-center">
+										<img th:src="@{/assets_new/images/sad.svg}" alt="sad" style="width: 50%">
+										<h1> AM not available</h1>
+									</div>
+								</div>
+		                    </div>
+	                	</div>
+	                	<div class="btn-group recruitersUser pr-0 pl-0 mt-3" style="display:none;">
+		                    <div class="pt-0 col-12">
+		                        <a class="dropdown-item p-0" href="javascript:void(0);" th:each="user,index:${recruitersToMail}">
+		                        	<div class="custom-control custom-checkbox custom-checkbox-primary">
+		                                <input type="checkbox" class="custom-control-input" th:id="${'RECRUITER_USER_'+user.id}" 
+		                                th:attr="data-user-id=${user.id},data-user-email=${user.email},data-user-firstname=${user.firstname},data-lastname=${user.lastname}">
+		                                <label class="custom-control-label" th:for="${'RECRUITER_USER_'+user.id}">
+		                                	<p class="m-0 p-0 textEmail" th:text="${user.email}"></p>
+				                            <p class="m-0 p-0" style="color: #7186a9"><sup th:text="${'Recruiter name: ' + user.firstname+ ' ' + user.lastname}"></sup></p>
+		                                </label>
+		                            </div>
+		                        </a>
+		                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center align-items-center" th:if="${#lists.size(recruitersToMail) < 1}">
+									<div class="text-center">
+										<img th:src="@{/assets_new/images/sad.svg}" alt="sad" style="width: 50%">
+										<h1> Recruiter not available</h1>
+									</div>
+								</div>
+		                    </div>
+	                	</div>
+                	</div>
+                	<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" style="justify-content: center;
+				    	align-items: center;display: flex;"> 
+		             	 	<button type="button" class="btn btn-info waves-effect waves-light" onclick="setFilter()">Close</button>
+                	</div>
+                </div>
+                	
+         	</div>
+  </div>
+					                                    

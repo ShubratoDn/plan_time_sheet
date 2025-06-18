@@ -1,0 +1,161 @@
+.monthTable th:first-child, .monthTable td:first-child {
+	position: sticky;
+	left: 0px;
+	background-color: #FFFFFF;
+	min-width: 37px;
+	max-width: 37px;
+}
+
+.monthTable th:nth-child(2), .monthTable td:nth-child(2) {
+	position: sticky;
+	left: 37px;
+	background-color: #FFFFFF;
+}
+
+.monthTable th:last-child, .monthTable td:last-child {
+	position: sticky;
+	right: 0px;
+	background-color: #FFFFFF;
+	min-width: 100px;
+	max-width: 100px;
+}
+
+.monthTable th:nth-last-child(2), .monthTable td:nth-last-child(2) {
+	position: sticky;
+	right: 100px;
+	background-color: #FFFFFF;
+}
+
+.round-icon {
+	display: inline-block;
+	border-radius: 60px;
+	box-shadow: 0px 0px 2px #888;
+	padding: 0.5em 0.6em;
+	margin: 5px;
+	cursor: pointer;
+
+}
+
+.round-icon-1 {
+	font-size: 20px; !important;
+	display: inline-block;
+	border-radius: 60px;
+	box-shadow: 0px 0px 2px #888;
+	padding: 0.2em 0.6em;
+	margin: 5px;
+	cursor: pointer;
+
+}
+
+.status-color-green{
+	background-color: #bcf3bc !important;	/* light green
+    color: green;/* 	light green */
+}
+
+.status-color-red{
+	background-color: #f3ccbc !important;/* 	light red */
+}
+
+.icon-back-color{
+	background-color:#1676c5 !important;/* 	light red */
+}
+
+.icon-size-24{
+	font-size: 22px; !important;/* 	light red */
+	display: inline-block;
+	border-radius: 60px;
+	box-shadow: 0px 0px 2px #888;
+	padding: 0.2em 0.3em;
+	margin: 5px;
+	cursor: pointer;
+}
+
+.mg-b-35 {
+	margin-bottom: 35px;
+}
+
+.back-ground{
+	background-color: rgb(239, 238, 238);
+}
+
+.mg-l-12{
+	margin-left: 12%;
+}
+.font-large {
+	font-size: large;
+}
+
+.table-responsive::-webkit-scrollbar { width: 0 !important }
+
+.w-100{
+	width: auto;
+	margin:10px!important;
+}
+
+.overflow-srcoll {
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+.pd-20 {
+	padding: 20px;
+}
+
+.year-box{
+	line-height: 1.42857143;
+    padding: 6px 24px 6px 12px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075) !important;
+    color: #555;
+    font-size: 14px;
+    vertical-align: middle;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    cursor: pointer;
+    background: white;
+    overflow: hidden;
+}
+
+.client-box{
+	line-height: 1.42857143;
+    padding: 5px 24px 5px 12px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075) !important;
+    color: #555;
+    font-size: 14px;
+    vertical-align: middle;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    background: white;
+    overflow: hidden;
+    height: 35px !important;
+}
+
+.height-file-popup {
+/* 	height:100vh; */
+height:calc(100vh - 4.94rem);rem
+    top: 0;
+    left: 0;
+}
+
+.height-file-popup1 {
+	height:calc(100vh - 2rem);
+    top: 0;
+    left: 0;
+}
+.border-shadow-success{
+	box-shadow: 0px 0px 2px #f40707 !important;
+}
+
+.border-shadow-danger{
+	box-shadow: 0px 0px 2px #4bd396 !important;
+}
+.table{
+	width: 100% !important;
+}
+.thead{
+	width: 100% !important;
+	text-align: center !important;
+}
+.dataTables_scrollHeadInner{
+	width:100% !important;
+}
+

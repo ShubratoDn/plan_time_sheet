@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
+        <meta name="author" content="Coderthemes">
+
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>schedular</title>
+
+        <!-- App css -->
+        <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/core.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/components.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/icons.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/pages.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/menu.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/responsive.css}" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" th:href="@{/assets/plugins/switchery/switchery.min.css}">
+        <script th:src="@{/assets/js/modernizr.min.js}"></script>
+        
+        <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" th:href="@{/assets/plugins/summernote/summernote.css}">
+        <link th:href="@{/assets/css/style.css}" rel="stylesheet" type="text/css" />
+
+    </head>
+
+
+    <body class="fixed-left">
+
+        <!-- Begin page -->
+        <div id="wrapper">
+			
+			<th:block th:replace="user/header :: header"></th:block>
+        
+        	<th:block  th:if="${session.user.role == 'ROLE_SUPERVISOR'}">
+        		<th:block th:replace="supervisor/menu :: menu"></th:block>
+        	</th:block>
+        	
+        	<th:block  th:if="${session.user.role == 'ROLE_ADMIN'}">
+        		<th:block th:replace="admin/menu :: menu" ></th:block>
+        	</th:block>
+			
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="content-page">
+                <!-- Start content -->
+                <div class="content">
+                    <div class="container">
+						<div class="row">
+							<div class="col-xs-12">
+								<div class="page-title-box">
+                                    <h4 class="page-title">Schedular </h4>
+                                    <ol class="breadcrumb p-0 m-0">
+                                        <li>
+                                            <a th:href="@{/supervisor/home}">Home</a>
+                                        </li>
+                                        <li class="active">
+                                            <a>Schedular</a>
+                                        </li>
+                                    </ol>
+                                    <div class="clearfix"></div>
+                                </div>
+							</div>
+						</div>
+						
+						<div class="alert alert-danger alert-dismissible fade in" role="alert" th:if="${error}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <strong>Oh snap!</strong> <th:block th:text="${error}"></th:block>
+                        </div>
+                        <div class="alert alert-success alert-dismissible fade in" role="alert" th:if="${success}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <strong>Success</strong> <th:block th:text="${success}"></th:block>
+                        </div>
+                        
+                        <div class="card-box">
+							<h4 class="m-t-0 header-title"><b>Schedular</b></h4>
+							<div class="row mb-20">
+								<div class="col-sm-3">
+                             		<label class="control-label" for="example-input1-group3">Year</label>
+                                 	<select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value" >
+										<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2017)}"
+	                                        	class="year-box-option" th:text="${year}" th:value="${'?year=' + year}" th:selected="${year == selectedYear}">
+	                                   	</option>
+	                         		</select>
+                               	</div>
+                                	
+                        		<div class="col-sm-3">
+                             		<label class="control-label" for="example-input1-group3">Month</label>
+                                 	<select name="sort" class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value" id="sortByAction">
+		  								<option th:each="month : ${T(com.aim.enums.Month).values()}" 
+		  										th:value="'?year='+${selectedYear} +'&month=' + ${month.urlParam}"
+		  										th:selected="${month} == ${selectedMonth}" th:text="${month.displayLabel}">
+		  							    </option>
+									</select>
+                                </div>
+                      		</div>
+                      		<form id="form" th:object="${schedular}" enctype="multipart/form-data" th:action="@{/supervisor/schedular}" method="post" data-parsley-validate>
+	                      		<table id="schedular-table" class="table table-striped  table-colored table-info">
+							   		<thead>
+							 			<tr>
+								            <th>No</th>
+								            <th>Date</th>
+								            <th>Daily Hours</th>
+								            <th>Extra Hours</th>
+								            <th>Vacation</th>
+								    	</tr>
+									</thead>
+									<tbody>
+										<tr class="back-ground" >
+											<th>Total</th>
+								            <th> </th>
+								            <th>
+								            	<p class="totalDailyHours mg-l-12"></p>
+								            </th>
+								            <th>
+								            	<p class="totalExtraHours mg-l-12"></p>
+								            </th>
+								            <th>
+								            	<p class="totalVacationHours mg-l-12"></p>
+								            </th>
+										</tr>
+										<tr class="odd gradeX" th:each="hourLog,index : *{calendarResponse}">
+									        <td>
+									        	<p> 
+									        		<label  th:text="${index.index + 1}"></label>
+									        	</p>
+									        </td>
+									        <td >
+									        	<input type="hidden" th:field="*{calendarResponse[__${index.index}__].date}"/>
+									        	<p th:text="${hourLog.dateFormate}"></p>
+									        </td>
+									        <td class = "">
+									        	<a class="col-lg-offset-1" onclick="setDailyHoursNextLine(this)">
+								        		    <i class="ion-arrow-down-b font-large" data-toggle="tooltip" title="copy to next line"></i>
+								        		</a>
+									        	<input type="text" th:field="*{calendarResponse[__${index.index}__].dailyHours}" onchange="sumOfDailyHours()" class="hourNum dailyHours">
+									        </td>
+									        <td>
+									        	<a class="col-lg-offset-1" onclick="setExtraHoursNextLine(this)">
+								        		    <i class="ion-arrow-down-b font-large" data-toggle="tooltip" title="copy to next line"></i>
+								        		</a>
+									        	<input type="text" th:field="*{calendarResponse[__${index.index}__].extraHours}" onchange="sumOfExtraHours()" class="hourNum extraHours">
+									        </td>
+									        <td>
+									        	<a class="col-lg-offset-1" onclick="setVacationHoursNextLine(this)">
+								        		    <i class="ion-arrow-down-b font-large" data-toggle="tooltip" title="copy to next line"></i>
+								        		</a>
+									        	<input type="text" th:field="*{calendarResponse[__${index.index}__].vacationHours}" onchange="sumOfVacationHours()" class="hourNum vacationHours">
+									        </td>
+							 			</tr>
+									</tbody>
+								</table>
+								  <div class="">
+									<button type="button" data-toggle='modal' data-target='#Email-modal' class="btn btn-sm btn-primary">
+										 <i class="ion-android-send round-icon icon-back-color"></i> Save & Email
+									 </button>
+						   		  </div>
+                                 <!-- Always hidden and used on change subject in send email popup -->
+									<div class="approveDiv">
+										<input type="hidden" class="subject" value="Timesheet reminder" />
+										<input type="hidden" class="message" th:value="${'Hello, <br />hi<br /><br />Please send your approved time sheets sent to PDDN (email timesheet@managetp.net)<br />
+											or fax to (866)371-7890).<br /><br /><br /> Time sheet for ' + schedular.startDate + ' To ' + schedular.endDate +' pay period must be turned in at the earlist.
+											If the time sheet are not turned in properly by deadline then pay roll/pay ment will be delayed.<br /><br /><br />
+											NEED TIME SHEET BEFORE ___ 01:00PM <br /><br /><br /> If you have already turned in your approved time sheet for the entire pay period then you may dis regard this message. <br /><br /> Thanks'}" />
+									</div>
+									<!--END Always hidden and used on change subject in send email popup -->
+									
+<!--                    			Email send Model -->
+									<div id="Email-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="EmailModel" aria-hidden="true" style="display: none;">
+										<div class="modal-dialog" style="width:65%;">
+											<div class="modal-content">
+												<div class="modal-header">
+													<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+														<div class="table-detail mail-right">
+	                                            			<div class="row">
+	                                                			<div class="col-sm-12">
+	                                                    			<div class="m-t-20">
+	                                                        			<div id="email-form" class="">
+			                                                                <div class="form-group">
+			                                                                   CC: <input type="text" id="email-to" name="ccEmail" class="form-control" placeholder="CC" th:value="${session.company.timesheetSubmitEmail}">
+			                                                                </div>
+			                                                                <div class="form-group">
+			                                                                    Subject: <input type="text" id="email-subject" name="subject" class="form-control subject" placeholder="Subject">
+			                                                                    <input type="hidden" id="description" th:field="*{description}">
+			                                                                </div>
+			                                                                <div class="form-group">
+			                                                                    <div class="summernote">
+			                                                                    
+			                                                                    </div>
+			                                                                </div>
+			                                                                <div class="btn-toolbar form-group m-b-0">
+																				 <div class="modal-footer">
+											                                        <button type="submit" class="btn btn-info waves-effect waves-light">Submit</button>
+											                                    </div>
+			                                                                </div>
+	                                                        			</div>
+	                                                    			</div>
+	                                                			</div>
+					                                        </div>
+					                                    </div>
+					                                 </div>
+					                            </div>
+					                         </div>
+					<!-- 						End of email send Model -->
+				                          </div>
+								</form>
+							</div>
+                	</div> <!-- content -->
+           		 </div>
+        	</div>
+        </div>
+        <!-- END wrapper -->
+		<footer class="footer text-right"> 2016 - 2018 © Zircos. </footer>
+
+
+        <script>
+            var resizefunc = [];
+        </script>
+
+        <!-- jQuery  -->
+        <script th:src="@{/assets/js/jquery.min.js}"></script>
+        <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+        <script th:src="@{/assets/js/detect.js}"></script>
+        <script th:src="@{/assets/js/fastclick.js}"></script>
+        <script th:src="@{/assets/js/jquery.blockUI.js}"></script>
+        <script th:src="@{/assets/js/waves.js}"></script>
+        <script th:src="@{/assets/js/jquery.slimscroll.js}"></script>
+        <script th:src="@{/assets/js/jquery.scrollTo.min.js}"></script>
+        <script th:src="@{/assets/plugins/switchery/switchery.min.js}"></script>
+		<script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+        <script th:src="@{/assets/plugins/summernote/summernote.min.js}"></script>
+        <script th:src="@{/assets/js/jquery.app.js}"></script>
+        <script th:src="@{/assets/js/fstdropdown.js}"></script>
+        <script th:src="@{/assets/js/javascript/schedular.js}"></script>
+        
+    </body>
+</html>

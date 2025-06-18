@@ -1,0 +1,82 @@
+<!-- ========== Left Sidebar Start ========== -->
+<div id="sidebar-menu" th:fragment="menu">
+    <!-- Left Menu Start -->
+    <ul class="metismenu list-unstyled" id="side-menu">
+        <li>
+            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                <i class="bx bx-home-circle"></i>
+                <span>Dashboard</span>
+            </a>
+            <ul class="sub-menu" aria-expanded="false">
+                <li><a th:href="@{/admin/home}">Revenue Dashboard</a></li>
+                <li><a th:href="@{/supervisor/home}">Consultant Dashboard</a></li>
+                <li><a th:if="${userTotalCount > 0}" th:href="@{/user/home}">Hours Dashboard</a></li>
+            </ul>
+        </li>
+
+        <li>
+            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                <i class="bx bx-user"></i>
+                <span>Users</span>
+            </a>
+            <ul class="sub-menu" aria-expanded="false">
+                <li><a th:href="@{/admin/add-user}">Add User</a></li>
+       			<li>
+       				<a th:href="@{/admin/user-list}">Users List</a>
+       			</li>
+       			<li>
+       				<a th:href="@{/admin/internal-user}" th:if="${permissionService.getPermissionPlan().commission == true}">Internal User Add</a>
+       				<a data-toggle="modal" data-target="#not-permit" th:if="${permissionService.getPermissionPlan().commission == false}"><i class="fa fa-lock"></i> Internal User Add</a>
+       			</li>
+       			
+            </ul>
+        </li>
+
+        <li th:if="${userTotalCount > 0}">
+            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                <i class="bx bx-calendar"></i>
+                <span>Time Sheet</span>
+            </a>
+            <ul class="sub-menu" aria-expanded="false">
+                <li><a th:href="@{/supervisor/add-user-time-sheet}">Add User time Sheet</a></li>
+                <li><a th:href="@{'/supervisor/time-sheet'}">Manage Time Sheet</a></li>
+<!--                 <li><a th:href="@{'/supervisor/time-sheet?yearFile='+ ${#dates.year(#dates.createNow())} + '&sort=rejected'}">Rejected Time Sheet</a></li> -->
+<!--                 <li><a th:href="@{'/supervisor/time-sheet?yearFile='+ ${#dates.year(#dates.createNow())} + '&sort=toBeapprove'}">To Be Time Sheet</a></li> -->
+            </ul>
+        </li>
+        <li>
+        	<a href="javascript:void(0);" class="has-arrow waves-effect">
+	             <i class="mdi mdi-calendar-clock"></i><span> Schedular </span> 
+	             <span class="menu-arrow"></span>
+           	</a>
+            <ul class="sub-menu" aria-expanded="false">
+                <li><a th:href="@{/supervisor/schedular}" class="waves-effect">
+             			<i class="mdi mdi-calendar-clock"></i><span>Manage Schedular </span> 
+           			</a>
+           		</li>
+            </ul>
+        </li>
+        <li>
+            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                <i class="bx bx-chat"></i>
+                <span>Activity</span>
+            </a>
+            <ul class="sub-menu" aria-expanded="false">
+                <li><a th:href="@{/admin/activity?role=ROLE_ADMIN}">Admin Activity</a></li>
+                <li><a th:href="@{/admin/activity?role=ROLE_SUPERVISOR}">Supervisor Activity</a></li>
+                <li><a th:href="@{/admin/activity?role=ROLE_USER}">User Activity</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                <i class="bx bxs-factory"></i>
+                <span>Company</span>
+            </a>
+            <ul class="sub-menu" aria-expanded="false">
+                <li><a th:href="@{/admin/company/configuration}">Configuration</a></li>
+            </ul>
+        </li>
+
+    </ul>
+</div>
+<!-- Sidebar -->

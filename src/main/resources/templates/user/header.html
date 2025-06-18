@@ -1,0 +1,53 @@
+<!-- Top Bar Start -->
+<div class="topbar" th:fragment="header">
+	
+	 <!-- Loader -->
+     <div id="preloader">
+         <div id="status">
+             <div class="spinner">
+               <div class="spinner-wrapper">
+                 <div class="rotator">
+                   <div class="inner-spin"></div>
+                   <div class="inner-spin"></div>
+                 </div>
+               </div>
+             </div>
+         </div>
+     </div>
+     
+    <!-- LOGO -->
+    <div class="topbar-left">
+        <a th:href="@{/}" class="logo"><span>Time Sheet</span></span><i class="mdi mdi-cube"></i></a>
+    </div>
+
+    <!-- Button mobile view to collapse sidebar menu -->
+    <div class="navbar navbar-default" role="navigation">
+        <div class="container">
+			<ul class="nav navbar-nav navbar-left">
+                 <li>
+                     <button class="button-menu-mobile open-left waves-effect waves-light">
+                         <i class="mdi mdi-menu"></i>
+                     </button>
+                 </li>
+             </ul>
+            <!-- Right(Notification) -->
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown user-box">
+                    <a href="#" class="dropdown-toggle waves-effect waves-light user-link" data-toggle="dropdown" aria-expanded="true">
+                        <img th:src="@{/assets/images/users/avatar-1.jpg}" alt="user-img" class="img-circle user-img">
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-right arrow-dropdown-menu arrow-menu-right user-list notify-list">
+                        <li>
+                            <h5 th:text="${ 'Hi , ' + session.user.firstName  + ' ' + session.user.lastName}"></h5>
+                        </li>
+                        <li><a th:href="@{/logout}"><i class="ti-power-off m-r-5"></i> Logout</a></li>
+                    </ul>
+                </li>
+
+            </ul> <!-- end navbar-right -->
+
+        </div><!-- end container -->
+    </div><!-- end navbar -->
+</div>
+<!-- Top Bar End -->

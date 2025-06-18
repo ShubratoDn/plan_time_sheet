@@ -1,0 +1,36 @@
+<div class="">
+	<div class="text-center p-2" style="background: #e7e7fb;border-bottom: 1px solid #556ee6">
+		<span><b th:text="${#dates.format(schedular.hoursDate,'dd MMM yyyy')}"></b></span>
+	</div>
+	<form id="setDayDate" th:action="@{/supervisor/schedular-save}" th:object="${schedular}" method="post" 
+		class="form-group mb-0">
+		<div class="text-center"><span class='set-msg'></span></div>
+		<div class="row justify-content-center mb-2">
+			<input class="col-sm-3 hourNum form-control m-1" maxlength="3" style="height: calc(0.5em + .94rem + 2px);background: rgba(52, 195, 143, 0.27)"
+			type="text" th:field="*{dailyHours}">
+			<input class="col-sm-3 hourNum form-control m-1" maxlength="3" style="height: calc(0.5em + .94rem + 2px);background: rgba(11, 124, 228, 0.27);"
+			type="text" th:field="*{extraHours}">
+			<input class="col-sm-3 hourNum form-control m-1" maxlength="3" style="height: calc(0.5em + .94rem + 2px);background: rgba(245, 126, 3, 0.27);" 
+			type="text" th:field="*{vacationHours}">
+			<input type="hidden" th:value="${#dates.format(schedular.hoursDate, 'dd-MM-yyyy')}" name="hoursDateString">
+			<input type="hidden" th:field="*{dayOff}" id="dayOff">
+		</div>
+		<div class="row">
+			<div class="col-sm-4 text-right"><p class="m-0">Set day off</p></div> 
+			<div class="col-sm-4">
+				<input onchange="setChange(this)" type="checkbox" id="switch1" switch="none" th:checked="${schedular.dayOff == true}">
+				<label for="switch1" data-on-label="" data-off-label=""></label>
+			</div> 
+		</div>
+		<div class="pl-3 pr-3" id="set-remark" th:style="${schedular.dayOff == true ? 'display:block' : 'display:none'}" >
+			<div class="form-group">
+				<label for="remark">Remark<span class="text-danger"></span></label>
+				<input class="form-control" th:field="*{remark}" type="text">
+			</div>
+		</div>
+		<div class="btn-group col-sm-12 m-0 p-0" role="group">
+            <button type="button" onclick="hidePopover()" class="col-sm-6 btn btn-outline-primary waves-effect waves-light rounded-0">Discart</button>
+            <button type="submit" class="col-sm-6 btn btn-outline-primary waves-effect waves-light rounded-0">Save</button>
+        </div>
+	</form>
+</div>

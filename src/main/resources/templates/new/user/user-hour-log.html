@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8" />
+	   	<title>HoursLog</title>
+	    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+	    <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+	    <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+	    <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+	    <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+	   	<link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        <link th:href="@{/assets/css/fstdropdown.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/plugins/sweetalert2/sweetalert2.min.css}" rel="stylesheet" type="text/css" />
+		<style>
+			.hide{
+				display: none !important;
+			}
+			.mb-20{
+				margin-bottom: 20px !important;
+			}
+		</style>
+    </head>
+    <body data-sidebar="dark">
+		<div id="layout-wrapper">
+			<th:block th:replace="new/user/header :: header"></th:block>
+	   		<div class="vertical-menu">
+	       		<div data-simplebar class="h-100" >
+					<th:block th:replace="new/user/menu :: menu"></th:block>
+	            </div>
+	       	</div>
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+        		<div class="page-content">
+            		<div class="container-fluid">
+                    	<div class="row">
+							<div class="col-12">
+								<div class="page-title-box d-flex align-items-center justify-content-between">
+                                    <h4 class="mb-0 font-size-18" th:classappend="${hideTimeSheet or hideReport} ? 'hide' : ''">Time Sheet </h4>
+                                    <h4 class="mb-0 font-size-18" th:classappend="${!hideTimeSheet or hideReport} ? 'hide' : ''">Report </h4>
+                                    <h4 class="mb-0 font-size-18" th:classappend="${hideTimeSheet or !hideReport} ? 'hide' : ''">Submitted timesheet </h4>
+                                    <div class="page-title-right">
+	                                    <ol class="breadcrumb m-0">
+	                                        <li class="breadcrumb-item">>
+	                                            <a th:href="@{/user/home}">Dashboard</a>
+	                                        </li>
+	                                        <li class="breadcrumb-item">
+	                                            <a href="#" th:text="${session.user.firstName  + ' ' + session.user.lastName}"> </a>
+	                                        </li>
+	                                        <li class="breadcrumb-item active" th:classappend="${hideTimeSheet or hideReport} ? 'hide' : ''">
+	                                            Time Sheet 
+	                                        </li>
+	                                        <li class="breadcrumb-item active" th:classappend="${!hideTimeSheet or hideReport} ? 'hide' : ''">
+	                                           	Report
+	                                        </li>
+	                                        <li class="breadcrumb-item active" th:classappend="${hideTimeSheet or !hideReport} ? 'hide' : ''">
+	                                           	Submitted timesheet
+	                                        </li>
+	                                    </ol>
+                                    </div>
+                                </div>
+							</div>
+						</div>
+						<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}">
+                  			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                       			<span aria-hidden="true">×</span>
+                     		</button>
+                  			<strong>Oh snap!</strong> <th:block th:text="${error}"></th:block>
+                 		</div>
+                  		<div class="alert alert-success alert-dismissible" role="alert" th:if="${success}">
+                			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                   				<span aria-hidden="true">×</span>
+                  			</button>
+                  			<strong>Success</strong> <th:block th:text="${success}"></th:block>
+           				</div>
+                        <div class="card" th:classappend="${hideReport} ? 'hide' : ''"  th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).REPORT_TIME_SHEET,T(com.aim.enums.Permission).READ, false)}">
+                           	<div class="card-body">
+							<div class="row mb-20">
+                        		<div class="col-sm-3">
+									<label class="control-label" for="example-input1-group3">Year</label>
+	                                <select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value">
+										<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2015)}"
+	                                        	th:text="${year}" th:value="'?year=' + ${year} + '&report=' + ${hideTimeSheet}"
+	                                        	th:selected="${year == selectYear}">
+	                                        		
+	                                   	</option>
+	                         		</select>
+                          		</div>
+                          		<div class="col-sm-3">
+									<label class="control-label" for="example-input1-group3">Client</label>
+	                                <select class="form-control fstdropdown-select" th:onchange="'selectClient(this.value,\''+ ${hideReport} + '\',\'' + ${hideTimeSheet} +'\')'">
+										<option th:each="details : ${userDetails}"
+	                                        	th:text="${details.clientName}" th:value="${details.userDetailId}"
+	                                        	th:selected="${details.userDetailId == userDetailId}">
+	                                        		
+	                                   	</option>
+	                         		</select>
+                          		</div>
+<!--                           		<div class="col-sm-6"> -->
+<!--                           			<a class="btn btn-sm btn-primary" th:href="@{${'/user/add-hours?id=' + {userDetailId} } }" style="float: right;">Add Hour Log</a> -->
+<!--                           		</div> -->
+                      		</div>
+                      		<div class="" th:if="${userDetail.timeSheetPeriod == 'oneWeek'} or ${userDetail.timeSheetPeriod == 'twoWeek'}">
+								<table class="table table-responsive">
+								    <thead>
+										<tr>
+											<th>No</th>
+									     	<th>Period</th>
+									     	<th>Monday</th>
+									     	<th>Tuesday</th>
+									     	<th>Wednesday</th>
+									     	<th>Thursday</th>
+									     	<th>Friday</th>
+									     	<th>Saturday</th>
+									     	<th>Sunday</th> 
+									     	<th>Total</th> 
+								      	</tr>
+									</thead>
+								    <tbody>
+										<tr th:each="userHourLog,i : ${userHourLogs}">
+								        	<td th:text="${i.index+1}"></td>
+								        	<td th:text="${userHourLog.get('End') + ' To ' + userHourLog.get('Start')}"></td>
+									     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Monday'),1,2)}">Monday</td>
+									     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Tuesday'),1,2)}">Tuesday</td>
+									     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Wednesday'),1,2)}">Wednesday</td>
+									     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Thursday'),1,2)}">Thursday</td>
+									     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Friday'),1,2)}">Friday</td>
+									     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Saturday'),1,2)}">Saturday</td>
+									     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Sunday'),1,2)}">Sunday</td> 
+									     	<td th:text="${#numbers.formatDecimal(userHourLog.get('Total'),1,2)}">Total</td> 
+								      	</tr>
+								    </tbody>
+							  	</table>
+							  	<!-- pagination -->
+					              <div class="col-12 dataTables_paginate paging_simple_numbers">
+					               		<ul id="pagination-ul" class="" style="float: right;"></ul>
+					                <script th:inline="javascript">
+										/*<![CDATA[*/
+										var currentPageNo = [[${currentPage}]];
+										var totalPages = [[${totalPage + 1}]]
+										/*]]>*/
+								   </script>
+					              </div>
+							<!--    end pagination  -->
+							</div>
+<!-- 				month hour log table -->
+							<div class="monthTable"  th:if="${userDetail.timeSheetPeriod == 'oneMonth'}">
+								<table id="monthTable" class="table setResponsive">
+								    <thead>
+										<tr>
+											<th>No</th>
+									     	<th>Period</th>
+									     	<th th:each="date : ${#numbers.sequence(01,31)}" th:text="${date}"></th>
+									     	<th>Total</th> 
+<!-- 									     	<th>Action</th>  -->
+								      	</tr>
+									</thead>
+								    <tbody>
+								    	<tr th:each="userHourLog,i : ${userHourLogsByMonth}">
+								        	<td th:text="${i.index+1}"></td>
+								        	<td th:text="${userHourLog.month.displayLabel}"></td>
+								        	
+								        	<td th:each="dateHourLog,j : ${userHourLog.defaultCalendarResponses}">
+								        		<th:block th:text="${dateHourLog.dailyHour} ? ${#numbers.formatDecimal(dateHourLog.dailyHour + dateHourLog.extraHour,1,2)} : 0.0"></th:block>
+								        	</td>
+								        	
+								        	<th:block th:if="${#lists.size(userHourLog.defaultCalendarResponses) == 28}">
+								        		<td> - </td>
+								        		<td> - </td>
+								        		<td> - </td>
+								        	</th:block>
+								        	
+								        	<th:block th:if="${#lists.size(userHourLog.defaultCalendarResponses) == 29}">
+								        		<td> - </td>
+								        		<td> - </td>
+								        	</th:block>
+								        	
+								        	<th:block th:if="${#lists.size(userHourLog.defaultCalendarResponses) == 30}">
+								        		<td> - </td>
+								        	</th:block>
+								        	
+								        	<td th:text="${#numbers.formatDecimal(userHourLog.total,1,2)}"></td>
+								        </tr>
+								    </tbody>
+							  	</table>
+                        	</div>
+                    	</div> <!-- container -->
+                 	</div> <!-- container -->
+                          <!--   hour log file cotainer  -->
+					<div class="card" th:classappend="${hideTimeSheet} ? 'hide' : ''" th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).SUBMITTED_TIMESHEET,T(com.aim.enums.Permission).READ, false)}">
+                    	<div class="card-body">
+							<h4 class="m-t-0 header-title"><b>My added time sheet</b></h4> 
+							<div class="row mb-20">
+                        		<div class="col-sm-3">
+									<label class="control-label" for="example-input1-group3">Year</label>
+	                                <select class="form-control fstdropdown-select" onchange="if (this.value) window.location.href=this.value">
+										<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()) ,2015)}"
+	                                        	th:text="${year}" th:value="'?year='+ ${selectYear} +'&yearFile=' + ${year}+ '&timeSheet=' + ${hideReport}"
+	                                        	th:selected="${year == selectYearFile}">
+	                                        		
+	                                   	</option>
+	                         		</select>
+                          		</div>
+                        		<div class="col-sm-3">
+									<label class="control-label" for="example-input1-group3">Client</label>
+	                                <select class="form-control fstdropdown-select" th:onchange="'selectClient(this.value,\''+ ${hideReport} + '\',\'' + ${hideTimeSheet} +'\')'">
+										<option th:each="details : ${userDetails}"
+	                                        	th:text="${details.clientName}" th:value="${details.userDetailId}"
+	                                        	th:selected="${details.userDetailId == userDetailId}">
+	                                        		
+	                                   	</option>
+	                         		</select>
+                          		</div>
+                      		</div> 
+                      		<div class="">
+								<table id="datatable" class="table setResponsive">
+								    <thead>
+										<tr>
+											<th>No</th>
+									     	<th>Period</th>
+									     	<th>Upload Date</th>
+									     	<th>Status</th>
+									     	<th>Action</th> 
+								      	</tr>
+									</thead>
+								    <tbody>
+										<tr th:each="hourLogFile,i : ${hourLogFiles}">
+								        	<td th:text="${i.index+1}"></td>
+									     	<td th:text="${#dates.format(hourLogFile.startDate, 'MMM-dd-yyyy ') + ' TO ' + #dates.format(hourLogFile.endDate, 'MMM-dd-yyyy ')}"></td>
+									     	<td th:text="${#dates.format(hourLogFile.createdDatetime, 'MMM-dd-yyyy HH:MM')}"></td>
+									     	<td>
+									     		<div th:if="${hourLogFile.reject}">
+													<a class='btn btn-xs btn-danger' data-toggle='modal' data-target='#panel-modal' >Rejected</a>
+													<div id='panel-modal' class='modal fade' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true' style='display: none;'>
+						                        
+							                           <div class='modal-dialog'>
+							                               <div class='modal-content p-0 b-0'>
+							                                   <div class='panel panel-color panel-primary'>
+							                                       <div class='panel-heading'>
+							                                           <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button>
+							                                         	<h3 class='panel-title'>Reason</h3>
+							                                       </div>
+							                                       <div class='panel-body'>
+							                                          <p th:text="${hourLogFile.rejectReason}"></p>
+							                                       </div>
+							                                   </div>
+							                               </div>
+							                           </div>
+							                       </div>
+						                       </div>
+						                       	
+			                                   <div th:if="${hourLogFile.approve}">
+			                                    	Approved
+			                                   </div>
+			                                   <div th:if="${!hourLogFile.approve} and ${!hourLogFile.reject}">
+			                                    	Submitted
+			                                   </div>
+									     		
+									     	</td>
+									     	<td>
+									     		<a th:if="${!hourLogFile.approve}" th:onclick="'deleteFile('+ ${hourLogFile.id}+')'" style="font-size: 25px"><i class="mdi mdi-delete-circle" data-toggle="tooltip" data-placement="right" title="Delete"></i></a>
+			                                   	<a th:if="${!hourLogFile.approve}" style="font-size: 22px" th:href="@{|/user/hour-log-file/edit/${hourLogFile.id}|}" class="">
+										     		<i class="mdi mdi-border-color" data-toggle="tooltip" data-placement="left" title="Edit"></i>
+										     	</a>
+										     	<a th:if="${hourLogFile.fileOriginalName} and ${hourLogFile.filePath}" th:href="@{|/user/user-hour-file/download/${hourLogFile.id}|}" th:attr="download=${hourLogFile.fileOriginalName}" class="">
+										     		<i class="fas fa-download" style="font-size: 20px" data-toggle="tooltip" data-placement="left" title="Download"></i>
+										     	</a>
+			                                   	
+									     	</td>
+								      	</tr>
+								    </tbody>
+							  	</table>
+							</div>
+						</div>
+						</div>
+                </div> <!-- content -->
+
+            </div>
+
+        </div>
+        <!-- END wrapper -->
+		<footer class="footer text-right"> 2016 - 2018 © Zircos. </footer>
+        <script>
+            var resizefunc = [];
+        </script>
+        
+        <script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			var userDetailId = [[${userDetailId}]]
+			var userDetail = [[${userDetail}]]
+			var year = [[${selectYear}]]
+			/*]]>*/
+		</script>
+
+        <!-- jQuery  -->
+       <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+       <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+       <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+       <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+       <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+       <script th:src="@{/assets_new/js/app.js}"></script>	
+       <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+       <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+       <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+       <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+       <script th:src="@{/assets/js/jquery.twbsPagination.js}"></script>
+       <script th:src="@{/assets/js/fstdropdown.js}"></script>
+       <script th:src="@{/assets/js/jquery.inputmask.bundle.js}"></script>
+       <script th:src="@{/assets/plugins/sweetalert2/sweetalert2.min.js}"></script>
+       <script th:src="@{/assets/plugins/sweetalert2/sweet-alerts.init.js}"></script> 
+       <script th:src="@{/assets/js/javascript/common.js}"></script>
+       <script th:src="@{/assets/js/javascript/user-hour-log.js}"></script>
+		
+    </body>
+</html>

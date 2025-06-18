@@ -1,0 +1,130 @@
+	<div id="view-table" class='col-md-6 height-file-popup pd-20 overflow-srcoll'>
+		<form id="form" th:object="${addUserTimeSheet}" enctype="multipart/form-data" th:action="@{/supervisor/add-time-sheet}" method="post" data-parsley-validate>
+        	<div class="row">
+           		<div class="col-md-6">
+					<div class="form-group">
+                   		 <label for="date">Start Date To End Date<span class="text-danger">*</span></label>
+						 <input class="form-control" id="date" type="text" th:value="${#dates.format(addUserTimeSheet.startDate, 'E MMM dd yyyy') +' To ' + #dates.format(addUserTimeSheet.endDate, 'E MMM dd yyyy')}"/>
+					</div>
+					<input class="form-control" type="hidden" th:field="*{startDate}" data-inputmask-alias="mm/dd/yyyy" required/>
+				    <input class="form-control" type="hidden" th:field="*{endDate}" data-inputmask-alias="mm/dd/yyyy" required/>
+				    <input type="hidden" th:field="*{userDetailId}" required/>
+				    <input type="hidden" name="timesheetId" th:value="${timesheetId}" required/>
+            	</div>
+       	 	</div>
+				<table id="hours-table" class="table table-striped  table-colored table-info col-sm-12">
+			   		<thead>
+			 			<tr>
+				            <th>No</th>
+				            <th>Date</th>
+				            <th>Daily Hours</th>
+				            <th>Extra Hours</th>
+				            <th>Vacation</th>
+				    	</tr>
+					</thead>
+					<tbody>
+						<tr class="back-ground" >
+							<th>Total</th>
+				            <th> </th>
+				            <th>
+				            	<p class="totalDailyHours mg-l-12"></p>
+				            </th>
+				            <th>
+				            	<p class="totalExtraHours mg-l-12"></p>
+				            </th>
+				            <th>
+				            	<p class="totalVacationHours mg-l-12"></p>
+				            </th>
+						</tr>
+						<tr class="odd gradeX" th:each="hourLog,index : *{calendarResponse}">
+					        <td>
+					        	<p> 
+					        		<label  th:text="${index.index + 1}"></label>
+					        	</p>
+					        </td>
+					        <td >
+					        	<input type="hidden" th:field="*{calendarResponse[__${index.index}__].date}"/>
+					        	<p th:text="${hourLog.dateFormate}"></p>
+					        </td>
+					        <td class = "">
+					        	<a class="col-lg-offset-1" onclick="setDailyHoursNextLine(this)">
+				        		    <i class="ion-arrow-down-b font-large" data-toggle="tooltip" title="copy to next line"></i>
+				        		</a>
+					        	<input type="text" th:field="*{calendarResponse[__${index.index}__].dailyHours}" onchange="sumOfDailyHours()" class="hourNum dailyHours">
+					        </td>
+					        <td>
+					        	<a class="col-lg-offset-1" onclick="setExtraHoursNextLine(this)">
+				        		    <i class="ion-arrow-down-b font-large" data-toggle="tooltip" title="copy to next line"></i>
+				        		</a>
+					        	<input type="text" th:field="*{calendarResponse[__${index.index}__].extraHours}" onchange="sumOfExtraHours()" class="hourNum extraHours">
+					        </td>
+					        <td>
+					        	<a class="col-lg-offset-1" onclick="setVacationHoursNextLine(this)">
+				        		    <i class="ion-arrow-down-b font-large" data-toggle="tooltip" title="copy to next line"></i>
+				        		</a>
+					        	<input type="text" th:field="*{calendarResponse[__${index.index}__].vacationHours}" onchange="sumOfVacationHours()" class="hourNum vacationHours">
+					        </td>
+			 			</tr>
+					</tbody>
+				</table>
+<!--   			<div class=""> -->
+<!-- 				<button type="button" data-toggle='modal' data-target='#Email-modal' class="btn btn-sm btn-primary"> -->
+<!-- 					 <i class="ion-android-send round-icon icon-back-color"></i> submit -->
+<!-- 				 </button> -->
+<!-- 			</div> -->
+            <div>
+                               <!-- Always hidden and used on change subject in send email popup -->
+				<div class="rejectDiv">
+					<input type="hidden" class="subject" th:value="${'Timesheet reject, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+ userDetail.user.firstName + ' '+ userDetail.user.lastName + ' for client: ' +userDetail.clientName}" />
+					<input type="hidden" class="message" th:value="${'Hello, <br /><br />Timesheet is reject of '+ userDetail.user.firstName + ' '+ userDetail.user.lastName +' for client : '+ userDetail.clientName +'<br /><br />for time period: '+ addUserTimeSheet.startDate +' To '+ addUserTimeSheet.endDate +'<br /><br />Please check and re-submit.  <br /><br />Thank you.'}" />
+				</div>
+				
+				<div class="approveDiv">
+					<input type="hidden" class="subject" th:value="${'Timesheet approve, ' +addUserTimeSheet.startDate + ' To ' + addUserTimeSheet.endDate +', '+ userDetail.user.firstName + ' '+ userDetail.user.lastName + 'for client: '+userDetail.clientName}" />
+					<input type="hidden" class="message" th:value="${'Hello, <br /><br />Timesheet is approve of ' + userDetail.user.firstName + ' '+ userDetail.user.lastName + '  for client : '+ userDetail.clientName +'<br /><br />for time period: '+ addUserTimeSheet.startDate +' To '+ addUserTimeSheet.endDate +'<br /><br />Please check <br /><br />Thank you.'}" />
+				</div>
+				<!--END Always hidden and used on change subject in send email popup -->
+
+<!-- 						Email send Model -->
+				<div class="table-detail mail-right">
+                 		<div class="row">
+                  		   <div class="m-t-20">
+                             <div id="email-form" class="">
+	                             <div class="from-group mg-b-35 col-sm-12">
+	                             	<label>Select status<span class="text-danger">*</span></label>
+	                          	  	 <select class="form-control client-box" onclick="onClickSubject(this.value)" >
+										<option value="approve" defaulte>Approve</option>
+										<option value="reject">Reject</option>
+	                         		</select>
+	                          	  </div>
+                        		<div class="form-group hide" id="rejectReason">
+                           	  		Reason: <textarea type="text" name="rejectReason" class="form-control" placeholder="write reason here.." value=" "></textarea>
+                           	  		<input type="hidden" name="isApprove" id="isApprove" value="">
+                           	    </div>
+                                <div class="form-group">
+                                   TO:  <input type="text" id="email-to" name="email" class="form-control" placeholder="To" th:value="${userDetail.user.email}">
+                                </div>
+                                <div class="form-group">
+                                   CC:  <input type="text" id="email-to" name="ccEmail" class="form-control" placeholder="CC" th:value="${session.company.timesheetSubmitEmail}">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="email-subject" name="subject" class="form-control subject" placeholder="Subject">
+                                    <input type="hidden" id="description" th:field="*{description}">
+                                </div>
+                                <div class="form-group">
+                                    <div class="summernote">
+                                    </div>
+                                </div>
+                                <div class="btn-toolbar form-group m-b-0">
+									<div class="modal-footer">
+                     					<button type="submit" id="button" class="btn btn-info waves-effect waves-light">Submit</button>
+     	 			  		 		</div>
+                       			 </div>
+                  			</div>
+                          </div>
+                                  <!-- End row -->
+                       </div> <!-- table detail -->
+                 </div>
+            </div>
+		</form> 
+	</div>

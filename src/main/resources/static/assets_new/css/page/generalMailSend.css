@@ -1,0 +1,94 @@
+.userInGenaralMail .dropdown-menu{
+    max-height: 340px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+.userInGenaralMail .dropdown-menu::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+.userInGenaralMail .dropdown-menu::-webkit-scrollbar-track {
+  background: #ffffff; 
+}
+ 
+/* Handle */
+.userInGenaralMail .dropdown-menu::-webkit-scrollbar-thumb {
+  background: #a1c8ea; 
+}
+
+/* Handle on hover */
+.userInGenaralMail .dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.userInGenaralMail .dropdown-menu{
+	background-color: #ffffff;
+	border: 1px solid #50a4f1;
+}
+.userInGenaralMail .btn:focus{
+	box-shadow: 0 0 0 0 rgba(85,110,230,.25) !important;
+}
+#theUserListInGenaralMailSend .search{
+	background: #cde5f9;
+}
+
+#emailListOther .dropdown-menu{
+	background-color: #ffffff;
+	border: 1px solid #50a4f1;
+}
+
+
+#emailListOther .btn:focus{
+	box-shadow: 0 0 0 0 rgba(85,110,230,.25) !important;
+}
+
+
+#emailListOther .dropdown-menu::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+#emailListOther .dropdown-menu::-webkit-scrollbar-track {
+  background: #ffffff; 
+}
+ 
+/* Handle */
+#emailListOther .dropdown-menu::-webkit-scrollbar-thumb {
+  background: #a1c8ea; 
+}
+
+/* Handle on hover */
+#emailListOther .dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.mailListSrcoll::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+.mailListSrcoll::-webkit-scrollbar-track {
+  background: #ffffff; 
+}
+ 
+/* Handle */
+.mailListSrcoll::-webkit-scrollbar-thumb {
+  background: #a1c8ea; 
+}
+
+/* Handle on hover */
+.mailListSrcoll::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+	
+#emailListOther .dropdown-menu {
+	max-height: 340px;
+	overflow-y: scroll;
+	overflow-x: hidden;"
+}
+
+#emailListOther .dropdown-menu.show {
+    top: auto !important;
+}
+			

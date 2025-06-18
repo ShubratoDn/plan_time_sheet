@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
+        <meta name="author" content="Coderthemes">
+
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Time Sheet</title>
+
+        <!-- App css -->
+        <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/core.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/components.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/icons.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/pages.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/menu.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets/css/responsive.css}" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" th:href="@{/assets/plugins/switchery/switchery.min.css}">
+		
+		<link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        
+        <script th:src="@{/assets/js/modernizr.min.js}"></script>
+
+    </head>
+
+
+    <body class="fixed-left">
+
+        <!-- Begin page -->
+        <div id="wrapper">
+			
+			<th:block th:replace="user/header :: header"></th:block>
+        
+        	<th:block th:replace="admin/menu :: menu"></th:block>
+			
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="content-page">
+                <!-- Start content -->
+                <div class="content">
+                    <div class="container">
+                        <div class="card-box table-responsive">
+							<div class="row mb-20">
+                        		<div class="col-sm-3">
+                             		<label class="control-label" for="example-input1-group3">Sort by</label>
+                                 	<select name="sort" class="form-control" onchange="if (this.value) window.location.href=this.value" id="sortByAction">
+		  								<option th:each="adminTimeSheetAction : ${T(com.aim.enums.AdminTimeSheetAction).values()}" 
+		  										th:value="'?sort=' + ${adminTimeSheetAction.urlParam}"
+		  										th:selected="${adminTimeSheetAction} == ${selectedSort}" th:text="${adminTimeSheetAction.displayLabel}"></option>
+									</select>
+                                </div>
+                           </div>
+                        	<table id="datatable" class="table table-responsive">
+                            	<thead>
+	                                <tr>
+	                                    <th>No</th>
+	                                    <th>Name/Client</th>
+	                                    <th>Date Period</th>
+	                                    <th>Monday</th>
+	                                    <th>Tuesday</th>
+	                                    <th>Wednesday</th>
+	                                    <th>Thursday</th>
+	                                    <th>Friday</th>
+	                                    <th>Saturday</th>
+	                                    <th>Sunday</th> 
+	                                    <th>Total</th> 
+	                                    <th>Action</th> 
+	                                </tr>
+                               </thead>
+                               <tbody>
+	                               <tr class="odd gradeX" th:if="${not #lists.isEmpty(adminTimeSheetResponses)}" th:each="adminTimeSheetResponse,index : ${adminTimeSheetResponses}">
+	                               	<td th:text="${index.index + 1}"></td>
+                                    <td th:text="${adminTimeSheetResponse.userDetail.user.firstName + adminTimeSheetResponse.userDetail.user.lastName + ' / ' + adminTimeSheetResponse.userDetail.clientName}"></td>
+                                    <td th:text="${#strings.replace(adminTimeSheetResponse.key,'TO',' TO ')}"></td>
+                                    <td th:text="${#numbers.formatDecimal(adminTimeSheetResponse.mondayHour,1,2)}"></td>
+                                    <td th:text="${#numbers.formatDecimal(adminTimeSheetResponse.tuesdayHour,1,2)}"></td>
+                                    <td th:text="${#numbers.formatDecimal(adminTimeSheetResponse.wednesdayHour,1,2)}"></td>
+                                    <td th:text="${#numbers.formatDecimal(adminTimeSheetResponse.thursdayHour,1,2)}"></td>
+                                    <td th:text="${#numbers.formatDecimal(adminTimeSheetResponse.fridayHour,1,2)}"></td>
+                                    <td th:text="${#numbers.formatDecimal(adminTimeSheetResponse.saturdayHour,1,2)}"></td>
+                                    <td th:text="${#numbers.formatDecimal(adminTimeSheetResponse.saturdayHour,1,2)}"></td>
+                                    <td th:text="${#numbers.formatDecimal(adminTimeSheetResponse.totalHour,1,2)}"></td>
+                                    <td>
+                                    	<button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#custom-width-modal" th:onclick="'bacisDetails(\''+ ${adminTimeSheetResponse.userDetail.user.firstName + adminTimeSheetResponse.userDetail.user.lastName + ' / ' + adminTimeSheetResponse.userDetail.clientName} + '\',' +${adminTimeSheetResponse.userDetail.userDetailId} + ')'">Basic Details</button>
+                                    </td>
+                               </tbody>
+                           </table>
+                        </div>
+                    </div> <!-- container -->
+                </div> <!-- content -->
+				<div id="reject-reason-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+	                 <div class="modal-dialog">
+					 	<div class="modal-content">
+							<div class="modal-header">
+		                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		                        <h4 class="modal-title">Reject Reason</h4>
+	                        </div>
+	                        <form th:action="@{/admin/time-sheet/reject}" method="POST">
+				                <div class="modal-body">
+			                      	<div class="row">
+			                          	<div class="col-md-12">
+			                              	<div class="form-group no-margin">
+			                                  	<label for="field-7" class="control-label">Reason</label>
+			                                  	<textarea class="form-control autogrow" id="field-7" name="reason" placeholder="Write reason...." style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 104px;" required></textarea>
+			                              		<input type="hidden" name="key" value="" id="reasonId">
+			                              		<input type="hidden" name="userDetailId" value="" id="userDetailId">
+			                              	</div>
+			                          	</div>
+			                      	</div>
+				                </div>
+	                            <div class="modal-footer">
+	                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
+	                                <button type="submit" class="btn btn-info waves-effect waves-light">Reject</button>
+	                            </div>
+	                        </form>
+	                     </div>
+	                 </div>
+             	</div><!-- /.modal --> 
+             	
+             	<div id="custom-width-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="custom-width-modalLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h4 class="modal-title" id="custom-width-modalLabel">View More Details : <span id="view_title_name"></span></h4>
+                            </div>
+                            <div class="modal-body">
+                              <div id="user-details-modal"></div>  
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.modal -->                      
+            </div>
+
+        </div>
+        <!-- END wrapper -->
+		<footer class="footer">
+	        <div class="container-fluid">
+	            <div class="row">
+	                <div class="col-sm-6">
+	                    <script>document.write(new Date().getFullYear())</script> © Aimtechnolabs.
+	                </div>
+	                <div class="col-sm-6">
+	                    <div class="text-sm-right d-none d-sm-block">
+	                        Design & Develop by Aimtechnolabs.com
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </footer>
+        <script>
+            var resizefunc = [];
+        </script>
+        
+        <script th:inline="javascript">
+			/*<![CDATA[*/
+			var context = [[@{/}]];
+				/*]]>*/
+		</script>
+        
+        <!-- jQuery  -->
+        <script th:src="@{/assets/js/jquery.min.js}"></script>
+        <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+        <script th:src="@{/assets/js/detect.js}"></script>
+        <script th:src="@{/assets/js/fastclick.js}"></script>
+        <script th:src="@{/assets/js/jquery.blockUI.js}"></script>
+        <script th:src="@{/assets/js/waves.js}"></script>
+        <script th:src="@{/assets/js/jquery.slimscroll.js}"></script>
+        <script th:src="@{/assets/js/jquery.scrollTo.min.js}"></script>
+        <script th:src="@{/assets/plugins/switchery/switchery.min.js}"></script>
+
+        <script th:src="@{/assets/js/jquery.app.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+       	<script th:src="@{/assets/js/javascript/admin-time-sheet.js}"></script>
+       	<script th:src="@{/assets/js/javascript/user-detail.js}"></script>
+       	<th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

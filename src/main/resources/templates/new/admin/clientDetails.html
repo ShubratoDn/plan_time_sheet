@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!-- App favicon -->
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- App title -->
+        <title>Monthly hours summary</title>
+		<link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+
+ 		<!-- Responsive datatable examples -->
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+        <style>
+        #datatable thead th {
+    		vertical-align: middle !important;
+    	}
+        </style>
+    </head>
+
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			
+			<th:block th:replace="new/user/header :: header"></th:block>
+			
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="vertical-menu">
+
+                <div data-simplebar class="h-100">
+					
+					<th:block th:replace="new/admin/menu :: menu"></th:block>
+					
+                </div>
+            </div>
+            <!-- Left Sidebar End -->
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+
+                <div class="page-content">
+                    <div class="container-fluid">
+                        <!-- start page title -->
+                        <div class="row">
+                            <div class="col-sm-12" style="float: right;">
+                                <div class="page-title-box d-flex align-items-center justify-content-between">
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            <li class="breadcrumb-item">
+	                                            <a th:href="@{/admin/user-list}">Users</a>
+	                                        </li>
+	                                        <li class="breadcrumb-item">
+	                                            <a href="#" th:text="${userDetail.user.firstName + ' ' + userDetail.user.lastName}"> </a>
+	                                        </li>
+<!-- 	                                        <li class="breadcrumb-item"> -->
+<!-- 	                                        	<a th:href="@{'/admin/user-detail/client/' + ${userDetail.userdetailsId} }"></a> -->
+<!-- 	                                        </li> -->
+	                                        <li class="breadcrumb-item active">
+	                                            Client Details
+	                                        </li>
+                                        </ol>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+						<th:block th:replace="new/admin/hour-log :: user-detail"></th:block>
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+										<p>
+                                            <b scope="row">Client Name : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${clientAddDetail.clientName}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">Phone : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${clientAddDetail.phone}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">ZipCode : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${clientAddDetail.zipCode}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">Address : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${clientAddDetail.address}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">Remark :</b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${clientAddDetail.remark}"></span>
+                                        </p>
+									</div>
+									<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+										<table id="datatable1"
+											class="table table-responsive"
+											style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+											<thead>
+												<tr>
+													<th>No</th>
+		                                            <th>Name</th>
+		                                            <th>Email</th>
+		                                            <th>Phone</th>
+		                                            <th>Department</th>
+		                                            <th>Actions</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr class="odd gradeX" th:each="managerDetail,index : ${clientAddDetail.managerDetails}">
+		                                            <td th:text="${index.index + 1}"></td>
+		                                            <td th:text="${managerDetail.managerName}"></td>
+		                                            <td th:text="${managerDetail.email}"></td>
+		                                            <td th:text="${managerDetail.phone}"></td>
+		                                            <td th:text="${managerDetail.department}"></td>
+		                                            <td>
+		                                            	
+		                                           	</td>
+		                                        </tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+								
+							</div>
+						</div>
+						<div class="card" th:if="${vendorAddDetails}">
+							<div class="card-body">
+								<h4><u>Vendor</u></h4>
+								<div class="row">
+									<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+										<p>
+                                            <b scope="row">Vendor Name : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${vendorAddDetails.clientName}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">Phone : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${vendorAddDetails.phone}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">ZipCode : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${vendorAddDetails.zipCode}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">Address : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${vendorAddDetails.address}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">Remark :</b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${vendorAddDetails.remark}"></span>
+                                        </p>
+									</div>
+									<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+										<table id="datatable2"
+											class="table table-responsive"
+											style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+											<thead>
+												<tr>
+													<th>No</th>
+		                                            <th>Name</th>
+		                                            <th>Email</th>
+		                                            <th>Phone</th>
+		                                            <th>Department</th>
+		                                            <th>Actions</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr class="odd gradeX" th:each="managerDetail,index : ${vendorAddDetails.managerDetails}">
+		                                            <td th:text="${index.index + 1}"></td>
+		                                            <td th:text="${managerDetail.managerName}"></td>
+		                                            <td th:text="${managerDetail.email}"></td>
+		                                            <td th:text="${managerDetail.phone}"></td>
+		                                            <td th:text="${managerDetail.department}"></td>
+		                                            <td>
+		                                            	
+		                                           	</td>
+		                                        </tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+								
+							</div>
+						</div>
+						<div class="card" th:if="${employerAddDetails}">
+							<div class="card-body">
+								<h4><u>Employer</u></h4>
+								<div class="row">
+									<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+										<p>
+                                            <b scope="row">Employer Name : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${employerAddDetails.clientName}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">Phone : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${employerAddDetails.phone}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">ZipCode : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${employerAddDetails.zipCode}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">Address : </b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${employerAddDetails.address}"></span>
+                                        </p>
+										<p>
+                                            <b scope="row">Remark :</b>
+                                            <span style="white-space: pre-line; word-break: break-all" th:text="${employerAddDetails.remark}"></span>
+                                        </p>
+									</div>
+									<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+										<table id="datatable3"
+											class="table table-responsive"
+											style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+											<thead>
+												<tr>
+													<th>No</th>
+		                                            <th>Name</th>
+		                                            <th>Email</th>
+		                                            <th>Phone</th>
+		                                            <th>Department</th>
+		                                            <th>Actions</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr class="odd gradeX" th:each="managerDetail,index : ${employerAddDetails.managerDetails}">
+		                                            <td th:text="${index.index + 1}"></td>
+		                                            <td th:text="${managerDetail.managerName}"></td>
+		                                            <td th:text="${managerDetail.email}"></td>
+		                                            <td th:text="${managerDetail.phone}"></td>
+		                                            <td th:text="${managerDetail.department}"></td>
+		                                            <td>
+		                                            	
+		                                           	</td>
+		                                        </tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+								
+							</div>
+						</div>
+                    </div>
+               	</div>
+			</div>
+       	</div>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			/*]]>*/
+		</script>
+		
+        <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+ <!-- Required datatable js -->
+        <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+        
+        <!-- Responsive examples -->
+        <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+       
+        <!-- Datatable init js -->
+		<script>
+			$(document).ready(function () {
+			    $("#datatable1").DataTable();
+			    $("#datatable2").DataTable();
+			    $("#datatable3").DataTable();
+			});
+		</script>  
+        <script th:src="@{/assets_new/js/app.js}"></script>
+		<th:block th:replace="new/genaralMailSend/genaral-mail-send :: mailSend" th:if="${session.user.role == 'ROLE_ADMIN' || session.user.role == 'ROLE_SUPERVISOR'}"></th:block>
+    </body>
+</html>

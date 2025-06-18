@@ -1,0 +1,54 @@
+<!-- ========== Left Sidebar Start ========== -->
+<div class="left side-menu" th:fragment="menu">
+    <div class="sidebar-inner slimscrollleft">
+
+        <!--- Sidemenu -->
+        <div id="sidebar-menu">
+            <ul>
+                <li class="has_sub">
+                    <a th:href="@{/user/home}" class="waves-effect">
+                    	<i class="mdi mdi-view-dashboard"></i>
+                    	<span th:text="#{dashboard}"> Dashboard </span> 
+                    </a>
+                </li>
+                <li class="has_sub">
+                    <a th:href="@{/user/add-time-sheet}" class="waves-effect">
+                    	<i class="mdi mdi-timetable"></i>
+                    	<span> Add time sheet </span> 
+                    </a>
+                </li>
+                <li class="has_sub">
+                    <a th:href="@{/user/submitted-timesheet}" class="waves-effect">
+                    	<i class="mdi mdi-table-large"></i>
+                    	<span> Submitted timesheet </span> 
+                    </a>
+                </li>
+                <li class="has_sub">
+                    <a th:href="@{/user/report}" class="waves-effect">
+                    	<i class="mdi mdi-book"></i>
+                    	<span> Report </span> 
+                    </a>
+                </li>
+
+<!--                 <li class="has_sub"> -->
+<!--                     <a href="javascript:void(0);" class="waves-effect"> -->
+<!-- 	                    <i class="mdi mdi-file"></i><span> Hours Log </span>  -->
+<!-- 	                    <span class="menu-arrow"></span> -->
+<!--                    	</a> -->
+<!--                     <ul class="list-unstyled"> -->
+<!--                         <li><a th:href="@{/user/add-hours}">Add Hours</a></li> -->
+<!--                     </ul> -->
+<!--                 </li> -->
+            </ul>
+        </div>
+        <!-- Sidebar -->
+        <div class="clearfix"></div>
+
+        <div class="help-box">
+            <h5 class="text-muted m-t-0">For Help ?</h5>
+            <p class=""><span class="text-dark"><b>Email:</b></span> <br/> <th:block th:text="#{help.email}"></th:block></p>
+        </div>
+
+    </div>
+
+</div>

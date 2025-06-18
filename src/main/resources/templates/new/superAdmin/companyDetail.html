@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Add Company</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="TimeSheet" name="description">
+        <meta content="TimeSheet" name="author">
+        <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+        <!-- Bootstrap Css -->
+        <link th:href="@{/assets_new/css/bootstrap.min.css}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link th:href="@{/assets_new/css/icons.min.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets_new/css/app.min.css}" id="app-style" rel="stylesheet" type="text/css" />
+
+        <link th:href="@{/assets_new/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/assets_new/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />     
+        
+        <link th:href="@{/assets_new/css/page/adminHome.css}" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" th:href="@{/assets_new/libs/summernote/summernote-bs4.min.css}">
+        
+		<style>
+			.validation-message{width: 100%;
+			    margin-top: .25rem;
+			    font-size: 80%;
+			    color: #f46a6a;
+			 }
+			input[name=limit] ~ .card{
+				box-shadow: 0 0.75rem 1.5rem rgba(18,38,63,.03);
+				border: 1px solid grey;
+				cursor: pointer;
+				background-color: #f5f5f8;
+			}
+			input[name=limit]:checked ~ .card{
+				border: 2px solid #556ee6;
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px'%0Awidth='80' height='80'%0AviewBox='0 0 172 172'%0Astyle=' fill:%23000000;'%3E%3Cg fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'%3E%3Cpath d='M0,172v-172h172v172z' fill='none'%3E%3C/path%3E%3Cg fill='%23556ee6'%3E%3Cpath d='M138.18229,37.84896l-73.68229,73.68229l-30.68229,-30.68229l-10.30208,10.30208l35.83333,35.83333l5.15104,4.92708l5.15104,-4.92708l78.83333,-78.83333z'%3E%3C/path%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+				background-repeat: no-repeat;
+    			background-size: 35px;
+    			background-position: 100% -3px;
+			}
+		</style>
+    </head>
+
+    <body data-sidebar="dark" class="sidebar-enable vertical-collpsed">
+
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+			
+			<th:block th:replace="new/user/header :: header"></th:block>
+			
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="vertical-menu">
+
+                <div data-simplebar class="h-100">
+					
+					<th:block th:replace="new/superAdmin/menu :: menu"></th:block>
+					
+                </div>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid" th:if="${company == null}">
+                    	<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 align-items-center justify-content-between">
+                    		<div class="text-center" >
+                    			<img th:src="@{/assets_new/images/sad.svg}" style="max-width: 400px;width: 100%;" alt="sad" class="">
+                    			<h2>Company not found</h2>
+                    		</div>
+                    	</div>
+                    </div>
+                    <div class="container-fluid" th:if="${company != null}">
+						<!-- start page title -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box d-flex align-items-center justify-content-between">
+                                    <h4 class="mb-0 font-size-18">Company</h4>
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            <li class="breadcrumb-item"><a th:href="@{/admin/home}">Dashboards</a></li>
+                                            <li class="breadcrumb-item active">Company Details</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+                        <div class="card">
+                        	<div class="card-body">
+                                        
+                               <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}">
+		                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		                                <span aria-hidden="true">×</span>
+		                            </button>
+		                            <strong>Oh snap!</strong> <th:block th:text="${error}"></th:block>
+		                        </div>
+		                        <div class="alert alert-success alert-dismissible" role="alert" th:if="${success}">
+		                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		                                <span aria-hidden="true">×</span>
+		                            </button>
+		                            <strong>Success</strong> <th:block th:text="${success}"></th:block>
+		                        </div> 	                        
+		                        
+		                        <div id="company-edit-form">
+									<form id="company-edit-id" th:action="@{/super-admin/edit-company}" th:object="${company}" method="post" class="custom-validation needs-validation" data-parsley-validate novalidate>
+										<div class="row">
+                                		<div class="col-12 col-sm-12 col-md-6 col-lg-6">
+	                                    	<div class="form-group">
+		                                        <label for="userName">Name<span class="text-danger">*</span></label>
+		                                        <input type="text" th:field="*{name}" parsley-trigger="change" required data-parsley-maxlength="50"
+		                                                 placeholder="Enter name" class="form-control">
+		                                        <input type="hidden" th:field="*{id}">
+		                                        <input type="hidden" th:field="*{urlSlug}">
+		                                        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="validation-message"></div>
+		                                        <div class="validation-message" th:if="${not #strings.isEmpty(nameError)}" th:text="${nameError}"></div>
+		                                    </div>
+                                  		</div>
+                                        <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+		                                    <div class="form-group">
+		                                    	<label for="emailAddress">Address (street, city, zipcode, ext.) <span class="text-danger">*</span></label>
+		                                        <input type="text" th:field="*{address}" parsley-trigger="change" required
+		                                                 placeholder="Enter address" class="form-control" data-parsley-maxlength="200">
+		                                        <div	th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="validation-message"></div>
+		                                    </div>
+	                                   </div>
+	                                   
+	                                   <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+									  		<div class="form-group">
+									        	<label for="name">File folder<span class="text-danger">*</span></label>
+									           	<input th:if="${folderExists == false}" type="text" th:field="*{fileFolder}" parsley-trigger="change" required
+									                    placeholder="Enter file folder" class="form-control" data-parsley-maxlength="12"  
+									                    data-parsley-pattern="^[A-Za-z0-9_]*$" data-parsley-pattern-message="Invalid name, use only character and number" data-parsley-minlength="2">
+									           	<div th:if="${folderExists == true}" th:text="${company.fileFolder}" class="form-control mb-1"> </div>
+									           	<p><sup class="text-grey" th:if="${folderExists == true}">You can not change </sup></p>
+										 		<input th:if="${folderExists == true}" type="hidden" th:field="*{fileFolder}">
+										 		<div class="validation-message" th:if="${not #strings.isEmpty(fileNameError)}" th:text="${fileNameError}"></div>
+										 	</div>
+										</div>
+	                                   
+                                        <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+		                                    <div class="form-group">
+		                                    	<label for="emailAddress">Details<span class="text-danger">*</span></label>
+		                                        <textarea th:field="*{details}" parsley-trigger="change" required data-parsley-maxlength="250"
+		                                                 placeholder="Enter details" class="form-control"></textarea>
+		                                        <div	th:if="${#fields.hasErrors('details')}" th:errors="*{details}" class="validation-message"></div>
+		                                    </div>
+	                                   </div>
+                                    </div>
+										<div class="form-group text-center">
+										    <button th:if="${company.varify}" class="btn btn-primary waves-effect waves-light" type="submit">
+										        Edit
+										    </button>
+										    <button class="btn btn-danger waves-effect m-l-5" type="button"
+													onclick="window.history.go(-1); return false;">
+										        Cancel
+										    </button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-body">
+							
+								<ul class="nav nav-tabs" role="tablist">
+                                  <li class="nav-item">
+                                      <a class="nav-link active" data-toggle="tab" href="#home" role="tab">
+                                          <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                                          <span class="d-none d-sm-block">Access plan</span>    
+                                      </a>
+                                  </li>
+                                  <li class="nav-item">
+                                      <a class="nav-link" data-toggle="tab" href="#profile" role="tab">
+                                          <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
+                                          <span class="d-none d-sm-block">Company user list</span>    
+                                      </a>
+                                  </li>
+                              </ul>
+							<div class="tab-content p-3 text-muted">
+                                            <div class="tab-pane active" id="home" role="tabpanel">
+                                               <div id="permission_error"></div>
+												  <form id="form" th:action="@{'/super-admin/access-plan/'+${company.id}}">
+													<table 
+														class="table table-bordered table-responsive nowrap">
+														<thead>
+															<tr>
+																<td>User can login</td>
+																<td>
+																	<input type="checkbox" name="userCanLogin" id="switch3" switch="bool" 
+																	th:checked="${permissionPlan.userCanLogin}" value="true"/>
+					                                               	<label for="switch3" data-on-label="Yes" data-off-label="No"></label>
+					                                           	</td>
+															</tr>
+															<tr>
+																<td>Commission</td>
+																<td>
+																	<input type="checkbox" id="switch1" switch="bool" name="commission" 
+																	th:checked="${permissionPlan.commission}" value="true"/>
+					                                               	<label for="switch1" data-on-label="Yes" data-off-label="No"></label>
+					                                           	</td>
+															</tr>
+															<tr>
+																<td>Schedular can set</td>
+																<td>
+																	<input type="checkbox" id="switch2" switch="bool" 
+																	name="schedularCanSet" value="true" th:checked="${permissionPlan.schedularCanSet}"/>
+					                                               	<label for="switch2" data-on-label="Yes" data-off-label="No"></label>
+					                                           	</td>
+															</tr>
+															<tr>
+																<td>Template can add</td>
+																<td>
+																	<input type="checkbox" id="switch4" switch="bool" value="true"
+																	name="templateCanSet" th:checked="${permissionPlan.templateCanSet}"/>
+					                                               	<label for="switch4" data-on-label="Yes" data-off-label="No"></label>
+					                                           	</td>
+															</tr>
+															<tr>
+																<td>QB integration</td>
+																<td>
+																	<input type="checkbox" id="switch5" switch="bool" value="true"
+																	name="qbIntegration" th:checked="${permissionPlan.qbIntegration}"/>
+					                                               	<label for="switch5" data-on-label="Yes" data-off-label="No"></label>
+					                                           	</td>
+															</tr>
+															<tr>
+																<td>User limit</td>
+																<td> <h4> 
+																	 <span id="limitId" th:text="${permissionPlan.userLimit}"></span>
+																	 <input type="hidden" id="userLimitId" name="userLimit" th:value="${permissionPlan.userLimit}">
+																	 <button style="border-radius: 50%;" type="button" class="ml-5 pt-2 pb-2 btn btn-primary waves-effect waves-light" data-toggle="modal" data-target=".bs-example-modal-sm">
+																		<i class="bx bx-plus-medical"></i>
+																	 </button>
+																	 </h4>
+					                                           	</td>
+															</tr>
+															<tr>
+																<td colspan="2"><button  class="btn btn-primary waves-effect waves-light" type="submit">Save</button></td>
+																
+															</tr>
+														</thead>
+													</table>
+													</form>
+													
+                                            </div>
+                                            <div class="tab-pane" id="profile" role="tabpanel">
+                                                 <table id="datatable"
+													class="table table-bordered table-responsive nowrap">
+													<thead>
+														<tr>
+															<th>No</th>
+				                                            <th>Name</th>
+				                                            <th>Email</th>
+				                                            <th>Role</th>
+				<!-- 	                                            <th>Actions</th> -->
+														</tr>
+													</thead>
+													<tbody>
+														<tr class="odd gradeX" th:each="uCompany,index : ${userCompanyList}">
+				                                            <td th:text="${index.index + 1}"></td>
+				                                            <td th:text="${uCompany.user.firstName + ' ' + uCompany.user.lastName}"></td>
+				                                            <td th:text="${uCompany.user.email}"></td>
+				                                            <td>
+				                                            	<span th:if="${uCompany.role =='ROLE_ADMIN'}">Admin</span>
+				                                            	<span th:if="${uCompany.role =='ROLE_USER'}">User</span>
+				                                            	<span th:if="${uCompany.role =='ROLE_SUPERVISOR'}"> Supervisor</span>
+				                                            </td>
+				                                            
+				                                        </tr>
+													</tbody>
+												</table>
+                                            </div>
+                             </div>
+							
+								
+							</div>
+						</div>
+                     </div>
+                  </div> <!-- container -->
+             </div> <!-- content -->
+        </div>
+        <div id="modalUser" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-modal="true">
+           <div class="modal-dialog modal-sm">
+               <div class="modal-content">
+                   <div class="modal-header">
+                       <h5 class="modal-title mt-0" id="mySmallModalLabel">User limit set</h5>
+                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                           <span aria-hidden="true">×</span>
+                       </button>
+                   </div>
+                   <div class="modal-body">
+                       <div class="col-12 col-sm-12">
+                       		<div class="row">
+	                       		<div class="col-sm-12 mb-5">
+	                       			<select class="form-control" id="setUserlimit">
+	                       				<option value="">Select user limits</option>
+	                       				<option value=5>5</option>
+	                       				<option value=10>10</option>
+	                       				<option value=20>20</option>
+	                       				<option value=30>30</option>
+	                       				<option value=40>40</option>
+	                       			</select>
+	                       		</div>
+	                       		<div class="col-sm-6">
+                       				<button type="button" onclick="setUserLimitAdd()" class="col-sm-12 btn btn-primary waves-effect waves-light">
+										 Add
+									</button>
+                       			</div>
+                       			<div class="col-sm-6">
+                       				<button type="button" onclick="setUserLimitRemove()" class="col-sm-12 btn btn-primary waves-effect waves-light">
+									 	Remove
+									</button>
+                       			</div>
+                       			
+                       		</div>
+                       </div>
+                   </div>
+               </div><!-- /.modal-content -->
+           </div><!-- /.modal-dialog -->
+       </div>
+       
+
+
+        
+        <script th:inline="javascript">
+		/*<![CDATA[*/
+			var context = [[@{/}]];
+			var companyId = [[${company.id}]];
+			var currentUser = [[${#lists.size(userCompanyList)}]];
+			/*]]>*/
+		</script>
+        <!-- JAVASCRIPT -->
+        <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets_new/libs/metismenu/metisMenu.min.js}"></script>
+        <script th:src="@{/assets_new/libs/simplebar/simplebar.min.js}"></script>
+        <script th:src="@{/assets_new/libs/node-waves/waves.min.js}"></script>
+		
+		<script th:src="@{/assets_new/libs/parsleyjs/parsley.min.js}"></script>
+        <script th:src="@{/assets_new/js/pages/form-validation.init.js}"></script>
+        <script th:src="@{/assets_new/js/app.js}"></script>
+        
+		<!-- Required datatable js -->
+        <script th:src="@{/assets_new/libs/datatables.net/js/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js}"></script>
+        
+        <!-- Responsive examples -->
+        <script th:src="@{/assets_new/libs/datatables.net-responsive/js/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets_new/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js}"></script>
+       
+		<!-- Datatable init js -->
+        <script th:src="@{/assets_new/js/companyDetails.js}"></script>  
+    </body>
+</html>
