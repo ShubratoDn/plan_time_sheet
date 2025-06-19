@@ -1,11 +1,9 @@
 package com.aim.repository;
 
-import javax.transaction.Transactional;
-
+import com.aim.entity.Company;
+import jakarta.transaction.Transactional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-
-import com.aim.entity.Company;
 
 @Repository
 @Transactional

@@ -1,98 +1,100 @@
 package com.aim.config;
 
-import javax.sql.DataSource;
-
+import com.aim.config.security.CustomUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.client.RestTemplate;
+
+import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+public class SecurityConfiguration {
 
 	@Autowired
 	private DataSource dataSource;
-	
-	@Value("${spring.queries.users-query}")
-	private String usersQuery;
-	
-	@Value("${spring.queries.roles-query}")
-	private String rolesQuery;
 
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth)
-			throws Exception {
-		auth.
-			jdbcAuthentication()
-				.usersByUsernameQuery(usersQuery)
-				.authoritiesByUsernameQuery(rolesQuery)
-				.dataSource(dataSource)
-				.passwordEncoder(bCryptPasswordEncoder);
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		
-		http.
-			authorizeRequests()
-				.antMatchers("/").permitAll()
-				.antMatchers("/registration").permitAll()
-				.antMatchers("/login").permitAll()
-				.antMatchers("/company/active").permitAll()
-				.antMatchers("/admin-signup").permitAll()
-				.antMatchers("/user/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR","ROLE_USER")
-				.antMatchers("/admin/mail/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/activity/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/add-user/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/user-list/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/internal-user/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/edit/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/deactive/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/active/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/template/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/user-detail/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/new-client-add/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/get-client/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/get-employer/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/get-vendor/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/set-internal-user/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/add-user-detail/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/basic-detail/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-				.antMatchers("/super-admin/**").hasAuthority("ROLE_SUPER_ADMIN")
-				.antMatchers("/supervisor/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SUPERVISOR")
-				.antMatchers("/change-pass/**").permitAll()
-				.antMatchers("/active").permitAll()
-				.antMatchers("/active/new-company").permitAll()
-				.antMatchers("/forgot-password/**").permitAll()
-				.antMatchers("/file/**").permitAll()
-				.anyRequest()
-				.authenticated().and().csrf().disable().formLogin()
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http
+			.csrf(csrf -> csrf.disable())
+			.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/", "/registration", "/login", "/company/active", "/admin-signup", "/change-pass/**", "/active", "/active/new-company", "/forgot-password/**", "/file/**", "/resources/**", "/static/**", "/css/**", "/js/**", "/scss/**", "/images/**", "/assets/**", "/assets_new/**").permitAll()
+				.requestMatchers("/user/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPERVISOR", "ROLE_USER")
+				.requestMatchers("/admin/mail/**", "/admin/activity/**", "/admin/add-user/**", "/admin/user-list/**", "/admin/internal-user/**", "/admin/edit/**", "/admin/deactive/**", "/admin/active/**", "/admin/template/**", "/admin/user-detail/**", "/admin/new-client-add/**", "/admin/get-client/**", "/admin/get-employer/**", "/admin/get-vendor/**", "/admin/set-internal-user/**", "/admin/add-user-detail/**", "/admin/basic-detail/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPERVISOR")
+				.requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+				.requestMatchers("/super-admin/**").hasAuthority("ROLE_SUPER_ADMIN")
+				.requestMatchers("/supervisor/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPERVISOR")
+				.anyRequest().authenticated()
+			)
+			.formLogin(form -> form
 				.loginPage("/login").failureUrl("/login?error=true")
-				.defaultSuccessUrl("/default",true)
+				.defaultSuccessUrl("/default", true)
 				.usernameParameter("email")
 				.passwordParameter("password")
-				.and().logout()
+				.permitAll()
+			)
+			.logout(logout -> logout
 				.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-				.logoutSuccessUrl("/login").and().exceptionHandling()
-				.accessDeniedPage("/access-denied");
-	}
-	
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-	    web
-	       .ignoring()
-	       .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**","/scss/**", "/images/**", "/assets/**", "/assets_new/**");
+				.logoutSuccessUrl("/login")
+				.permitAll()
+			)
+			.exceptionHandling(ex -> ex
+				.accessDeniedPage("/access-denied")
+			);
+
+		http.authenticationProvider(authenticationProvider());
+		return http.build();
 	}
 
+//	@Bean
+//	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+//		return authenticationConfiguration.getAuthenticationManager();
+//	}
+//
+//	@Bean
+//	public UserDetailsService userDetailsService(CustomUserDetailsServiceImpl customUserDetailsService) {
+//		return customUserDetailsService;
+//	}
+
+	@Autowired
+	private CustomUserDetailsServiceImpl userDetailsServiceImple;
+
+
+	@Bean
+	public DaoAuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+		daoAuthenticationProvider.setUserDetailsService(userDetailsServiceImple);
+		daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+
+		return daoAuthenticationProvider;
+	}
+
+
+	// Configure and return authentication manager
+	// Declare this Bean, it will needed for JWT Authentication while Login. Check Login auth controller
+	@Bean
+	AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
+
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
 }

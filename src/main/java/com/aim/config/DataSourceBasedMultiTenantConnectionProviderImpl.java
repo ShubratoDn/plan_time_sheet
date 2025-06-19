@@ -3,7 +3,7 @@ package com.aim.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.hibernate.engine.jdbc.connections.spi.AbstractDataSourceBasedMultiTenantConnectionProviderImpl;
@@ -42,7 +42,8 @@ public class DataSourceBasedMultiTenantConnectionProviderImpl extends AbstractDa
     }
     
     @Override
-    protected DataSource selectDataSource(String tenantIdentifier) {
+    protected DataSource selectDataSource(Object tenantIdentifierObj) {
+        String tenantIdentifier = tenantIdentifierObj.toString();
         if (!init) {
             init = true;
 //            TenantDataSource tenantDataSource = context.getBean(TenantDataSource.class);

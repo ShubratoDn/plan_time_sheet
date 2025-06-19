@@ -11,14 +11,14 @@
 	<properties>
 		<env>dev</env>
 		<jdk.version>17</jdk.version>
-		<spring-boot.version>2.7.18</spring-boot.version>
+		<spring-boot.version>3.2.6</spring-boot.version>
 	</properties>
 
 	<!-- Inherit defaults from Spring Boot -->
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.18</version>
+		<version>3.2.6</version>
 		<relativePath/>
 	</parent>
 
@@ -118,9 +118,9 @@
 
 		<!-- JAXB API - Updated for Java 17 compatibility -->
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.1</version>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>4.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
