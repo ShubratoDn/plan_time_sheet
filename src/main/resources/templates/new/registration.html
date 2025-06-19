@@ -86,7 +86,7 @@
 			                            </button>
 			                            <strong>Success</strong> <th:block th:text="${success}"></th:block>
 			                        </div>
-                                    <form class="form-horizontal" th:class="${captchaErrorMsg}?'captchErrorClass'" th:action="@{/registration}" th:object="${company}" method="post" class="needs-validation" data-parsley-validate novalidate>
+                                    <form th:class="${captchaErrorMsg}?'captchErrorClass'" th:action="@{/registration}" th:object="${company}" method="post" class="needs-validation" data-parsley-validate novalidate>
             							
                                         <div class="row">
 	                                        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
