@@ -267,13 +267,16 @@
 					                          		<span th:if="${hour.userDetails.ptax != 0.0}">W2 Consultant</span>
 					                          		<span th:if="${hour.userDetails.ptax == 0.0}">C2C Consultant</span>
 					                          	</td>
-		                          				<td>
-		                          					<a data-toggle="modal" data-target="#custom-width-modal" 
-		                          						th:onclick="'bacisDetails(\'' + ${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName} + '\','+ ${hour.userDetails.userDetailId} + ')'">
-		                          						<i class="fas fa-info-circle" style="color: orange; font-size: 20px;" 
-		                          						data-toggle="tooltip" title="Basic Details"></i></a>
-		                          				</td>
-	                     					</tr>
+												<td>
+													<a data-toggle="modal" data-target="#custom-width-modal"
+													   th:attr="data-username=${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName},
+                data-userid=${hour.userDetails.userDetailId}"
+													   onclick="handleBasicDetails(this)">
+														<i class="fas fa-info-circle" style="color: orange; font-size: 20px;"
+														   data-toggle="tooltip" title="Basic Details"></i>
+													</a>
+												</td>
+											</tr>
 	                                    </tbody>
 	                                </table>
                              	</div>
@@ -345,6 +348,14 @@
 			var extra = [[${adminUserHoursChart.extra}]];
 			var vacation = [[${adminUserHoursChart.vacation}]];
 			/*]]>*/
+		</script>
+
+		<script>
+			function handleBasicDetails(el) {
+				const name = el.getAttribute("data-username");
+				const id = el.getAttribute("data-userid");
+				bacisDetails(name, id);
+			}
 		</script>
 
 		<script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>

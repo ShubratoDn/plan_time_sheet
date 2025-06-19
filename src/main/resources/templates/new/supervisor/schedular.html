@@ -210,12 +210,21 @@
 								   					<td class="p-0 m-0"> 
 								   						<b th:text="${month.month.displayLabel}"></b>
 								   					</td>
-								   					<td class="p-0 m-0" th:each="day:${month.calendarResponse}" th:attr="data-datestartvalue=${day.dateFormate},
-								   						data-weekday=${day.weekday},data-off=${day.offDay}" th:id="${'id_'+day.dateFormate+'_'+month.month.urlParam}" 
-								   						th:classappend="${day.dateFormate != null}?'dateRoundBox':''"
-								   						th:onclick="|datePopover(${day.dateFormate}, ${month.month.urlParam}, ${selectedYear}, this)|">
-								   						<span class="" th:if="${day.dateFormate != null}" th:text="${day.dateFormate}"></span>
-								   					</td>
+													<td class="p-0 m-0"
+														th:each="day : ${month.calendarResponse}"
+														th:attr="data-datestartvalue=${day.dateFormate},
+																 data-weekday=${day.weekday},
+																 data-off=${day.offDay},
+																 data-date=${day.dateFormate},
+																 data-month=${month.month.urlParam},
+																 data-year=${selectedYear}"
+														th:id="${'id_' + day.dateFormate + '_' + month.month.urlParam}"
+														th:classappend="${day.dateFormate != null} ? 'dateRoundBox' : ''"
+														onclick="handleDatePopover(this)">
+
+														<span th:if="${day.dateFormate != null}" th:text="${day.dateFormate}"></span>
+													</td>
+
 								   				</tr>
 								   			</tbody>
 		                      			</table>
@@ -362,6 +371,16 @@
 			var permission = [[${permissionService.getPermissionPlan().schedularCanSet}]];
 		/*]]>*/
         </script>
+
+		<script>
+			function handleDatePopover(el) {
+				const date = el.getAttribute("data-date");
+				const month = el.getAttribute("data-month");
+				const year = el.getAttribute("data-year");
+
+				datePopover(date, month, year, el);
+			}
+		</script>
         <!-- jQuery  -->
         <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
         <script th:src="@{/assets_new/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>

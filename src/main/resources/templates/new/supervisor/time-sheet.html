@@ -245,19 +245,25 @@
 																		<i class="fas fa-download" style="font-size: 17px;"
 																		data-toggle="tooltip" data-placement="left"
 																		title="Download"></i>
-																	</a> <a data-toggle="modal"
-																		data-target="#custom-width-modal"
-																		th:onclick="'bacisDetails(\'' + ${hourLogFile.userDetail.user.firstName + ' ' + hourLogFile.userDetail.user.lastName + ' / ' + hourLogFile.userDetail.clientName} + '\',' + ${hourLogFile.userDetail.userDetailId} + ')'">
-																		<i class="fas fa-info-circle"
-																		style="color: orange; font-size: 20px;"
-																		data-toggle="tooltip" title="Basic Details"></i>
 																	</a>
-																	
+																	<a data-toggle="modal"
+																	   data-target="#custom-width-modal"
+																	   th:attr="data-username=${hourLogFile.userDetail.user.firstName + ' ' + hourLogFile.userDetail.user.lastName + ' / ' + hourLogFile.userDetail.clientName},
+            data-userid=${hourLogFile.userDetail.userDetailId}"
+																	   onclick="handleBasicDetails(this)">
+																		<i class="fas fa-info-circle"
+																		   style="color: orange; font-size: 20px;"
+																		   data-toggle="tooltip" title="Basic Details"></i>
+																	</a>
+
 																	<a data-toggle="modal" data-target="#file-view-model"
-																		th:onclick="'fileView(\'' + ${hourLogFile.id} + '\', \'' + ${hourLogFile.filePath} + '\')'"><i
-																		class="fa fa-eye" style="font-size: 20px;"
-																		data-toggle="tooltip" data-placement="right"
-																		title="File View"></i></a>
+																	   th:attr="data-id=${hourLogFile.id}, data-path=${hourLogFile.filePath}"
+																	   onclick="handleFileView(this)">
+																		<i class="fa fa-eye" style="font-size: 20px;"
+																		   data-toggle="tooltip" data-placement="right"
+																		   title="File View"></i>
+																	</a>
+
 
 																	<th:block
 																		th:if="${#strings.equals(selectedSort.urlParam,'rejected')}">
@@ -453,6 +459,19 @@
 				var companyUrl = [[${session.company.urlSlug}]];
 				/*]]>*/
 		</script>
+
+			<script>
+				function handleBasicDetails(el) {
+					const name = el.getAttribute("data-username");
+					const id = el.getAttribute("data-userid");
+					bacisDetails(name, id);
+				}
+				function handleFileView(el) {
+					const id = el.getAttribute("data-id");
+					const path = el.getAttribute("data-path");
+					fileView(id, path);
+				}
+			</script>
 
 			<!-- jQuery  -->
 			<script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>

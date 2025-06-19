@@ -372,9 +372,28 @@
 						                               	<td th:text="${index.index + 1}"></td>
 						                               	<td>
 															<div>
-						                              			<a data-toggle="modal" data-target="#custom-hours-modal" th:onclick="'hoursDetails(\'' + ${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName} + '\','+ ${hour.userDetails.userDetailId} + ')'"><i class="far fa-calendar-alt" style="color: orange; font-size: 20px;" data-toggle="tooltip" title="Hours Details"></i></a>
-						                              			<a data-toggle="modal" data-target="#custom-width-modal" th:onclick="'bacisDetails(\'' + ${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName} + '\','+ ${hour.userDetails.userDetailId} + ')'"><i class="fas fa-info-circle" style="color: orange; font-size: 20px;" data-toggle="tooltip" title="Basic Details"></i></a>
-						                          			</div>
+<!--						                              			<a data-toggle="modal" data-target="#custom-hours-modal" th:onclick="'hoursDetails(\'' + ${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName} + '\','+ ${hour.userDetails.userDetailId} + ')'"><i class="far fa-calendar-alt" style="color: orange; font-size: 20px;" data-toggle="tooltip" title="Hours Details"></i></a>-->
+<!--						                              			<a data-toggle="modal" data-target="#custom-width-modal" th:onclick="'bacisDetails(\'' + ${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName} + '\','+ ${hour.userDetails.userDetailId} + ')'"><i class="fas fa-info-circle" style="color: orange; font-size: 20px;" data-toggle="tooltip" title="Basic Details"></i></a>-->
+
+																<a
+																		data-toggle="modal"
+																		data-target="#custom-hours-modal"
+																		th:attr="data-username=${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName},
+             data-userid=${hour.userDetails.userDetailId}"
+																		onclick="handleHoursDetails(this)">
+																	<i class="far fa-calendar-alt" style="color: orange; font-size: 20px;" data-toggle="tooltip" title="Hours Details"></i>
+																</a>
+
+																<a
+																		data-toggle="modal"
+																		data-target="#custom-width-modal"
+																		th:attr="data-username=${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName},
+             data-userid=${hour.userDetails.userDetailId}"
+																		onclick="handleBasicDetails(this)">
+																	<i class="fas fa-info-circle" style="color: orange; font-size: 20px;" data-toggle="tooltip" title="Basic Details"></i>
+																</a>
+
+															</div>
 														</td>
 						                                <td th:text="${hour.userDetails.user.firstName + ' ' + hour.userDetails.user.lastName + '/' + hour.userDetails.clientName}"></td>
 						                                <td th:text="${#numbers.formatDecimal(hour.total.get('Daily'),1,2)}">Total Daily Hours</td>
@@ -503,6 +522,21 @@
 			var expensesCon = [[${expensesCon}]];
 			var expensesOther = [[${expensesOther}]];
 			/*]]>*/
+		</script>
+
+		<script>
+			function handleHoursDetails(el) {
+				const name = el.getAttribute("data-username");
+				const id = el.getAttribute("data-userid");
+				hoursDetails(name, id);
+			}
+
+			function handleBasicDetails(el) {
+				const name = el.getAttribute("data-username");
+				const id = el.getAttribute("data-userid");
+				bacisDetails(name, id);
+			}
+
 		</script>
 		
         <!-- JAVASCRIPT -->
