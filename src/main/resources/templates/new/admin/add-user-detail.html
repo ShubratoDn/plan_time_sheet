@@ -448,7 +448,7 @@
 											</select>
 											<select class=""
 												th:field="*{aCMCommission}" required>
-												<option value="00">00</option selected>
+												<option value="00" selected>00</option>
 											</select> 
 											<select class=""
 												th:field="*{aCMRateCountOn}" id="aCMRateCountOn" required>
@@ -477,7 +477,7 @@
 											</select>
 											<select class=""
 												th:field="*{bDMCommission}" required>
-												<option value="00">00</option selected>
+												<option value="00" selected>00</option>
 											</select> 
 											<select class=""
 												th:field="*{bDMRateCountOn}" id="aCMRateCountOn" required>
@@ -508,7 +508,7 @@
 											</select>
 											<select class=""
 												th:field="*{recCommission}" required>
-												<option value="00">00</option selected>
+												<option value="00" selected>00</option>
 											</select> 
 											<select class=""
 												th:field="*{recRateCountOn}" id="aCMRateCountOn" required>
@@ -844,17 +844,22 @@
 										<td th:text="${#dates.format(userDetail.startDate, 'MMM-dd-yyyy')}"></td>
 										<td th:text="${#dates.format(userDetail.endDate, 'MMM-dd-yyyy')}"></td>
 										<td>
-										
-										<a data-toggle="modal"
-											data-target="#custom-width-modal"
-											th:onclick="'bacisDetails(\'' + ${userDetail.user.firstName + ' ' + userDetail.user.lastName} + ' / ' +${userDetail.clientName} +'\','+ ${userDetail.userDetailId} + ')'"><i
-												class="fas fa-info-circle"
-												style="color: orange; font-size: 20px;"
-												data-toggle="tooltip" data-placement="left"
-												data-placement="left" data-placement="right"
-												title="Basic Details"></i></a> 
-												
-												&nbsp; <a th:if="${session.user.role == 'ROLE_ADMIN'}" th:href="@{${'/admin/user-detail/client/' + userDetail.userDetailId}}"><span class="badge badge-info">More details</span></a>
+
+											<a data-toggle="modal"
+											   data-target="#custom-width-modal"
+											   th:attr="data-username=${userDetail.user.firstName + ' ' + userDetail.user.lastName + ' / ' + userDetail.clientName},
+            data-userid=${userDetail.userDetailId}"
+											   onclick="handleBasicDetails(this)">
+												<i class="fas fa-info-circle"
+												   style="color: orange; font-size: 20px;"
+												   data-toggle="tooltip"
+												   data-placement="right"
+												   title="Basic Details">
+												</i>
+											</a>
+
+
+											&nbsp; <a th:if="${session.user.role == 'ROLE_ADMIN'}" th:href="@{${'/admin/user-detail/client/' + userDetail.userDetailId}}"><span class="badge badge-info">More details</span></a>
 												
 												&nbsp; <a th:if="${session.user.role == 'ROLE_ADMIN'}"
 											th:href="@{${'/admin/user-detail/' + {userDetail.user.id} + '?userDetailId=' + {userDetail.userDetailId} } }"><i
@@ -1019,6 +1024,15 @@
 			var vendorIdSelected = [[${userDetail.vendorId}]];
 			/*]]>*/
 	</script>
+
+		<script>
+			function handleBasicDetails(el) {
+				const name = el.getAttribute("data-username");
+				const id = el.getAttribute("data-userid");
+				bacisDetails(name, id);
+			}
+
+		</script>
 
 	<!-- jQuery  -->
 	<!-- JAVASCRIPT -->
