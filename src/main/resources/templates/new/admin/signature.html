@@ -83,13 +83,21 @@
 												<tr class="odd gradeX" th:each="sig,index : ${signatures}">
 													<td th:text="${index.index + 1}"></td>
 					                                <td th:text="${sig.title}"></td>
-					                                <td>
-					                                	<a href="javascript:void(0);" th:onclick="'viewSignature(\''+${sig.htmlDate}+'\')'" data-toggle="tooltip" data-placement="left" title="View"><i class="bx bxs-notepad font-size-16"></i></a>
-<!-- 					                           			<a href="javascript:void(0);" th:onclick="'editSignature(\''+${sig.id}+'\')'" data-toggle="tooltip" data-placement="left" title="Edit"><i class="fas fa-pen-square font-size-16"></i></a> -->
-					                           			<a href="javascript:void(0);" th:onclick="'deleteSignature(\''+${sig.id}+'\')'">
-				                                            <i class="fa fa-trash font-size-16"></i>
-				                                        </a>
-					                                </td>
+													<td>
+														<a href="javascript:void(0);"
+														   th:attr="data-html-date=${sig.htmlDate}"
+														   onclick="handleViewSignature(this)"
+														   data-toggle="tooltip" data-placement="left" title="View">
+															<i class="bx bxs-notepad font-size-16"></i>
+														</a>
+
+														<a href="javascript:void(0);"
+														   th:attr="data-id=${sig.id}"
+														   onclick="handleDeleteSignature(this)">
+															<i class="fa fa-trash font-size-16"></i>
+														</a>
+													</td>
+
 												</tr>
 											</tbody>
 										</table>
@@ -177,6 +185,18 @@
 		/*<![CDATA[*/
 			var context = [[@{/}]];
 			/*]]>*/
+		</script>
+		<script>
+			function handleViewSignature(el) {
+				const htmlDate = el.getAttribute("data-html-date");
+				viewSignature(htmlDate);
+			}
+
+			function handleDeleteSignature(el) {
+				const id = el.getAttribute("data-id");
+				deleteSignature(id);
+			}
+	
 		</script>
         <!-- JAVASCRIPT -->
         <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>

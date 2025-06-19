@@ -223,9 +223,12 @@
 								<div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
 									<div class="form-group">
 								    	<p class="text-danger m-0 descriptionErrorInGenaral" style="display: none;">Please enter description</p>
-						                <div class="summernote" th:utext="${T(com.aim.enums.DefaultMailTemplate).REQUEST_ACCESS.htmlData}">
-						                </div>
-						            </div>
+<!--						                <div class="summernote" th:utext="${T(com.aim.enums.DefaultMailTemplate).REQUEST_ACCESS.htmlData}">-->
+<!--						                </div>-->
+
+										<div class="summernote" th:utext="${requestAccessHtml}"></div>
+
+									</div>
 						            <div class="col-sm-12">
 							            <a class="float-right" href="javascript:void(0);" onclick="accessMailCancel()">
 											Cancel plan ?
@@ -351,9 +354,7 @@
 								<div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
 									<div class="form-group">
 								    	<p class="text-danger m-0 descriptionErrorInGenaral" style="display: none;">Please enter description</p>
-						                <div class="summernote" th:utext="${T(com.aim.enums.DefaultMailTemplate).CANCELPLAN_ACCESS.htmlData}">
-						                </div>
-						            </div>
+										<div class="summernote" th:utext="${cancelPlanHtml}"></div>
 								</div>
 						      </div>
 						      <div id="access-mail-cancel-form-is-submit" style="position: absolute;

@@ -2049,7 +2049,10 @@ public class AdminController extends DataMenuController {
 		PermissionPlan permissionPlan = permissionService.getPermissionPlan();
 		modelMap.addAttribute("permissionPlan", permissionPlan);
 		modelMap.addAttribute("accessReq", accessReq);
-		
+		modelMap.addAttribute("requestAccessHtml", DefaultMailTemplate.REQUEST_ACCESS.htmlData);
+		modelMap.addAttribute("cancelPlanHtml", DefaultMailTemplate.CANCELPLAN_ACCESS.htmlData);
+
+
 		return "new/admin/planPermission";
 	}
 	/**

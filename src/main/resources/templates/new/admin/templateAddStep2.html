@@ -116,13 +116,15 @@
 	                                                    <label class="custom-control-label" for="customRadiocolor2">Template</label>
 	                                                </div>
                                                 </div>
-												<div class="mb-2" th:each="sortName: ${emailNameShortCuts}">
-													<button class="dropdown-item mt-1" th:onclick="|setKey('${sortName.urlParam}')|">
-														<i class="bx bxs-hand-right font-size-20 align-middle mr-1 text-primary"></i> 
-														<label for="" th:text="${sortName.displayLabel}"></label>
+												<div class="mb-2" th:each="sortName : ${emailNameShortCuts}">
+													<button class="dropdown-item mt-1"
+															th:attr="data-urlparam=${sortName.urlParam}"
+															onclick="handleSetKey(this)">
+														<i class="bx bxs-hand-right font-size-20 align-middle mr-1 text-primary"></i>
+														<label th:text="${sortName.displayLabel}"></label>
 													</button>
-                                                </div>
-												
+												</div>
+
 												<div class="mb-2">
 													<button class="dropdown-item mt-1" data-toggle="modal" data-target="#signatureViewList">
 														<i class="bx bxs-hand-right font-size-20 align-middle mr-1 text-primary"></i> 
@@ -280,6 +282,13 @@
 		/*<![CDATA[*/
 			var context = [[@{/}]];
 			/*]]>*/
+		</script>
+		<script>
+			function handleSetKey(el) {
+				const urlParam = el.getAttribute("data-urlparam");
+				setKey(urlParam);
+			}
+
 		</script>
         <!-- JAVASCRIPT -->
         <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>

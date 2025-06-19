@@ -220,25 +220,36 @@
 																th:text="${#dates.format(hourLogFile.startDate , 'MMM dd yyyy') + ' TO ' + #dates.format(hourLogFile.endDate , 'MMM dd yyyy')}"></td>
 															<td><span class="badge badge-danger">Pending
 															</span></td>
-															<td><a data-toggle="modal"
-																data-target="#custom-width-modal"
-																th:onclick="'bacisDetails(\'' + ${hourLogFile.userDetail.user.firstName + ' ' + hourLogFile.userDetail.user.lastName + ' / ' + hourLogFile.userDetail.clientName} + '\',' + ${hourLogFile.userDetail.userDetailId} + ')'">
+															<td>
+																<a data-toggle="modal"
+																   data-target="#custom-width-modal"
+																   th:attr="data-username=${hourLogFile.userDetail.user.firstName + ' ' + hourLogFile.userDetail.user.lastName + ' / ' + hourLogFile.userDetail.clientName},
+            data-userid=${hourLogFile.userDetail.userDetailId}"
+																   onclick="handleBasicDetails(this)">
 																	<i class="fas fa-info-circle"
-																	style="color: orange; font-size: 20px;"></i>
-															</a> <a
+																	   style="color: orange; font-size: 20px;"></i>
+																</a>
+
+																<a
 																th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).TIMESHEET,T(com.aim.enums.Permission).CREATE, false)}"
 																th:href="@{|/supervisor/add-user-time-sheet?user=${hourLogFile.userDetail.user.id}&startDate=${#dates.format(hourLogFile.startDate , 'MM/dd/yyyy')}|}">
 																	<i class="fas fa-calendar-plus"
 																	style="font-size: 17px;" data-toggle="tooltip"
 																	data-placement="left" title="Add timesheet"></i>
-															</a> <a
-																th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).PENDING_TIMESHEET_MAIL,T(com.aim.enums.Permission).CREATE, false)}"
-																href="javascript:void(0);"
-																th:onclick="'sendMailSelectedType(\'' + pendingTimesheet+'\' ,\''+ ${hourLogFile.userDetail.userDetailId} + '\',\''+${#dates.format(hourLogFile.startDate , 'MMM dd yyyy')}+'\',\''+${#dates.format(hourLogFile.endDate , 'MMM dd yyyy')}+'\' )'">
+															</a>
+																<a th:if="${permissionService.grantPermission(session.user.role, T(com.aim.enums.Functionality).PENDING_TIMESHEET_MAIL, T(com.aim.enums.Permission).CREATE, false)}"
+																   href="javascript:void(0);"
+																   th:attr="data-timesheet=${pendingTimesheet},
+            data-userid=${hourLogFile.userDetail.userDetailId},
+            data-start=${#dates.format(hourLogFile.startDate , 'MMM dd yyyy')},
+            data-end=${#dates.format(hourLogFile.endDate , 'MMM dd yyyy')}"
+																   onclick="handleSendMail(this)">
 																	<i class="fas fa-envelope-square"
-																	style="font-size: 17px;" data-toggle="tooltip"
-																	data-placement="left" title="Send reminder mail"></i>
-															</a></td>
+																	   style="font-size: 17px;" data-toggle="tooltip"
+																	   data-placement="left" title="Send reminder mail"></i>
+																</a>
+
+															</td>
 														</tr>
 													</tbody>
 												</table>
@@ -404,6 +415,22 @@
 				var context = [[@{/}]];
 				var companyUrl = [[${session.company.urlSlug}]];
 				/*]]>*/
+		</script>
+
+		<script>
+			function handleBasicDetails(el) {
+				const name = el.getAttribute("data-username");
+				const id = el.getAttribute("data-userid");
+				bacisDetails(name, id); // Your existing function
+			}
+			function handleSendMail(el) {
+				const timesheet = el.getAttribute("data-timesheet");
+				const userId = el.getAttribute("data-userid");
+				const startDate = el.getAttribute("data-start");
+				const endDate = el.getAttribute("data-end");
+
+				sendMailSelectedType(timesheet, userId, startDate, endDate);
+			}
 		</script>
 
 			<!-- jQuery  -->
