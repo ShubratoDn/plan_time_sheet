@@ -5,7 +5,7 @@ import com.aim.entity.User;
 import com.aim.repository.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.WebRequestInterceptor;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,21 +15,14 @@ import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapt
 
 //https://medium.com/swlh/multi-tenancy-implementation-using-spring-boot-hibernate-6a8e3ecb251a
 @Component
-public class RequestInterceptor extends WebRequestHandlerInterceptorAdapter {
+public class RequestInterceptor implements HandlerInterceptor {
 
 	@Autowired HttpSession session;
 
 	@Autowired
     private CompanyRepository companyRepository;
 
-	/**
-	 * Create a new WebRequestHandlerInterceptorAdapter for the given WebRequestInterceptor.
-	 *
-	 * @param requestInterceptor the WebRequestInterceptor to wrap
-	 */
-	public RequestInterceptor(WebRequestInterceptor requestInterceptor) {
-		super(requestInterceptor);
-	}
+
 
 	@Override
     public boolean preHandle(HttpServletRequest request,
