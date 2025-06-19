@@ -1,6 +1,7 @@
 package com.aim.config;
 
 import com.aim.config.security.CustomUserDetailsServiceImpl;
+import com.aim.config.security.CustomAuthenticationFailureHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +43,7 @@ public class SecurityConfiguration {
 				.anyRequest().authenticated()
 			)
 			.formLogin(form -> form
-				.loginPage("/login").failureUrl("/login?error=true")
+				.loginPage("/login").failureHandler(new CustomAuthenticationFailureHandler())
 				.defaultSuccessUrl("/default", true)
 				.usernameParameter("email")
 				.passwordParameter("password")
@@ -80,6 +81,7 @@ public class SecurityConfiguration {
 		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 		daoAuthenticationProvider.setUserDetailsService(userDetailsServiceImple);
 		daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+		daoAuthenticationProvider.setHideUserNotFoundExceptions(false);
 
 		return daoAuthenticationProvider;
 	}

@@ -299,6 +299,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public User findUserByEmailAndActive(String email, int active) {
+		return userRepository.findByEmailAndActive(email, active);
+	}
+
+	@Override
 	public Boolean isValidActivationKey(String uId) throws Exception {
 
 		User user = userRepository.findByUuid(uId);

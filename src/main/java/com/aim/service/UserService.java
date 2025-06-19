@@ -39,6 +39,8 @@ public interface UserService {
 
 	User findUserByEmail(String email);
 
+	User findUserByEmailAndActive(String email, int isActive);
+
 	Boolean isValidActivationKey(String key) throws Exception;
 
 	Boolean resetPassword(String key, String password) throws Exception;

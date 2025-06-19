@@ -55,11 +55,18 @@ public class LoginController {
 	 * @return
 	 */
 	@RequestMapping(value={"/", "/login"}, method = RequestMethod.GET)
-	public String login(final Principal principal) {
-		if (null == principal) 
-			return "new/login"; 
-		else 
+	public String login(final Principal principal, HttpServletRequest request, ModelMap model) {
+		if (null == principal) {
+			// Transfer error from session to model
+			Object error = request.getSession().getAttribute("error");
+			if (error != null) {
+				model.addAttribute("error", error);
+				request.getSession().removeAttribute("error");
+			}
+			return "new/login";
+		} else {
 			return "redirect:/default";
+		}
 	}
 	
 	/**

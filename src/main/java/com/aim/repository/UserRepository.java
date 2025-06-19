@@ -37,5 +37,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 	User findByFileFolder(String name);
 
 	Page<User> findByFirstNameStartsWithIgnoreCase(String startsWith, Pageable pageable);
+
+	User findByEmailAndActive(String email, int active);
 	
 }
