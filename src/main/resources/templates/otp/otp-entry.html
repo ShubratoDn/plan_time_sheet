@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Enter OTP</title>
+    <link th:href="@{/assets_new/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+    <script th:src="@{/assets_new/libs/jquery/jquery.min.js}"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">OTP Verification</h4>
+                    <p class="card-text">An OTP has been sent to <b th:text="${email}"></b>. Please enter it below.</p>
+                    <form th:action="@{/otp/validate}" method="post">
+                        <div class="form-group">
+                            <label for="otp">OTP</label>
+                            <input type="text" class="form-control" id="otp" name="otp" maxlength="6" required autofocus>
+                        </div>
+                        <div th:if="${error}" class="alert alert-danger mt-2" th:text="${error}"></div>
+                        <button type="submit" class="btn btn-primary mt-2">Verify OTP</button>
+                    </form>
+                    <div class="mt-3">
+                        <button id="resendBtn" class="btn btn-link" disabled>Resend OTP (<span id="timer">20</span>s)</button>
+                        <span id="resendStatus" class="text-success ml-2"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let timer = 20;
+    let resendBtn = $("#resendBtn");
+    let timerSpan = $("#timer");
+    let resendStatus = $("#resendStatus");
+    let interval = setInterval(function() {
+        timer--;
+        timerSpan.text(timer);
+        if (timer <= 0) {
+            resendBtn.prop('disabled', false);
+            resendBtn.text('Resend OTP');
+            clearInterval(interval);
+        }
+    }, 1000);
+    resendBtn.click(function() {
+        resendBtn.prop('disabled', true);
+        resendStatus.text('');
+        $.post('/otp/resend', function(data) {
+            if (data === 'OK') {
+                timer = 20;
+                timerSpan.text(timer);
+                resendBtn.text('Resend OTP (' + timer + 's)');
+                resendStatus.text('OTP resent!');
+                interval = setInterval(function() {
+                    timer--;
+                    timerSpan.text(timer);
+                    if (timer <= 0) {
+                        resendBtn.prop('disabled', false);
+                        resendBtn.text('Resend OTP');
+                        clearInterval(interval);
+                    }
+                }, 1000);
+            } else if (data === 'WAIT') {
+                resendStatus.text('Please wait before resending.');
+            } else {
+                resendStatus.text('Session expired. Please login again.');
+            }
+        });
+    });
+</script>
+</body>
+</html> 

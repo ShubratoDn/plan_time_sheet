@@ -2,6 +2,8 @@ package com.aim.config;
 
 import com.aim.config.security.CustomUserDetailsServiceImpl;
 import com.aim.config.security.CustomAuthenticationFailureHandler;
+import com.aim.config.security.CustomAuthenticationSuccessHandler;
+import com.aim.config.security.OtpEnforcementFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,12 +24,24 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+
+	@Autowired
+	private CustomUserDetailsServiceImpl userDetailsServiceImple;
+
 	@Autowired
 	private DataSource dataSource;
+
+	@Autowired
+	private OtpEnforcementFilter otpEnforcementFilter;
 
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler() {
+		return new CustomAuthenticationSuccessHandler();
 	}
 
 	@Bean
@@ -43,8 +58,9 @@ public class SecurityConfiguration {
 				.anyRequest().authenticated()
 			)
 			.formLogin(form -> form
-				.loginPage("/login").failureHandler(new CustomAuthenticationFailureHandler())
-				.defaultSuccessUrl("/default", true)
+				.loginPage("/login")
+				.failureHandler(new CustomAuthenticationFailureHandler())
+				.successHandler(customAuthenticationSuccessHandler())
 				.usernameParameter("email")
 				.passwordParameter("password")
 				.permitAll()
@@ -56,7 +72,8 @@ public class SecurityConfiguration {
 			)
 			.exceptionHandling(ex -> ex
 				.accessDeniedPage("/access-denied")
-			);
+			)
+			.addFilterAfter(otpEnforcementFilter, UsernamePasswordAuthenticationFilter.class);
 
 		http.authenticationProvider(authenticationProvider());
 		return http.build();
@@ -71,10 +88,6 @@ public class SecurityConfiguration {
 //	public UserDetailsService userDetailsService(CustomUserDetailsServiceImpl customUserDetailsService) {
 //		return customUserDetailsService;
 //	}
-
-	@Autowired
-	private CustomUserDetailsServiceImpl userDetailsServiceImple;
-
 
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
