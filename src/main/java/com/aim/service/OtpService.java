@@ -1,11 +1,14 @@
 package com.aim.service;
 
+import com.aim.config.MailPropertyConfig;
 import com.aim.entity.OtpToken;
 import com.aim.entity.User;
 import com.aim.repository.OtpTokenRepository;
 import com.aim.service.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -21,6 +24,10 @@ public class OtpService {
     private OtpTokenRepository otpTokenRepository;
     @Autowired
     private EmailSenderService emailSenderService;
+    @Autowired
+    private org.thymeleaf.TemplateEngine templateEngine;
+    @Value("${timesheet.server.url}")
+    private String TIMESHEET_SERVER_URL;
 
     public OtpToken generateAndSendOtp(User user) {
         String otp = String.format("%06d", new Random().nextInt(999999));
@@ -63,8 +70,11 @@ public class OtpService {
     }
 
     private void sendOtpEmail(User user, String otp) {
-        String subject = "Your Login OTP";
-        String message = "Your OTP for login is: " + otp + "\nThis OTP is valid for 3 minutes.";
-        emailSenderService.sendEmailToUserWithCC(message, user.getEmail(), subject, null, null, null);
+        final Context ctx = new Context(java.util.Locale.US);
+        ctx.setVariable("fullname", user.getFirstName() + ' ' + user.getLastName());
+        ctx.setVariable("otp", otp);
+        ctx.setVariable("rootURL", TIMESHEET_SERVER_URL);
+        final String htmlContent = templateEngine.process("mail/otp-login-email", ctx);
+        emailSenderService.sendEmailToUserWithCC(htmlContent, user.getEmail(), "Your Login OTP", null, null, MailPropertyConfig.FROMEMAIL);
     }
-} 
+}

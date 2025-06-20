@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>401 Unauthorized</title>
+    <link th:href="@{/assets_new/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+    <style>
+        .error-container { text-align: center; margin-top: 10vh; }
+        .error-code { font-size: 8em; color: #ffc107; font-weight: bold; }
+        .error-message { font-size: 2em; color: #333; }
+        .home-link { margin-top: 2em; }
+    </style>
+</head>
+<body>
+    <div class="container error-container">
+        <div class="error-code">401</div>
+        <div class="error-message">Unauthorized</div>
+        <p>You are not authorized to view this page. Please log in with the correct credentials.</p>
+        <div class="home-link">
+            <a th:href="@{/login}" class="btn btn-primary">Go to Login</a>
+        </div>
+    </div>
+</body>
+</html> 

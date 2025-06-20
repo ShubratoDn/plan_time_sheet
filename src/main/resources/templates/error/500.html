@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>500 Internal Server Error</title>
+    <link th:href="@{/assets_new/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+    <style>
+        .error-container { text-align: center; margin-top: 10vh; }
+        .error-code { font-size: 8em; color: #dc3545; font-weight: bold; }
+        .error-message { font-size: 2em; color: #333; }
+        .home-link { margin-top: 2em; }
+    </style>
+</head>
+<body>
+    <div class="container error-container">
+        <div class="error-code">500</div>
+        <div class="error-message">Internal Server Error</div>
+        <p>Sorry, something went wrong on our end. Please try again later.</p>
+        <div class="home-link">
+            <a th:href="@{/}" class="btn btn-primary">Go to Home</a>
+        </div>
+    </div>
+</body>
+</html> 

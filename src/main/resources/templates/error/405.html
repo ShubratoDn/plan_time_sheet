@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>405 Method Not Allowed</title>
+    <link th:href="@{/assets_new/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+    <style>
+        .error-container { text-align: center; margin-top: 10vh; }
+        .error-code { font-size: 8em; color: #fd7e14; font-weight: bold; }
+        .error-message { font-size: 2em; color: #333; }
+        .home-link { margin-top: 2em; }
+    </style>
+</head>
+<body>
+    <div class="container error-container">
+        <div class="error-code">405</div>
+        <div class="error-message">Method Not Allowed</div>
+        <p>The method you used to access this page is not allowed. Please use the correct method.</p>
+        <div class="home-link">
+            <a th:href="@{/}" class="btn btn-primary">Go to Home</a>
+        </div>
+    </div>
+</body>
+</html> 
