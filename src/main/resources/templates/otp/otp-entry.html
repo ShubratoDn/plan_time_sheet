@@ -12,6 +12,9 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
+                    <div class="text-right mb-3">
+                        <a href="/logout" class="btn btn-outline-secondary">Home</a>
+                    </div>
                     <h4 class="card-title">OTP Verification</h4>
                     <p class="card-text">An OTP has been sent to <b th:text="${email}"></b>. Please enter it below.</p>
                     <form th:action="@{/otp/validate}" method="post">
