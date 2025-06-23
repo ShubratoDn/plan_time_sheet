@@ -1,25 +1,13 @@
-FROM maven:3.6.1-jdk-8-slim AS build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 RUN mkdir -p /workspace
 WORKDIR /workspace
 COPY pom.xml /workspace
 COPY src /workspace/src
 RUN mvn -f pom.xml clean package
 
-### STAGE 1: Build ###
-#FROM node:12.7-alpine AS buildui
-#WORKDIR /usr/src/app
-#COPY /mc-ui/package.json  /usr/src/app/
-#RUN npm install
-#COPY ./mc-ui/ /usr/src/app
-## naresh #RUN npm run build
-#RUN npm run build:prod
-
-#FROM tomcat:latest
-FROM tomcat:9.0.39-jdk8-openjdk-buster
-# change for memory
-# for file share
+# Deploy stage: Use Tomcat 10+ with Java 17+
+FROM tomcat:10.1-jdk17-temurin
 RUN mkdir -p  /User/File/TimeSheet/files/
-
 ENV CATALINA_OPTS="-Xms1G -Xmx1G"
 COPY --from=build /workspace/target/*.war /usr/local/tomcat/webapps/mtimesheet.war
 #COPY --from=buildui  usr/src/app/dist   /usr/local/tomcat/webapps/mc-ui
